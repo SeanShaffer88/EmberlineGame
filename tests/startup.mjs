@@ -1,0 +1,31 @@
+import {chromium} from 'playwright';
+import assert from 'node:assert/strict';
+import {writeFileSync} from 'node:fs';
+import {newGame,serialize} from '../web/model.js';
+const browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true,args:['--use-angle=swiftshader','--enable-unsafe-swiftshader']});
+const checks=[];
+try {
+ const page=await browser.newPage({viewport:{width:412,height:915}});
+ const saved=newGame(42);saved.started=true;saved.inventory.wood=71;
+ const data=serialize(saved);
+ await page.addInitScript(value=>localStorage.setItem('emberline.save',value),data);
+ await page.route('**/main.js',route=>route.abort());
+ await page.goto('http://127.0.0.1:8844/');
+ await page.locator('#startup-details').waitFor();
+ assert.match(await page.locator('#startup-details').innerText(),/Could not load game script/);
+ assert.equal(await page.evaluate(()=>localStorage.getItem('emberline.save')),data);
+ checks.push('An unavailable module displays retry/details without touching the save');
+ await page.unroute('**/main.js');
+ await page.route('**/main.js',route=>route.fulfill({contentType:'text/javascript',body:'throw new Error("Startup regression fixture");'}));
+ await page.reload();await page.locator('#startup-details').waitFor();
+ assert.match(await page.locator('#startup-details').innerText(),/Startup regression fixture/);
+ assert.equal(await page.evaluate(()=>localStorage.getItem('emberline.save')),data);
+ checks.push('An exception before renderer initialization is visible and preserves the save');
+ await page.unroute('**/main.js');await page.locator('#loading button').click();
+ await page.locator('#menu').waitFor();assert.equal(await page.locator('#loading').isVisible(),false);
+ assert.equal(await page.evaluate(async()=>(await import('./main.js')).state.inventory.wood),71);
+ await page.evaluate(()=>window.emberlineStartupError('Late error must not cover a running game'));
+ assert.equal(await page.locator('#loading').isVisible(),false);
+ checks.push('Retry starts the game, loads existing progress and dismisses startup diagnostics');
+ writeFileSync('build/startup-results.json',JSON.stringify({checks},null,2));console.log(JSON.stringify({checks},null,2));
+}finally{await browser.close();}

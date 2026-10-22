@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#203b4b"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"><title>Emberline</title><link rel="stylesheet" href="style.css"></head>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#203b4b"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"><title>Emberline</title><link rel="icon" href="data:,"><link rel="stylesheet" href="style.css"></head>
 <body>
 <svg class="sprite" xmlns="http://www.w3.org/2000/svg"><defs>
 <symbol id="i-wood" viewBox="0 0 24 24"><path d="M5 6 17 3l4 13-12 4Z"/><ellipse cx="7" cy="13" rx="4" ry="7"/><path d="m12 7 5-1m-4 5 5-1M6 9l2 8"/></symbol>
@@ -41,5 +41,6 @@
 <div id="welcome" hidden><div class="welcome-top"><svg><use href="#i-train"/></svg><span>AN OFFLINE SURVIVAL ADVENTURE</span></div><div class="welcome-title"><span>LAST TRAIN</span><h1>EMBERLINE<span>.</span></h1><p>The rails end here.<br>A new home begins.</p></div><div class="welcome-bottom"><div class="welcome-rule"></div><p>Explore a frozen valley. Gather, build, and bring<br>your people home. This is where you stay.</p><button id="start" class="primary">Build a new beginning <svg><use href="#i-arrow"/></svg></button><small>ONE PERSISTENT WORLD · COMPLETELY OFFLINE</small></div></div>
 <div id="modal" hidden><section class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title"><header><div><span id="sheet-kicker" class="eyebrow">FROSTHOLLOW</span><h2 id="sheet-title">Settlement</h2></div><button id="close-sheet" class="icon-button" aria-label="Close menu"><svg><use href="#i-close"/></svg></button></header><div id="sheet-body"></div></section></div>
 <div id="toast" role="status" hidden></div><div id="floaters"></div><input type="file" id="import-file" accept="application/json,.json" hidden>
+<script src="boot.js"></script>
 <script type="module" src="main.js"></script>
 </body></html>

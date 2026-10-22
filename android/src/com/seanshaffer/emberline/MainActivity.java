@@ -6,14 +6,19 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Build;
+import android.util.Log;
 import android.view.View;
+import android.webkit.ConsoleMessage;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.webkit.WebChromeClient;
 import android.widget.Toast;
+import android.widget.FrameLayout;
 import org.json.JSONObject;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -37,10 +42,15 @@ public final class MainActivity extends Activity {
         web = new WebView(this);
         web.setBackgroundColor(Color.rgb(195, 220, 229));
         web.setOverScrollMode(View.OVER_SCROLL_NEVER);
-        // Android 15 can enforce edge-to-edge. Apply insets explicitly for camera and navigation safety.
-        web.setOnApplyWindowInsetsListener((v, insets) -> {
-            v.setPadding(insets.getSystemWindowInsetLeft(), insets.getSystemWindowInsetTop(),
+        FrameLayout frame = new FrameLayout(this);
+        frame.setBackgroundColor(Color.rgb(195, 220, 229));
+        frame.addView(web, new FrameLayout.LayoutParams(-1, -1));
+        // Resize the WebView itself: its HTML viewport does not respect View padding.
+        frame.setOnApplyWindowInsetsListener((v, insets) -> {
+            FrameLayout.LayoutParams layout = (FrameLayout.LayoutParams) web.getLayoutParams();
+            layout.setMargins(insets.getSystemWindowInsetLeft(), insets.getSystemWindowInsetTop(),
                     insets.getSystemWindowInsetRight(), insets.getSystemWindowInsetBottom());
+            web.setLayoutParams(layout);
             return insets.consumeSystemWindowInsets();
         });
         WebSettings settings = web.getSettings();
@@ -55,6 +65,14 @@ public final class MainActivity extends Activity {
         settings.setMediaPlaybackRequiresUserGesture(true);
         settings.setSupportZoom(false);
         WebView.setWebContentsDebuggingEnabled(false);
+        web.setWebChromeClient(new WebChromeClient() {
+            @Override public boolean onConsoleMessage(ConsoleMessage entry) {
+                if (entry.messageLevel() == ConsoleMessage.MessageLevel.ERROR) {
+                    Log.e("Emberline", entry.sourceId() + ":" + entry.lineNumber() + " " + entry.message());
+                }
+                return true;
+            }
+        });
         web.addJavascriptInterface(new LocalBridge(), "EmberlineNative");
         web.setWebViewClient(new WebViewClient() {
             @Override public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
@@ -70,10 +88,10 @@ public final class MainActivity extends Activity {
                 String mime = path.endsWith(".js") ? "text/javascript" : path.endsWith(".css") ? "text/css" : path.endsWith(".html") ? "text/html" : path.endsWith(".svg") ? "image/svg+xml" : "text/plain";
                 try {
                     return new WebResourceResponse(mime, "UTF-8", 200, "OK", Collections.singletonMap("Cache-Control", "no-store"), getAssets().open(path.substring(1)));
-                } catch (Exception ignored) { return denied(); }
+                } catch (Exception error) { Log.e("Emberline", "Bundled asset unavailable: " + path, error); return denied(); }
             }
         });
-        setContentView(web);
+        setContentView(frame);
         web.loadUrl("https://" + ORIGIN + "/index.html");
     }
     private WebResourceResponse denied() {
@@ -85,6 +103,11 @@ public final class MainActivity extends Activity {
         catch (Exception e) { return false; }
     }
     public final class LocalBridge {
+        @JavascriptInterface public String deviceInfo() {
+            android.content.pm.PackageInfo provider = WebView.getCurrentWebViewPackage();
+            return "Android " + Build.VERSION.RELEASE + " (API " + Build.VERSION.SDK_INT + ")\nWebView "
+                    + (provider == null ? "unavailable" : provider.versionName);
+        }
         @JavascriptInterface public String load() { return prefs.getString("save", ""); }
         @JavascriptInterface public String loadBackup() { return prefs.getString("backup", ""); }
         @JavascriptInterface public synchronized boolean save(String data) {

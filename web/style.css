@@ -5,3 +5,5 @@
 @media(max-height:720px){.topbar{top:10px}.vitals{top:61px;padding:9px}.resources{top:124px}.quest-card{top:168px;padding:9px}.quest-icon{height:31px}.world-tools{top:250px}.welcome-title{margin-top:23px}.welcome-title h1{font-size:45px}.welcome-top{margin-top:20px}.welcome-title p{font-size:12px}.welcome-bottom{margin-bottom:20px}.welcome-bottom p{font-size:10px;margin:10px 0}.bottom{gap:7px}.action-card{bottom:158px}.sheet{max-height:94%}}
 
 .camp-remark{border-left:3px solid #d9b776;padding:10px 0 10px 14px;color:#526e77;font-style:italic;line-height:1.65}
+
+#loading h2{font-size:24px}#loading>p{max-width:340px;padding:0 20px;line-height:1.5}#startup-details{max-width:90vw;max-height:40vh;overflow:auto;white-space:pre-wrap;word-break:break-word;text-align:left;background:#eff5f4;padding:16px;border-radius:12px;font:12px/1.5 monospace}#loading>.primary{min-width:180px;margin-top:12px}

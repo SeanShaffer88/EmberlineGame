@@ -3,7 +3,8 @@ param(
  [Parameter(Mandatory=$true)][string]$AndroidJar,
  [Parameter(Mandatory=$true)][string]$BuildTools,
  [Parameter(Mandatory=$true)][string]$KeyStore,
- [string]$KeyAlias = 'frostline'
+ [string]$KeyAlias = 'frostline',
+ [string]$PythonExe = 'python'
 )
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
@@ -22,9 +23,9 @@ $sourceFiles = @(Get-ChildItem -LiteralPath (Join-Path $projectRoot 'android/src
 Run-Checked (Join-Path $JdkHome 'bin/javac.exe') (@('-encoding','UTF-8','-source','8','-target','8','-classpath',$AndroidJar,'-d',(Join-Path $stageRoot 'classes')) + $sourceFiles)
 $classFiles = @(Get-ChildItem -LiteralPath (Join-Path $stageRoot 'classes') -Filter '*.class' -Recurse | ForEach-Object FullName)
 Run-Checked (Join-Path $BuildTools 'd8.bat') (@('--release','--min-api','29','--lib',$AndroidJar,'--output',(Join-Path $stageRoot 'dex')) + $classFiles)
-Run-Checked (Join-Path $JdkHome 'bin/jar.exe') @('uf',(Join-Path $stageRoot 'base.apk'),'-C',(Join-Path $stageRoot 'dex'),'classes.dex')
-Run-Checked (Join-Path $BuildTools 'zipalign.exe') @('-f','-P','16','4',(Join-Path $stageRoot 'base.apk'),(Join-Path $stageRoot 'aligned.apk'))
-$apk = Join-Path $buildRoot 'Emberline-0.1.0.apk'
+Run-Checked $PythonExe @((Join-Path $PSScriptRoot 'package-apk.py'),(Join-Path $stageRoot 'base.apk'),(Join-Path $stageRoot 'dex/classes.dex'),(Join-Path $stageRoot 'packaged.apk'))
+Run-Checked (Join-Path $BuildTools 'zipalign.exe') @('-f','-P','16','4',(Join-Path $stageRoot 'packaged.apk'),(Join-Path $stageRoot 'aligned.apk'))
+$apk = Join-Path $buildRoot 'Emberline-0.1.1.apk'
 Run-Checked (Join-Path $BuildTools 'apksigner.bat') @('sign','--ks',$KeyStore,'--ks-key-alias',$KeyAlias,'--ks-pass','env:EMBERLINE_STORE_PASS','--out',$apk,(Join-Path $stageRoot 'aligned.apk'))
 Run-Checked (Join-Path $BuildTools 'apksigner.bat') @('verify','--verbose','--print-certs',$apk)
 Run-Checked (Join-Path $BuildTools 'zipalign.exe') @('-c','-P','16','4',$apk)
