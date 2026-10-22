@@ -1,0 +1,19 @@
+{
+  "name": "emberline",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "An original offline winter train-survival adventure for Android.",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "serve": "node scripts/serve.mjs",
+    "vendor": "node scripts/vendor.mjs"
+  },
+  "dependencies": {
+    "three": "0.186.1"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "playwright": "1.64.1"
+  }
+}

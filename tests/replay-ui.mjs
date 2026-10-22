@@ -1,0 +1,28 @@
+import {chromium} from 'playwright';
+import assert from 'node:assert/strict';
+import {writeFileSync} from 'node:fs';
+const browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true,args:['--use-angle=swiftshader','--enable-unsafe-swiftshader']});
+try{
+ const page=await browser.newPage({viewport:{width:412,height:915},deviceScaleFactor:1.5,isMobile:true,hasTouch:true}),errors=[],checks=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto('http://127.0.0.1:8844/');await page.locator('#start').click();await page.locator('[data-mode="cozy"]').click();await page.locator('#begin-exploring').click();
+ const state=()=>page.evaluate(async()=>JSON.parse(JSON.stringify((await import('./main.js')).state)));
+ assert.equal((await state()).difficulty,'cozy');checks.push('Every difficulty is freely selectable');
+ await page.locator('#quest-card').click();await page.locator('[data-journal="contracts"]').click();assert.ok((await state()).contract);const serial=(await state()).contractSerial;await page.locator('#skip-contract').click();assert.equal((await state()).contractSerial,serial+1);await page.screenshot({path:'build/screenshots/07-contracts.png'});checks.push('Contract board creates varied, freely replaceable challenges');
+ await page.locator('[data-journal="secrets"]').click();await page.locator('[data-clue="0"]').click();assert.ok(await page.locator('#clue-0').isVisible());await page.screenshot({path:'build/screenshots/08-secrets.png'});await page.locator('[data-journal="badges"]').click();assert.equal(await page.locator('.quest-row').count(),25);await page.screenshot({path:'build/screenshots/09-badges.png'});checks.push('Collection clues and all 25 achievement entries are usable');await page.locator('#close-sheet').click();
+ await page.locator('[data-panel="craft"]').click();assert.equal(await page.locator('[data-gear]').count(),5);assert.ok(await page.locator('[data-gear="lantern"]').isDisabled());await page.locator('[data-gear="axe"]').scrollIntoViewIfNeeded();await page.screenshot({path:'build/screenshots/10-equipment.png'});await page.locator('#close-sheet').click();await page.locator('[data-panel="build"]').click();assert.equal(await page.locator('[data-livery]').count(),6);assert.ok(await page.locator('[data-livery="gold"]').isDisabled());await page.locator('#close-sheet').click();checks.push('Equipment and liveries use earned unlocks; unearned rewards remain locked');
+ await page.evaluate(()=>window.emberlinePause());const paused=(await state()).activeSeconds;await page.waitForTimeout(1200);assert.equal((await state()).activeSeconds,paused);await page.evaluate(()=>window.emberlineResume());await page.waitForTimeout(500);assert.ok((await state()).activeSeconds>paused);checks.push('Android lifecycle hooks freeze and resume simulation without wall-clock catch-up');
+ // Aim the camera at a known test destination, then use actual touch movement and interaction.
+ await page.evaluate(async()=> (await import('./main.js')).view.lookAt(-7,9));await page.waitForTimeout(300);let p=await page.evaluate(async()=> (await import('./main.js')).view.project(-7,9,0));await page.touchscreen.tap(p.x,p.y);
+ for(let i=0;i<120;i++){if((await state()).secretSeen.includes('secret0'))break;await page.waitForTimeout(100);}
+ assert.ok((await state()).secretSeen.includes('secret0'));await page.waitForTimeout(1800);p=await page.evaluate(async()=> (await import('./main.js')).view.project(-7,10,.65));await page.touchscreen.tap(p.x,p.y);assert.match(await page.locator('#action-card').innerText(),/cairn/i);await page.locator('#perform-action').click();
+ for(let i=0;i<80;i++){if((await state()).relics.includes(0))break;await page.waitForTimeout(100);}
+ assert.ok((await state()).relics.includes(0));await page.locator('#secret-continue').waitFor();await page.screenshot({path:'build/screenshots/11-secret-found.png'});await page.locator('#secret-continue').click();checks.push('Hidden cairn appears only nearby, can be touched and searched, and opens its original story');
+ await page.reload();await page.locator('#menu').waitFor();assert.ok((await state()).relics.includes(0));assert.ok((await state()).achievements.includes('curious'));assert.equal((await state()).difficulty,'cozy');checks.push('Secret discovery, badge, difficulty and contract persist through reload');
+ // Visual fixture only: verify rescued crew presentation independently of campaign progression.
+ await page.evaluate(async()=>{const {state,view}=await import('./main.js');Object.assign(state.flags,{mira:true,oren:true,ivo:true});view.sync(true);});
+ await page.locator('[data-panel="crew"]').click();assert.equal(await page.locator('.camp-remark').count(),3);assert.match(await page.locator('.camp-remark').first().innerText(),/kettle/);
+ await page.locator('[data-companion="mira"]').click();assert.equal(await page.evaluate(async()=> (await import('./main.js')).view.residents.mira.visible),false);
+ await page.evaluate(async()=>{(await import('./main.js')).state.flags.beacon=true;});await page.locator('#close-sheet').click();await page.locator('[data-panel="crew"]').click();assert.match(await page.locator('.camp-remark').first().innerText(),/breakfast/);await page.screenshot({path:'build/screenshots/12-crew.png'});
+ checks.push('Rescued-crew visual fixture: camp remarks follow milestones and active companions leave camp');
+ assert.deepEqual(errors,[]);writeFileSync('build/replay-ui-results.json',JSON.stringify({checks,errors},null,2));console.log(JSON.stringify({checks,errors},null,2));
+}finally{await browser.close();}

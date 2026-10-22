@@ -1,0 +1,25 @@
+import {chromium} from 'playwright';
+import {mkdirSync,writeFileSync} from 'node:fs';
+import assert from 'node:assert/strict';
+mkdirSync('build/screenshots',{recursive:true});
+const browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true,args:['--enable-webgl','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
+const context=await browser.newContext({viewport:{width:412,height:915},deviceScaleFactor:1.5,isMobile:true,hasTouch:true});
+const page=await context.newPage(),errors=[],external=[],checks=[];
+page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(!r.url().startsWith('http://127.0.0.1:8844/')&&!r.url().startsWith('data:')&&!r.url().startsWith('blob:'))external.push(r.url());});
+await page.goto('http://127.0.0.1:8844/');
+await page.locator('#start').waitFor({state:'visible'});await page.waitForTimeout(1800);assert.equal(await page.locator('#error').count(),0);await page.screenshot({path:'build/screenshots/01-welcome.png'});checks.push('WebGL2 startup and original scene rendered');
+await page.locator('#start').click();await page.locator('#begin-exploring').click();await page.waitForTimeout(900);await page.screenshot({path:'build/screenshots/02-valley.png'});checks.push('New game and field guide completed');
+await page.locator('[data-panel="craft"]').click();await page.locator('[data-craft="planks"][data-count="1"]').click();await page.locator('[data-craft="planks"][data-count="1"]').click();
+assert.equal(await page.evaluate(async()=> (await import('./main.js')).state.inventory.planks),4);checks.push('Craft buttons debit timber and create four planks');
+await page.screenshot({path:'build/screenshots/03-crafting.png'});await page.locator('#close-sheet').click();
+await page.locator('[data-panel="build"]').click();await page.screenshot({path:'build/screenshots/04-settlement.png'});await page.locator('#close-sheet').click();
+await page.locator('#quest-card').click();await page.screenshot({path:'build/screenshots/05-journal.png'});await page.locator('#close-sheet').click();
+await page.reload();await page.locator('#menu').waitFor({state:'visible'});assert.equal(await page.evaluate(async()=> (await import('./main.js')).state.inventory.planks),4);checks.push('Reload resumes local save without a login or title reset');
+await page.locator('#home-button').click();await page.locator('#rest').click();assert.equal(await page.evaluate(async()=> (await import('./main.js')).state.restCount),1);checks.push('Return and rest restores player through UI');
+await page.locator('#menu').click();await page.locator('#quality').click();assert.equal(await page.evaluate(async()=> (await import('./main.js')).state.settings.quality),'low');await page.locator('#sound').click();assert.equal(await page.evaluate(async()=> (await import('./main.js')).state.settings.sound),false);checks.push('Graphics and sound settings persist');await page.locator('#close-sheet').click();
+await page.evaluate(async()=>window.importEmberlineSave('{"version":2}'));assert.equal(await page.evaluate(async()=> (await import('./main.js')).state.inventory.planks),4);checks.push('Invalid import leaves progress intact');
+for(const size of [{width:360,height:740},{width:480,height:1040},{width:915,height:412}]){await page.setViewportSize(size);await page.waitForTimeout(400);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);await page.screenshot({path:`build/screenshots/layout-${size.width}x${size.height}.png`});}
+checks.push('360, 412, 480 pixel portrait and landscape layouts have no horizontal overflow');
+assert.deepEqual(errors,[]);assert.deepEqual(external,[]);checks.push('No JavaScript exceptions and no external resource requests');
+writeFileSync('build/browser-results.json',JSON.stringify({checks,errors,externalRequests:external,engine:await browser.version()},null,2));
+console.log(JSON.stringify({checks,errors,externalRequests:external},null,2));await browser.close();

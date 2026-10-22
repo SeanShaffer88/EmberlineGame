@@ -1,0 +1,8 @@
+node_modules/
+build/
+local.properties
+*.keystore
+*.jks
+*.p12
+*.log
+.gradle/
