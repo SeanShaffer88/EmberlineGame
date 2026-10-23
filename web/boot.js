@@ -19,7 +19,7 @@
   try {
    if (window.EmberlineNative && window.EmberlineNative.deviceInfo) environment = window.EmberlineNative.deviceInfo();
   } catch (_) {}
-  details.textContent = 'Emberline 0.1.1\n' + String(detail).slice(0, 1400) + '\n\n' + environment;
+  details.textContent = 'Emberline 0.1.2\n' + String(detail).slice(0, 1400) + '\n\n' + environment;
   var retry = document.createElement('button');
   retry.className = 'primary'; retry.textContent = 'Try again';
   retry.onclick = function () { location.reload(); };

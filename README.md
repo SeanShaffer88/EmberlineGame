@@ -2,7 +2,7 @@
 
 An original offline Android survival adventure. The rails end in **Frosthollow**, and the train becomes your permanent home. Explore one continuous snowy valley, gather supplies, craft equipment, rescue a crew, and build a settlement that stays with you.
 
-**Version 0.1.1 is a playable preview.** The signed APK and source are available in Releases. It has passed model, browser/touch, and Android 15 emulator checks, including airplane-mode launch, gathering, crafting, save restoration, and native backup export/import. The owner has also played 0.1.1 on the target phone, a Galaxy S24 Ultra, through the recommended phone check with no problems found; it felt smooth.
+**Version 0.1.2 is a playable preview.** It adds joystick movement. Signed APKs and source are published in Releases; until a 0.1.2 APK is published there, build it from source (see Android build) or install 0.1.1. It has passed model, browser/touch, and Android 15 emulator checks, including airplane-mode launch, gathering, crafting, save restoration, and native backup export/import. The owner has also played 0.1.1 on the target phone, a Galaxy S24 Ultra, through the recommended phone check with no problems found; it felt smooth.
 
 ![Emberline gameplay](docs/gameplay.png)
 
@@ -23,7 +23,7 @@ The campaign ends with the beacon; the valley remains playable for contracts, se
 
 ## Install and play
 
-1. Download `Emberline-0.1.1.apk` onto the phone and open it from My Files or the browser's download list.
+1. Download the newest `Emberline-<version>.apk` from Releases onto the phone and open it from My Files or the browser's download list.
 2. If Android asks, allow that app to install this APK. Accept the Emberline installation prompt.
 3. Update an existing installation directly; do not uninstall it if you want to keep its private save.
 4. Open Emberline, choose a difficulty in the field guide, and tap **Let’s make a home**.
@@ -32,10 +32,10 @@ Requires Android 10 or newer and Android System WebView with WebGL2 support. The
 
 Tap snow to walk, or hold the joystick at the bottom left (arrow keys or WASD in a browser); drag to pan. Tap an object and its action button to gather, rescue, or restore. Use Craft and Build for improvements, Crew for companions and crops, and Pack for food or medicine. Tap the quest card for Story, Contracts, Secrets, and Badges. Return & rest is always available, even without food. The compass recenters the camera; the plus/minus button changes zoom.
 
-## Unreleased
+## What changed in 0.1.2
 
 - Added an on-screen movement joystick, requested after phone testing. Holding it walks tile by tile in the direction pushed, relative to the camera; releasing it stops. It cancels a tap-to-walk route or selection. Tap-to-walk is unchanged. Arrow keys and WASD do the same in a browser.
-- Not yet built into an APK or tested on a phone.
+- Android versionCode 3. The joystick has not yet been tested on a phone.
 
 ## What changed in 0.1.1
 
@@ -88,7 +88,7 @@ $env:EMBERLINE_STORE_PASS = <password supplied securely in your session>
 $env:EMBERLINE_STORE_PASS = $null
 ```
 
-The output is `build/Emberline-0.1.1.apk`. The script verifies raw ZIP paths, CRCs, the APK signature, and alignment. Nested asset paths must use forward slashes; Python on Windows can conceal raw backslashes in ZipInfo.filename, so validation uses orig_filename. A fresh staging directory prevents stale class files entering subsequent builds. Private release keys and passwords are never included in the source archive.
+The output is `build/Emberline-0.1.2.apk`. The script verifies raw ZIP paths, CRCs, the APK signature, and alignment. Nested asset paths must use forward slashes; Python on Windows can conceal raw backslashes in ZipInfo.filename, so validation uses orig_filename. A fresh staging directory prevents stale class files entering subsequent builds. Private release keys and passwords are never included in the source archive.
 
 Game rules: `web/model.js`. Content: `web/content.js`. Rendering: `web/world.js`. Touch/UI/save orchestration: `web/main.js`. Original procedural sound: `web/audio.js`. Android wrapper: `android/src/com/seanshaffer/emberline/MainActivity.java`.
 
