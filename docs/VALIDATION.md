@@ -62,8 +62,8 @@ The exact final APK was signature/alignment/CRC checked and its 11 web assets co
 
 The owner installed 0.1.1 on the target Galaxy S24 Ultra and ran the recommended phone check below. They reported no problems and smooth play. Their only request was joystick movement, which was then added (see below). This is an owner playtest report, not a measured frame-rate, battery, or certification result. Full campaign and long replay runs remain verified in model tests, not played end to end on Android.
 
-## Joystick movement (unreleased)
+## Joystick movement (0.1.2 source)
 
-`tests/joystick.mjs` checks in headless Chrome at 412×915 with touch emulation that the joystick does not overlap Return & rest, the menu bar, the place name, or the action card; that holding it right, up, left, and down walks at least two tiles in the matching screen direction and stops on release; that arrow keys do the same; that it clears a selection; and that the position reached survives reload, with no JavaScript errors. The model and the other browser suites still pass. The joystick has not yet been built into an APK or tested on the phone.
+`tests/joystick.mjs` checks in headless Chrome at 412×915 with touch emulation that the joystick does not overlap Return & rest, the menu bar, the place name, or the action card; that holding it right, up, left, and down walks at least two tiles in the matching screen direction and stops on release; that arrow keys do the same; that it clears a selection; and that the position reached survives reload, with no JavaScript errors. The model and the other browser suites still pass. Source is versioned 0.1.2 (versionCode 3). The joystick has not yet been built into a signed APK or tested on the phone; the APK, signature, and hash records above are for 0.1.1.
 
 Recommended phone check: update without uninstalling → cold-launch in airplane mode → walk and gather → craft → close/relaunch → verify progress → export/import backup → background/resume. Keep the same signing identity for future updates.
