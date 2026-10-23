@@ -26,7 +26,7 @@ Separate headless Chrome sessions with software WebGL2 and touch input checked:
 
 This update reran browser smoke, touch gathering/building, and startup-failure checks. A separate environmental QA run verified a touch-generated trail, changing tree transforms, increased snow and dimmer light in a storm fixture, and reduced snow density in Battery saver, with no JavaScript exceptions. Screenshots were visually inspected. Storm state was explicitly set for this visual check; it is not campaign-completion evidence.
 
-Reports are produced in `build/browser-results.json`, `build/touch-results.json`, and `build/replay-ui-results.json`. Screenshots are browser captures, not photographs or screenshots of a Galaxy S24 Ultra. Software renderer speed is not a mobile performance measurement.
+Reports are produced in `build/browser-results.json`, `build/touch-results.json`, `build/replay-ui-results.json`, and `build/joystick-results.json`. Screenshots are browser captures, not photographs or screenshots of a Galaxy S24 Ultra. Software renderer speed is not a mobile performance measurement.
 
 ## Android package
 
@@ -58,8 +58,12 @@ Native checks completed during this update:
 
 The exact final APK was signature/alignment/CRC checked and its 11 web assets compared byte for byte with the working source. Debugging is disabled in the release.
 
-## Outstanding physical-phone checks
+## Physical-phone check — Galaxy S24 Ultra — 2026-10-23
 
-The requested target remains Galaxy S24 Ultra. Samsung/WebView GPU compatibility, sustained frame rate, audio quality, touch feel, battery behavior, and device-specific document providers still require a physical-phone playtest. Emulator speed does not measure phone performance. Full campaign and long replay runs were verified in model tests, not played end to end on Android.
+The owner installed 0.1.1 on the target Galaxy S24 Ultra and ran the recommended phone check below. They reported no problems and smooth play. Their only request was joystick movement, which was then added (see below). This is an owner playtest report, not a measured frame-rate, battery, or certification result. Full campaign and long replay runs remain verified in model tests, not played end to end on Android.
+
+## Joystick movement (unreleased)
+
+`tests/joystick.mjs` checks in headless Chrome at 412×915 with touch emulation that the joystick does not overlap Return & rest, the menu bar, the place name, or the action card; that holding it right, up, left, and down walks at least two tiles in the matching screen direction and stops on release; that arrow keys do the same; that it clears a selection; and that the position reached survives reload, with no JavaScript errors. The model and the other browser suites still pass. The joystick has not yet been built into an APK or tested on the phone.
 
 Recommended phone check: update without uninstalling → cold-launch in airplane mode → walk and gather → craft → close/relaunch → verify progress → export/import backup → background/resume. Keep the same signing identity for future updates.
