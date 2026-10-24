@@ -23,7 +23,12 @@ try{
  checks.push('Earned upgrades reveal laundry, icicles, hanging lanterns and a vent with growing leaves; original scenery and interactive models still render');
 
  const motion=await page.evaluate(()=>{
-  const v=g.view,d=v.details,before=m.serialize(g.state),mem={...v.renderer.info.memory};
+  const v=g.view,d=v.details;
+  // Newly earned held props upload lazily. Warm them once before checking that
+  // repeated animation does not allocate more GPU geometry or textures.
+  for(const r of v.inhabitants.people)for(const prop of Object.values(r.props))prop.visible=true;
+  v.renderer.render(v.scene,v.camera);frame();
+  const before=m.serialize(g.state),mem={...v.renderer.info.memory};
   let hadFeet=false,hadBreath=false;for(let i=0;i<180;i++){frame(1/30,{x:i*.012,z:3,angle:i<60?0:Math.PI/2,walking:true});hadFeet||=d.particles.items.some(p=>p.kind==='foot'&&p.age<p.life);hadBreath||=d.particles.items.some(p=>p.kind==='breath'&&p.age<p.life);}
   const node=m.WORLD.find(n=>n.id==='first-pine');v.impact(node);frame();const branch=d.particles.items.filter(p=>p.kind==='branch'&&p.age<p.life).length;
   const positions=d.particles.positions.slice();for(let i=0;i<90;i++)frame(1/30);const expired=d.particles.items.filter(p=>p.kind==='branch'&&p.age<p.life).length;

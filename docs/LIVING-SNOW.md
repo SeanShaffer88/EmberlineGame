@@ -1,5 +1,7 @@
 # Living Snow
 
+This historical milestone is included in the newer [Valley Neighbours preview](VALLEY-NEIGHBOURS.md).
+
 Twenty further visual improvements for Emberline's source/browser preview, 2026-10-23. Everything takes place in the same permanent Frosthollow valley. No APK was built, signed or released. Existing drag movement, exploration, gathering, progression, saves and all earlier additions remain.
 
 ## The twenty improvements

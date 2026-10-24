@@ -10,7 +10,7 @@ try{
  page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});page.on('request',r=>{if(!/^(http:\/\/127\.0\.0\.1:8844\/|data:|blob:)/.test(r.url()))external.push(r.url());});
  // A supplied-supplies fixture keeps this UI test focused on restoration, not
  // replaying the separately tested campaign economy and rescues.
- const fixture=newGame(90);fixture.started=true;for(const id of ['mira','oren','ivo','pump'])fixture.flags[id]=true;for(const id of Object.keys(fixture.buildings))fixture.buildings[id]=1;for(const id of Object.keys(fixture.inventory))fixture.inventory[id]=150;
+ const fixture=newGame(90);fixture.started=true;fixture.settings.autoGather=false;for(const id of ['mira','oren','ivo','pump'])fixture.flags[id]=true;for(const id of Object.keys(fixture.buildings))fixture.buildings[id]=1;for(const id of Object.keys(fixture.inventory))fixture.inventory[id]=150;
  fixture.settings.stickSide='right';
  await page.addInitScript(data=>{if(!localStorage.getItem('emberline.save'))localStorage.setItem('emberline.save',data);},serialize(fixture));
  await page.goto('http://127.0.0.1:8844/');await page.locator('#menu').waitFor();

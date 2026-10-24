@@ -6,7 +6,15 @@ An original offline Android survival adventure. The rails end in **Frosthollow**
 
 ![Emberline gameplay](docs/gameplay.png)
 
-## Unreleased Living Snow preview
+## Unreleased Valley Neighbours preview
+
+The `feature/play-feel` branch adds **20 character and wildlife improvements**, including jointed walking, eased stride starts/stops, backpack motion, blinking and head glances, full-body gathering, shoulder brushing, independent companion steps, held crew tools and tea, fox foraging/resting, hare grooming/listening, Pip preening and fading tracks laid down by the animals themselves. See [the full list and actual renderer images](docs/VALLEY-NEIGHBOURS.md).
+
+**Walk close to gather automatically.** Trees, coal, salvage and berries use normal tools, costs and finite stock. Dragging remains responsive while gathering; leave reach to stop, or press × to pause until you move. Low vitals stop work safely. Settings → Comfort → Automatic gathering switches back to manual gathering. Construction, conversations, puzzles, discoveries and wolf encounters stay deliberate interactions.
+
+Everything remains bundled and fully offline in the same permanent valley. Existing saves keep their progress and gain an optional gathering preference. No APK was built, signed or released. This is a source/browser milestone; physical Galaxy S24 Ultra performance remains unverified.
+
+## Previous Living Snow preview
 
 The `feature/play-feel` branch now includes twenty more visual improvements: textured snow, sculpted drifts, roof icicles, moving cloud shadows, golden-hour light, creek mist, ground spindrift, swaying reeds, branch-snow showers, footstep powder, breath, scarves, hand-warming idles, eased turns, crew greetings, a clothesline, hanging porch lamps, workshop sparks, greenhouse vents and feeder flight/pecking animations. They respond to weather, movement and existing earned upgrades. See [the complete Living Snow notes and actual screenshots](docs/LIVING-SNOW.md).
 

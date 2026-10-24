@@ -8,7 +8,7 @@ const checks=[],errors=[],external=[];
 try{
  const context=await browser.newContext({viewport:{width:412,height:915},deviceScaleFactor:1.5,isMobile:true,hasTouch:true}),page=await context.newPage();
  page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(!/^(http:\/\/127\.0\.0\.1:8844\/|data:|blob:)/.test(r.url()))external.push(r.url());});
- const fresh=()=>{const s=M.newGame(90);s.started=true;s.completed=M.QUESTS.map(q=>q.id);return s;};
+ const fresh=()=>{const s=M.newGame(90);s.started=true;s.settings.autoGather=false;s.completed=M.QUESTS.map(q=>q.id);return s;};
  await page.addInitScript(data=>{if(!localStorage.getItem('emberline.save'))localStorage.setItem('emberline.save',data);},M.serialize(fresh()));
  await page.goto('http://127.0.0.1:8844/');await page.locator('#menu').waitFor();
  const bind=()=>page.evaluate(async()=>{window.game=await import('./main.js');window.rules=await import('./model.js');window.buzzes=[];navigator.vibrate=duration=>{buzzes.push(duration);return true;};window.sounds=[];const original=game.sound.play.bind(game.sound);game.sound.play=kind=>{sounds.push(kind);original(kind);};});await bind();

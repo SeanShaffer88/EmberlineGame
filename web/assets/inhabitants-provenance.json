@@ -1,0 +1,44 @@
+{
+  "createdOn": "2026-10-23",
+  "scope": "Original Valley Neighbours character rigs, held props, wildlife animation and pawprints for the source/browser preview. Existing downloaded assets keep their earlier manifests.",
+  "license": "MIT (original project code)",
+  "networkRequired": false,
+  "authoringMethod": "Original meshes, joint hierarchies and deterministic cosmetic choreography authored with the existing bundled three.js runtime. No added authoring service, model download or runtime dependency.",
+  "sources": [
+    {
+      "file": "web/actor-motion.js",
+      "bytes": 3349,
+      "sha256": "988a21b3991f0c4d66a4018532d06242ac257af628b5ac4ead4746ed693117ef"
+    },
+    {
+      "file": "web/inhabitants.js",
+      "bytes": 17035,
+      "sha256": "efbc939ac3cf56d8a34db19f466cb17effe6d5e5cb5813cb82c247e1ca07b991"
+    },
+    {
+      "file": "web/world.js",
+      "bytes": 33508,
+      "sha256": "85ceb777f19f58b497cc208685928c0ea30e0190df1594a97e7c111612683d4c"
+    }
+  ],
+  "visualAssets": [
+    "Hip/knee/ankle joints and boots",
+    "Pack straps and secondary pack motion",
+    "Named head/face/eye rigs",
+    "Handled tea mugs",
+    "Marked medical kit and bandage roll",
+    "Carpenters hammer",
+    "Folding two-panel trail map",
+    "Fox head, legs, tail and eyes",
+    "Hare head, ears, feet and tail",
+    "Pip head and eyes",
+    "Fixed-pool fox and hare prints"
+  ],
+  "downloadedModelCountUnchanged": 26,
+  "runtimeLimits": {
+    "animalPrintRecords": 96,
+    "batterySaverVisiblePrints": 32,
+    "clearWeatherPrintLifetimeSeconds": 28
+  },
+  "validation": "Actual local WebGL poses, continuous route tests, fixed-pool expiry and lifecycle checks. No new glTF or raster asset was downloaded."
+}

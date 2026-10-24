@@ -23,3 +23,8 @@ Six models from [Kenney Food Kit 2.0](https://kenney.nl/assets/food-kit) and fou
 ## Living Snow source preview — 2026-10-23
 
 The snow/cloud and textile materials, drifts, icicles, reeds, linen, hanging lamps, vent, scarves, particle effects and added animation routines in `web/living-details.js` and `web/life-motion.js` are original project code under the project's MIT license. They are generated locally from code, with no downloaded texture, model, service or new runtime dependency. Pip's wing pivots extend Emberline's existing original bird geometry. Existing Kenney assets and generated illustrations retain the terms above. `web/assets/living-snow-provenance.json` records the source assets and hashes. New documentation images are screenshots of the actual local renderer using disclosed progression/time fixtures, not generated concept art.
+
+
+## Valley Neighbours source preview — 2026-10-23
+
+The articulated character joints, boots, pack straps, held medical kit/bandage, carpenter's hammer, folding paper map, handled tea mugs, fox/hare/bird rig extensions, choreography and pooled animal prints are original Emberline code under MIT. `web/inhabitants.js` and `web/actor-motion.js` generate them using the existing local three.js runtime. `web/assets/inhabitants-provenance.json` records source hashes. No additional downloaded asset, AI image/model/music service, dependency, account or online runtime is introduced. Existing 26 Kenney models and illustrations retain their earlier provenance and licenses. Documentation screenshots are actual WebGL captures with disclosed progression and clock fixtures.

@@ -5,7 +5,7 @@ import {newGame,serialize} from '../web/model.js';
 const browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true,args:['--use-angle=swiftshader','--enable-unsafe-swiftshader']});
 try{
  const page=await browser.newPage({viewport:{width:412,height:915},deviceScaleFactor:1.5,isMobile:true,hasTouch:true}),errors=[];page.on('pageerror',e=>errors.push(e.message));
- const s=newGame();s.started=true;s.player={x:4,z:5};await page.addInitScript(data=>localStorage.setItem('emberline.save',data),serialize(s));await page.goto('http://127.0.0.1:8844/');await page.locator('#menu').waitFor();
+ const s=newGame();s.started=true;s.settings.autoGather=false;s.player={x:4,z:5};await page.addInitScript(data=>localStorage.setItem('emberline.save',data),serialize(s));await page.goto('http://127.0.0.1:8844/');await page.locator('#menu').waitFor();
  await page.locator('#menu').click();for(const label of ['Finish only','All strikes','Off']){await page.locator('#haptics').click();assert.equal(await page.locator('#haptics').innerText(),label);}await page.locator('#close-sheet').click();
  // Deliberately overlapping rendered geometry makes the ambiguity deterministic.
  // World data is unchanged; no harvest/progression is claimed from this fixture.

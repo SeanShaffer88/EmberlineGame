@@ -1,3 +1,4 @@
+import {Inhabitants} from './inhabitants.js';
 import {LivingDetails} from './living-details.js';
 import {FieldArt,makeFieldNode} from './field-art.js';
 import * as T from './vendor/three.module.js';
@@ -59,7 +60,7 @@ export class WorldView{
   this.footprints=new T.InstancedMesh(printGeo,new T.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.64,depthWrite:false}),128);this.footprints.frustumCulled=false;this.scene.add(this.footprints);
   this.prints=Array.from({length:128},()=>({age:75,x:0,z:0,angle:0}));this.printCursor=0;this.printSide=1;this.printDistance=0;this.lastPrintPosition=this.hero.position.clone();this.printTransform=new T.Object3D();this.printColor=new T.Color();this.printFresh=new T.Color(0x88a9bb);this.printSnow=new T.Color(C.snow);this.updateFootprints(0,null);
   this.waypointMark=new T.Group();const marker=this.mesh(new T.RingGeometry(.28,.34,24),0xbe804d);marker.rotation.x=-Math.PI/2;marker.position.y=.07;this.waypointMark.add(marker);this.box(this.waypointMark,0,.48,0,.045,.9,.045,0x526d79);this.box(this.waypointMark,.2,.82,0,.4,.22,.025,0xe9b46d);this.scene.add(this.waypointMark);
-  this.finishFX=new FinishFX(this);this.art=new ValleyArt(this);this.journey=new JourneyArt(this);this.field=new FieldArt(this);this.details=new LivingDetails(this);this.bindInput();this.resize();this.sync(true);window.addEventListener('resize',()=>this.resize());
+  this.finishFX=new FinishFX(this);this.art=new ValleyArt(this);this.journey=new JourneyArt(this);this.field=new FieldArt(this);this.details=new LivingDetails(this);this.inhabitants=new Inhabitants(this);this.bindInput();this.resize();this.sync(true);window.addEventListener('resize',()=>this.resize());
  }
  material(color){if(!this.materials.has(color))this.materials.set(color,new T.MeshStandardMaterial({color,roughness:1,flatShading:true}));return this.materials.get(color);}
  mesh(geo,color){const m=new T.Mesh(geo,this.material(color));m.castShadow=true;m.receiveShadow=true;return m;}
@@ -68,7 +69,19 @@ export class WorldView{
  glow(parent,x,y,z,r=.5){const m=new T.Mesh(new T.CircleGeometry(r,24),new T.MeshBasicMaterial({color:0xffc477,transparent:true,opacity:.18,depthWrite:false}));m.rotation.x=-Math.PI/2;m.position.set(x,y,z);m.userData.warmGlow=true;parent.add(m);return m;}
  tree(g,scale=1){this.cylinder(g,0,.6,0,.13,.19,1.2,C.bark);for(let i=0;i<3;i++){const y=1.05+i*.63,r=(1.0-i*.23)*scale;const cone=this.mesh(new T.ConeGeometry(r,1.45*scale,7),C.fir);cone.position.y=y;g.add(cone);const snow=this.mesh(new T.ConeGeometry(r*.88,1.13*scale,7),C.snow);snow.position.y=y+.21;g.add(snow);}g.rotation.y=scale;}
  cabin(g,color=C.wood,small=false){const w=small?1.15:1.7;this.box(g,0,.65,0,w,1.25,1.35,color);for(const side of [-1,1]){const roof=this.box(g,side*.42,1.45,0,1.12,.18,1.7,C.snow);roof.rotation.z=side*-.48;}this.box(g,0,.4,.694,.38,.8,.05,C.roof);for(const x of [-.57,.57])this.box(g,x,.8,.7,.25,.32,.055,C.gold);this.box(g,.55,1.75,-.3,.2,.65,.23,C.metal);this.glow(g,0,.04,1,1);}
- person(color){const g=new T.Group();this.cylinder(g,0,.11,0,.3,.3,.02,0x8dabb9);const body=this.box(g,0,.67,0,.45,.58,.3,color);this.cylinder(g,0,1.1,0,.235,.235,.3,color);this.box(g,0,1.1,.19,.28,.14,.06,0xeec49a);this.cylinder(g,0,1.03,0,.25,.25,.07,0x536b70);this.box(g,0,.91,.04,.47,.1,.35,0xc7d3c7);for(const eye of [-.075,.075])this.box(g,eye,1.13,.228,.025,.025,.018,0x344e60);this.box(g,0,.65,-.23,.34,.39,.2,0x536b70);for(const s of [-1,1]){const leg=this.box(g,s*.13,.24,0,.16,.34,.18,0x344e60);leg.name='leg'+s;const arm=this.box(g,s*.3,.65,0,.13,.4,.17,color);arm.name='arm'+s;}return g;}
+ person(color){
+  const g=new T.Group(),name=(o,n)=>(o.name=n,o);
+  name(this.cylinder(g,0,.11,0,.3,.3,.02,0x8dabb9),'person-shadow');
+  name(this.box(g,0,.67,0,.45,.58,.3,color),'coat');
+  name(this.cylinder(g,0,1.1,0,.235,.235,.3,color),'hat');
+  name(this.box(g,0,1.1,.19,.28,.14,.06,0xeec49a),'face');
+  name(this.cylinder(g,0,1.03,0,.25,.25,.07,0x536b70),'hat-band');
+  name(this.box(g,0,.91,.04,.47,.1,.35,0xc7d3c7),'collar');
+  for(const side of [-1,1])name(this.box(g,side*.075,1.13,.228,.025,.025,.018,0x344e60),'eye'+side);
+  name(this.box(g,0,.65,-.23,.34,.39,.2,0x536b70),'pack');
+  for(const side of [-1,1]){name(this.box(g,side*.13,.24,0,.16,.34,.18,0x344e60),'leg'+side);name(this.box(g,side*.3,.65,0,.13,.4,.17,color),'arm'+side);}
+  return g;
+ }
  train(g){
   this.box(g,0,.48,0,2.6,.3,1.45,0x2f4656);const cab=this.box(g,-.7,1.25,0,1,1.4,1.35,C.red);cab.name='livery';this.box(g,-.7,2,0,1.3,.16,1.65,C.snow);
   const boiler=this.cylinder(g,.55,1.04,0,.53,.53,1.5,0x345665,12);boiler.rotation.z=Math.PI/2;
@@ -223,7 +236,7 @@ export class WorldView{
   this.workRing.visible=!!working;if(working){this.workRing.position.set(working.node.x,.1,working.node.z);this.workRing.geometry.setDrawRange(0,Math.max(6,Math.floor(working.progress*60)*6));}this.art.update(animationDt,moving);this.journey.update();this.field.update();this.finishFX.update(animationDt);if(s.settings.reducedMotion)this.finishFX.root.visible=false;this.waypointMark.visible=!!s.camp.waypoint;if(s.camp.waypoint)this.waypointMark.position.set(s.camp.waypoint.x,0,s.camp.waypoint.z);
   if(this.burstLife>0){this.burstLife=Math.max(0,this.burstLife-animationDt*1.8);const p=1-this.burstLife;for(let i=0;i<28;i++){const a=i*2.4,r=p*(.5+(i%7)*.14);this.burstPositions[i*3]=this.burstOrigin.x+Math.cos(a)*r;this.burstPositions[i*3+1]=.4+Math.sin(p*Math.PI)*(.5+(i%4)*.2);this.burstPositions[i*3+2]=this.burstOrigin.z+Math.sin(a)*r;}this.burst.geometry.attributes.position.needsUpdate=true;this.burst.material.opacity=s.settings.reducedMotion?0:this.burstLife;}
   if(!this.manual){const aim=target.clone();if(this.selected)aim.lerp(new T.Vector3(this.selected.x,0,this.selected.z),.65);const homeBias=this.selected?0:Math.max(0,1-Math.hypot(target.x,target.z-1)/10);aim.add(new T.Vector3(-1.2*homeBias,0,-.5-1.7*homeBias));this.focus.lerp(aim,1-Math.exp(-dt*4));}if(Math.abs(this.zoom-this.zoomTarget)>.005){this.zoom+=(this.zoomTarget-this.zoom)*(1-Math.exp(-dt*10));this.updateProjection();}if(this.viewport&&this.viewportTarget){let changed=false;for(const key of ['left','right','top','bottom']){const delta=this.viewportTarget[key]-this.viewport[key];if(Math.abs(delta)>.05){this.viewport[key]+=delta*(1-Math.exp(-dt*7));changed=true;}}if(changed)this.updateProjection();}this.positionCamera();
-  this.updateWeather(animationDt);this.updateTreeFades(dt,working?.node);this.updateFootprints(animationDt,moving);this.details.update(animationDt,moving,working);
+  this.updateWeather(animationDt);this.updateTreeFades(dt,working?.node);this.updateFootprints(animationDt,moving);this.details.update(animationDt,moving,working);this.inhabitants.update(animationDt,moving,working);
   for(const [id,left]of this.recoils){const node=this.objects.get(id),remaining=Math.max(0,left-animationDt),kick=(s.settings.reducedMotion?0:1)*Math.sin(remaining/.18*Math.PI*3)*remaining*.22;if(node.userData.node.type==='tree')node.rotation.z+=kick;else node.rotation.z=kick;if(remaining)this.recoils.set(id,remaining);else this.recoils.delete(id);}
   if(this.destination.visible)this.destination.scale.setScalar(1+(s.settings.reducedMotion?0:Math.sin(this.clock*5)*.12));
   const f=this.objects.get('furnace').getObjectByName('flame');f.scale.setScalar(1+(s.settings.reducedMotion?0:Math.sin(this.clock*8)*.15));this.ring.scale.setScalar(1+(s.settings.reducedMotion?0:Math.sin(this.clock*3)*.03));this.renderer.render(this.scene,this.camera);
