@@ -27,7 +27,10 @@ try{
   // Newly earned held props upload lazily. Warm them once before checking that
   // repeated animation does not allocate more GPU geometry or textures.
   for(const r of v.inhabitants.people)for(const prop of Object.values(r.props))prop.visible=true;
-  v.renderer.render(v.scene,v.camera);frame();
+  // Contact fragments, fish surface rings and the foraging acorn upload only on first use.
+  for(const type of ['tree','coal','scrap','food'])v.harvestArt.impact(m.WORLD.find(n=>n.type===type));
+  v.harvestArt.update(.02,null);v.rhythms.acorn.visible=true;for(const ring of v.rhythms.fishRings)ring.visible=true;
+  v.renderer.render(v.scene,v.camera);for(const records of Object.values(v.harvestArt.records))for(const p of records)p.age=p.life;frame();
   const before=m.serialize(g.state),mem={...v.renderer.info.memory};
   let hadFeet=false,hadBreath=false;for(let i=0;i<180;i++){frame(1/30,{x:i*.012,z:3,angle:i<60?0:Math.PI/2,walking:true});hadFeet||=d.particles.items.some(p=>p.kind==='foot'&&p.age<p.life);hadBreath||=d.particles.items.some(p=>p.kind==='breath'&&p.age<p.life);}
   const node=m.WORLD.find(n=>n.id==='first-pine');v.impact(node);frame();const branch=d.particles.items.filter(p=>p.kind==='branch'&&p.age<p.life).length;

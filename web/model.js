@@ -132,6 +132,7 @@ export function moveFree(s,dx,dz){
  const changed=Math.hypot(s.player.x-before.x,s.player.z-before.z)>.00001;
  if(changed){J.markTrail(s,before);if(Math.round(before.x)!==Math.round(s.player.x)||Math.round(before.z)!==Math.round(s.player.z))reveal(s);if(s.contract?.kind==='survey'&&Math.hypot(s.player.x-s.contract.x,s.player.z-s.contract.z)<=1.5)s.contract.visited=true;}return changed;
 }
+export function gatherYield(s,n){const item={tree:'wood',scrap:'scrap',coal:'coal',food:'food'}[n?.type];if(!item)return {};const count=({tree:6,scrap:5,coal:4,food:4}[n.type])+s.buildings.workshop+(s.journey.challenge?.id==='handtools'?0:n.type==='tree'?s.gear.axe:['scrap','coal'].includes(n.type)?s.gear.prybar:0)+(n.type==='tree'&&s.companion==='oren'?1:0);return {[item]:count};}
 export function canContinueGather(s,n){return ['tree','coal','scrap','food'].includes(n.type)&&stock(s,n)>0&&s.energy>=8&&s.warmth>=15&&s.health>=25;}
 export function actionInfo(s,n){
  if(!n)return null;
@@ -165,7 +166,7 @@ export function interact(s,id){
  if(n.type==='building'||n.type==='home')return{ok:false,message:'Use the settlement menu.'};
  if(n.type==='survivor'||n.type==='landmark'){pay(s,info.cost);s.flags[n.id]=true;return{ok:true,message:n.type==='survivor'?`${CREW[n.id].name} is safe at home!`:`${n.name} restored.`,quests:settleQuests(s)};}
  s.energy-=info.energy;s.stock[n.id]=stock(s,n)-1;s.regrowth[n.id]=s.activeSeconds+180;
- let loot;if(n.type==='wolf'){const damage=Math.round(18*(s.companion==='mira'?.7:1)*DIFFICULTIES[s.difficulty].damage);s.health-=damage;loot={food:4,scrap:3};}else{const item={tree:'wood',scrap:'scrap',coal:'coal',food:'food'}[n.type];const count=({tree:6,scrap:5,coal:4,food:4}[n.type])+s.buildings.workshop+(s.journey.challenge?.id==='handtools'?0:n.type==='tree'?s.gear.axe:['scrap','coal'].includes(n.type)?s.gear.prybar:0)+(n.type==='tree'&&s.companion==='oren'?1:0);loot={[item]:count};s.gathered[item]=(s.gathered[item]||0)+count;}
+ let loot;if(n.type==='wolf'){const damage=Math.round(18*(s.companion==='mira'?.7:1)*DIFFICULTIES[s.difficulty].damage);s.health-=damage;loot={food:4,scrap:3};}else{loot=gatherYield(s,n);const [item,count]=Object.entries(loot)[0];s.gathered[item]=(s.gathered[item]||0)+count;}
  if(s.journey.challenge&&n.type!=='wolf')s.journey.challenge.harvests=Math.min(9,s.journey.challenge.harvests+1);add(s,loot);let message='+'+costText(loot);if(s.health<=0){returnHome(s);message+=' · The crew brought you home to recover.';}
  return{ok:true,message,loot,quests:settleQuests(s)};
 }

@@ -1,3 +1,5 @@
+import {ValleyRhythms} from './valley-rhythms.js';
+import {HarvestArt} from './harvest-art.js';
 import {Inhabitants} from './inhabitants.js';
 import {LivingDetails} from './living-details.js';
 import {FieldArt,makeFieldNode} from './field-art.js';
@@ -60,7 +62,7 @@ export class WorldView{
   this.footprints=new T.InstancedMesh(printGeo,new T.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.64,depthWrite:false}),128);this.footprints.frustumCulled=false;this.scene.add(this.footprints);
   this.prints=Array.from({length:128},()=>({age:75,x:0,z:0,angle:0}));this.printCursor=0;this.printSide=1;this.printDistance=0;this.lastPrintPosition=this.hero.position.clone();this.printTransform=new T.Object3D();this.printColor=new T.Color();this.printFresh=new T.Color(0x88a9bb);this.printSnow=new T.Color(C.snow);this.updateFootprints(0,null);
   this.waypointMark=new T.Group();const marker=this.mesh(new T.RingGeometry(.28,.34,24),0xbe804d);marker.rotation.x=-Math.PI/2;marker.position.y=.07;this.waypointMark.add(marker);this.box(this.waypointMark,0,.48,0,.045,.9,.045,0x526d79);this.box(this.waypointMark,.2,.82,0,.4,.22,.025,0xe9b46d);this.scene.add(this.waypointMark);
-  this.finishFX=new FinishFX(this);this.art=new ValleyArt(this);this.journey=new JourneyArt(this);this.field=new FieldArt(this);this.details=new LivingDetails(this);this.inhabitants=new Inhabitants(this);this.bindInput();this.resize();this.sync(true);window.addEventListener('resize',()=>this.resize());
+  this.finishFX=new FinishFX(this);this.art=new ValleyArt(this);this.journey=new JourneyArt(this);this.field=new FieldArt(this);this.details=new LivingDetails(this);this.inhabitants=new Inhabitants(this);this.harvestArt=new HarvestArt(this);this.rhythms=new ValleyRhythms(this);this.bindInput();this.resize();this.sync(true);window.addEventListener('resize',()=>this.resize());
  }
  material(color){if(!this.materials.has(color))this.materials.set(color,new T.MeshStandardMaterial({color,roughness:1,flatShading:true}));return this.materials.get(color);}
  mesh(geo,color){const m=new T.Mesh(geo,this.material(color));m.castShadow=true;m.receiveShadow=true;return m;}
@@ -120,8 +122,8 @@ export class WorldView{
   this.art?.sync();this.journey?.sync();this.field?.sync();this.details?.sync();this.warmGlows=[];this.scene.traverse(o=>{if(o.userData.warmGlow)this.warmGlows.push(o);});this.companion.visible=!!s.companion;if(s.companion)this.companion.traverse(o=>o.userData.node={id:'crew-'+s.companion,type:'crew',crew:s.companion});
   for(const [id,person]of Object.entries(this.residents)){person.visible=!!s.flags[id]&&s.companion!==id;const remote=this.objects.get(id).getObjectByName('survivor');if(remote)remote.visible=!s.flags[id];}
  }
- finishGather(n){this.finishFX.start(n);}
- impact(n,complete=false){this.details?.impact(n);this.burstOrigin={x:n.x,z:n.z};this.burstLife=complete?1:.75;const profile=workProfile(n.type);this.burst.material.color.setHex(profile.color);this.burst.material.size=n.type==='food'?5:n.type==='coal'?3:4;this.recoils.set(n.id,.18);}
+ finishGather(n){this.finishFX.start(n);if(['tree','coal','scrap','food'].includes(n.type))this.inhabitants.people[0].detail.finish();}
+ impact(n,complete=false){this.harvestArt?.impact(n,complete);this.details?.impact(n);this.burstOrigin={x:n.x,z:n.z};this.burstLife=complete?1:.75;const profile=workProfile(n.type);this.burst.material.color.setHex(profile.color);this.burst.material.size=n.type==='food'?5:n.type==='coal'?3:4;this.recoils.set(n.id,.18);}
  setPath(points=[]){const count=Math.min(120,points.length);for(let i=0;i<count;i++){this.routePositions[i*3]=points[i][0];this.routePositions[i*3+1]=.07;this.routePositions[i*3+2]=points[i][1];}this.routeDots.geometry.setDrawRange(0,count);this.routeDots.geometry.attributes.position.needsUpdate=true;}
  updateTreeFades(dt,working){
   this.workTarget=working?.type==='tree'?working.id:null;
@@ -236,7 +238,7 @@ export class WorldView{
   this.workRing.visible=!!working;if(working){this.workRing.position.set(working.node.x,.1,working.node.z);this.workRing.geometry.setDrawRange(0,Math.max(6,Math.floor(working.progress*60)*6));}this.art.update(animationDt,moving);this.journey.update();this.field.update();this.finishFX.update(animationDt);if(s.settings.reducedMotion)this.finishFX.root.visible=false;this.waypointMark.visible=!!s.camp.waypoint;if(s.camp.waypoint)this.waypointMark.position.set(s.camp.waypoint.x,0,s.camp.waypoint.z);
   if(this.burstLife>0){this.burstLife=Math.max(0,this.burstLife-animationDt*1.8);const p=1-this.burstLife;for(let i=0;i<28;i++){const a=i*2.4,r=p*(.5+(i%7)*.14);this.burstPositions[i*3]=this.burstOrigin.x+Math.cos(a)*r;this.burstPositions[i*3+1]=.4+Math.sin(p*Math.PI)*(.5+(i%4)*.2);this.burstPositions[i*3+2]=this.burstOrigin.z+Math.sin(a)*r;}this.burst.geometry.attributes.position.needsUpdate=true;this.burst.material.opacity=s.settings.reducedMotion?0:this.burstLife;}
   if(!this.manual){const aim=target.clone();if(this.selected)aim.lerp(new T.Vector3(this.selected.x,0,this.selected.z),.65);const homeBias=this.selected?0:Math.max(0,1-Math.hypot(target.x,target.z-1)/10);aim.add(new T.Vector3(-1.2*homeBias,0,-.5-1.7*homeBias));this.focus.lerp(aim,1-Math.exp(-dt*4));}if(Math.abs(this.zoom-this.zoomTarget)>.005){this.zoom+=(this.zoomTarget-this.zoom)*(1-Math.exp(-dt*10));this.updateProjection();}if(this.viewport&&this.viewportTarget){let changed=false;for(const key of ['left','right','top','bottom']){const delta=this.viewportTarget[key]-this.viewport[key];if(Math.abs(delta)>.05){this.viewport[key]+=delta*(1-Math.exp(-dt*7));changed=true;}}if(changed)this.updateProjection();}this.positionCamera();
-  this.updateWeather(animationDt);this.updateTreeFades(dt,working?.node);this.updateFootprints(animationDt,moving);this.details.update(animationDt,moving,working);this.inhabitants.update(animationDt,moving,working);
+  this.updateWeather(animationDt);this.updateTreeFades(dt,working?.node);this.updateFootprints(animationDt,moving);this.details.update(animationDt,moving,working);this.inhabitants.update(animationDt,moving,working);this.harvestArt.update(animationDt,working);this.rhythms.update(animationDt);
   for(const [id,left]of this.recoils){const node=this.objects.get(id),remaining=Math.max(0,left-animationDt),kick=(s.settings.reducedMotion?0:1)*Math.sin(remaining/.18*Math.PI*3)*remaining*.22;if(node.userData.node.type==='tree')node.rotation.z+=kick;else node.rotation.z=kick;if(remaining)this.recoils.set(id,remaining);else this.recoils.delete(id);}
   if(this.destination.visible)this.destination.scale.setScalar(1+(s.settings.reducedMotion?0:Math.sin(this.clock*5)*.12));
   const f=this.objects.get('furnace').getObjectByName('flame');f.scale.setScalar(1+(s.settings.reducedMotion?0:Math.sin(this.clock*8)*.15));this.ring.scale.setScalar(1+(s.settings.reducedMotion?0:Math.sin(this.clock*3)*.03));this.renderer.render(this.scene,this.camera);

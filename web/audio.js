@@ -1,8 +1,9 @@
+import {strikeVoice} from './harvest-feel.js';
 import {weather} from './journey.js';
 import {ambienceLevels} from './field.js';
 // Original synthesized effects; no downloads, recordings or audio assets.
 export class Sound {
- constructor(enabled, music = () => true, mix = () => ({})) { this.mixSettings=mix; this.nextBird=0; this.enabled = enabled; this.musicEnabled = music; this.note = 0; this.nextNote = 0; this.nextCrackle = 0; }
+ constructor(enabled, music = () => true, mix = () => ({})) { this.strikeSerial={tree:0,coal:0,scrap:0,food:0}; this.mixSettings=mix; this.nextBird=0; this.enabled = enabled; this.musicEnabled = music; this.note = 0; this.nextNote = 0; this.nextCrackle = 0; }
  start() {
   if (!this.enabled()) return;
   try {
@@ -77,6 +78,7 @@ export class Sound {
  play(kind = 'tap') {
   if (!this.enabled() || !this.ctx || this.ctx.state !== 'running') return;
   const now = this.ctx.currentTime;
+  const voice=strikeVoice(kind,this.strikeSerial[kind]||0);if(kind in this.strikeSerial)this.strikeSerial[kind]++;
   if(kind==='whistle'){this.tone(330,now,.85,.025,'sine',310);this.tone(495,now,.8,.012,'sine',465);this.rustle(now,850,.65,.012);return;}
   if(/^note-[0-2]$/.test(kind)){const f=[392,523.25,783.99][+kind.slice(-1)];this.tone(f,now,.6,.035,'sine',f);this.tone(f*2,now,.3,.008,'sine',f*2);return;}
   if(kind.startsWith('finish-')){const type=kind.slice(7);this.rustle(now,type==='tree'?480:type==='coal'?950:1800,.32,.07);this.tone(type==='food'?740:330,now+.04,.25,.025,'triangle',550);this.tone(660,now+.16,.24,.02);return;}
@@ -85,14 +87,14 @@ export class Sound {
   if(kind==='step-packed'){this.rustle(now,1100,.085,.018);return;}
   if (kind === 'step') { this.rustle(now, 1800, .12, .023); return; }
   if (kind === 'tree') {
-   this.tone(170, now, .16, .055, 'sine', 65);
-   this.rustle(now, 620, .14, .13); return;
+   this.tone(voice.frequency, now, .16, .055*voice.weight, 'sine', 65*voice.pitch);
+   this.rustle(now, 620*voice.pitch, .14, .1*voice.weight); return;
   }
   if (kind === 'scrap' || kind === 'coal') {
-   this.tone(kind === 'coal' ? 580 : 940, now, .24, .025, 'triangle', 420);
-   this.rustle(now, 2400, .10, .06); return;
+   this.tone(voice.frequency, now, .24, .025*voice.weight, 'triangle', 420*voice.pitch);
+   this.rustle(now, 2400*voice.pitch, .10, .06*voice.weight); return;
   }
-  if (kind === 'food') { this.rustle(now, 1200, .18, .05); this.tone(660, now + .04, .18, .022); return; }
+  if (kind === 'food') { this.rustle(now, 1200, .18, .05); this.tone(voice.frequency, now + .04, .18, .022*voice.weight); return; }
   const notes = kind === 'reward' ? [392, 493.88, 587.33, 783.99] : kind === 'gather' ? [220, 330] : [440];
   notes.forEach((f, i) => this.tone(f, now + i * .09, .28, .032));
  }

@@ -1,3 +1,4 @@
+import {CharacterDetail} from './character-detail.js';
 import * as T from './vendor/three.module.js';
 import {daylight} from './model.js';
 import {animalSpot} from './journey.js';
@@ -32,7 +33,7 @@ class PersonRig{
    this.legs.push({hip,knee,ankle,side});
    const strap=v.box(this.torso,side*.16,.25,.169,.045,.43,.023,0x745e48);strap.rotation.z=side*.08;
   }
-  this.props={};this.makeProps();tag(p,p.userData.node);
+  this.props={};this.makeProps();this.detail=new CharacterDetail(v,this);tag(p,p.userData.node);
  }
  makeProps(){
   const v=this.v,p=this.root,hand=p.getObjectByName('sleeve1');
@@ -113,6 +114,7 @@ class PersonRig{
     this.pose='tea';this.props.mug.visible=true;const sip=reduced?0:sipAt(t,this.seed);this.arms[1].rotation.x=-.65-sip*.95;this.props.mug.rotation.x=-this.arms[1].rotation.x-.2;this.head.rotation.x=-sip*.08;
    }
   }
+  this.detail.update(dt,moving,hero?working:null);
   if(reduced){this.torso.position.y=.45;this.torso.rotation.set(0,0,0);this.head.rotation.set(0,0,0);this.pack.position.y=this.packY;this.pack.rotation.set(0,0,0);for(const leg of this.legs){leg.hip.rotation.set(0,0,0);leg.knee.rotation.x=leg.ankle.rotation.x=0;}}
  }
 }

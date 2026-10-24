@@ -47,8 +47,11 @@ try{
  for(const [id,d]of Object.entries(DISCOVERIES)){
   await page.evaluate(async id=>{const n=rules.WORLD.find(n=>n.id==='discovery-'+id),path=rules.pathTo(game.state,n.x,n.z,true);for(const [x,z]of path)rules.move(game.state,x,z);game.view.sync(true);game.view.center();},id);await page.waitForTimeout(1200);
   assert.equal(await page.evaluate(id=>game.view.objects.get('discovery-'+id).visible,id),true);
+  // Wait for projected framing to settle, rather than assuming a fixed wall
+  // delay equals enough rendered frames on the software GPU.
+  await page.waitForFunction(id=>{const n=rules.WORLD.find(n=>n.id==='discovery-'+id),p=game.view.project(n.x,n.z,.22),last=window.discoveryFrame;window.discoveryFrame=p;return last&&Math.hypot(p.x-last.x,p.y-last.y)<.05;},id);
   const p=await page.evaluate(id=>{const n=rules.WORLD.find(n=>n.id==='discovery-'+id);return game.view.project(n.x,n.z,.22);},id);await page.touchscreen.tap(p.x,p.y);if(await page.locator('[data-near]').count())await page.locator('[data-near]').filter({hasText:d.name}).click();
-  assert.equal(await page.evaluate(()=>game.view.selected?.type),'discovery');await page.locator('#perform-action').click();await page.locator('#discovery-continue').waitFor();assert.ok((await page.locator('#sheet-body').innerText()).includes(d.text));await page.locator('#discovery-continue').click();
+  const selection=await page.evaluate(({p,id})=>({type:game.view.selected?.type,id,point:p,element:document.elementFromPoint(p.x,p.y)?.outerHTML.slice(0,500),modal:!document.getElementById('modal').hidden,position:game.state.player,frame:game.view.project(rules.WORLD.find(n=>n.id==='discovery-'+id).x,rules.WORLD.find(n=>n.id==='discovery-'+id).z,.22)}),{p,id});if(selection.type!=='discovery')await page.screenshot({path:'build/screenshots/discovery-selection-debug.png'});assert.equal(selection.type,'discovery',JSON.stringify(selection));await page.locator('#perform-action').click();await page.locator('#discovery-continue').waitFor();assert.ok((await page.locator('#sheet-body').innerText()).includes(d.text));await page.locator('#discovery-continue').click();
   assert.equal(await page.evaluate(project=>game.view.objects.get('project-'+project).userData.keepsake.visible,d.project),true);
  }
  await page.locator('#quest-card').click();await page.locator('[data-journal="camp"]').click();assert.ok((await page.locator('#sheet-body').innerText()).includes('Found along the way · 3 / 3'));await page.screenshot({path:'build/screenshots/living-valley-memories.png'});await page.locator('#close-sheet').click();
@@ -58,10 +61,11 @@ try{
  // Place the explorer immediately behind a real loaded tree. Check that its
  // materials alone fade and are released after walking clear.
  await page.evaluate(()=>{game.state.player={x:4,z:5};rules.reveal(game.state);game.view.sync(true);game.view.center();});await page.waitForTimeout(1100);
+ await page.waitForFunction(()=>game.view.treeFades.get('first-pine')?.alpha<.3);
  const fading=await page.evaluate(()=>({ids:[...game.view.treeFades.keys()],alpha:game.view.treeFades.get('first-pine')?.alpha,other:(()=>{const values=[];game.view.objects.get('near-pine').traverse(m=>{if(m.isMesh&&m.name!=='touch-target')for(const mat of Array.isArray(m.material)?m.material:[m.material])values.push(mat.opacity);});return values;})()}));assert.ok(fading.ids.includes('first-pine'));assert.ok(fading.alpha<.3);assert.ok(fading.other.length&&fading.other.every(x=>x===1),'shared tree materials remain opaque');
  await page.screenshot({path:'build/screenshots/living-valley-tree-fade.png'});
- await page.evaluate(()=>{game.state.player={x:0,z:3};game.view.center();});await page.waitForTimeout(1600);assert.equal(await page.evaluate(()=>game.view.treeFades.has('first-pine')),false);
- await page.locator('#menu').click();await page.locator('#quality').click();await page.locator('#close-sheet').click();await page.evaluate(()=>{game.state.player={x:4,z:5};game.view.center();});await page.waitForTimeout(1100);assert.ok(await page.evaluate(()=>game.view.treeFades.get('first-pine')?.alpha<.3));
+ await page.evaluate(()=>{game.state.player={x:0,z:3};game.view.center();});await page.waitForFunction(()=>!game.view.treeFades.has('first-pine'));assert.equal(await page.evaluate(()=>game.view.treeFades.has('first-pine')),false);
+ await page.locator('#menu').click();await page.locator('#quality').click();await page.locator('#close-sheet').click();await page.evaluate(()=>{game.state.player={x:4,z:5};game.view.center();});await page.waitForFunction(()=>game.view.treeFades.get('first-pine')?.alpha<.3);assert.ok(await page.evaluate(()=>game.view.treeFades.get('first-pine')?.alpha<.3));
  checks.push('Actual foreground tree fades around the explorer and restores/disposes its copies after clearing; Battery saver also fades it');
  // Tap a physical resident, then check a completed overview fixture.
  await page.evaluate(()=>{game.state.player={x:0,z:3};game.state.activeSeconds=0;game.view.center();});await page.waitForTimeout(900);

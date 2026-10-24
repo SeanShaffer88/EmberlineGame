@@ -6,7 +6,13 @@ An original offline Android survival adventure. The rails end in **Frosthollow**
 
 ![Emberline gameplay](docs/gameplay.png)
 
-## Unreleased Valley Neighbours preview
+## Unreleased Valley Rhythms preview
+
+Fifty further improvements focus on gathering, character animation and valley life: readable stock/yield/haul feedback, staged resource depletion, material fragments and sound variations, elbow/wrist/mitten rigs, distinct tool poses, weather and social gestures, squirrels, an owl, pond fish, fireflies, moths, pump water, wind chimes and engine details. See [all fifty additions and screenshots](docs/VALLEY-RHYTHMS.md).
+
+Everything remains fully offline in the same permanent Frosthollow valley. Drag movement and automatic gathering remain available, and saves keep their format. **No APK was built, signed or released.** This is a source/browser milestone; physical Galaxy S24 Ultra validation awaits a later build.
+
+## Previous Valley Neighbours preview
 
 The `feature/play-feel` branch adds **20 character and wildlife improvements**, including jointed walking, eased stride starts/stops, backpack motion, blinking and head glances, full-body gathering, shoulder brushing, independent companion steps, held crew tools and tea, fox foraging/resting, hare grooming/listening, Pip preening and fading tracks laid down by the animals themselves. See [the full list and actual renderer images](docs/VALLEY-NEIGHBOURS.md).
 

@@ -12,13 +12,13 @@
     },
     {
       "file": "web/inhabitants.js",
-      "bytes": 17035,
-      "sha256": "efbc939ac3cf56d8a34db19f466cb17effe6d5e5cb5813cb82c247e1ca07b991"
+      "bytes": 17181,
+      "sha256": "f0133b6198ff8678182fe0657ac5a88395bdcfd964b81a19b7119a273b56cf4c"
     },
     {
       "file": "web/world.js",
-      "bytes": 33508,
-      "sha256": "85ceb777f19f58b497cc208685928c0ea30e0190df1594a97e7c111612683d4c"
+      "bytes": 33885,
+      "sha256": "764ab15dfd9a9433b941631f36c81940920cffbe30c321694816cbdfe097d5a8"
     }
   ],
   "visualAssets": [
@@ -40,5 +40,7 @@
     "batterySaverVisiblePrints": 32,
     "clearWeatherPrintLifetimeSeconds": 28
   },
-  "validation": "Actual local WebGL poses, continuous route tests, fixed-pool expiry and lifecycle checks. No new glTF or raster asset was downloaded."
+  "validation": "Actual local WebGL poses, continuous route tests, fixed-pool expiry and lifecycle checks. No new glTF or raster asset was downloaded.",
+  "updatedOn": "2026-10-23",
+  "updateScope": "Valley Rhythms adds forearm/wrist detail and world integration; original asset attribution retained."
 }

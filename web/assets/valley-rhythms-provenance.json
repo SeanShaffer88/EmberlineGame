@@ -1,0 +1,78 @@
+{
+  "createdOn": "2026-10-23",
+  "scope": "Fifty additional gathering, character animation and valley-life improvements; source/browser milestone only.",
+  "license": "MIT (original project code)",
+  "networkRequired": false,
+  "authoringMethod": "Original procedural meshes, bounded instanced effects, joint animation, deterministic local choreography and WebAudio variations using the existing bundled runtime. No new downloaded art or dependencies.",
+  "sources": [
+    {
+      "file": "web/harvest-feel.js",
+      "bytes": 2604,
+      "sha256": "9ffb6e4e4fe0995518b9520637dfb89a197189f66028f87662cdf6d3c10b2178"
+    },
+    {
+      "file": "web/harvest-art.js",
+      "bytes": 6462,
+      "sha256": "7955c41eba9217ccc60783bac355f0baba7880455a8cfbf2296f2e16cb46c5f8"
+    },
+    {
+      "file": "web/character-detail.js",
+      "bytes": 5615,
+      "sha256": "ad79bfeaa2e622d930431c5ab74764f94d3ac7f552d920593146c2abc6ab6de0"
+    },
+    {
+      "file": "web/valley-rhythms.js",
+      "bytes": 10136,
+      "sha256": "e9a8a86b7c6c94dce9a0f0383edeb766c557583563992337c74e1ca5c6e84217"
+    },
+    {
+      "file": "web/audio.js",
+      "bytes": 8063,
+      "sha256": "911a3382f287c50378ca6b57b8048235b5f1e73c9fcf81e9774909431ed21d26"
+    },
+    {
+      "file": "web/model.js",
+      "bytes": 34527,
+      "sha256": "a906e3cb0c870162a4bd4402c79fc677362b2e507bde176521afce7121a2cfb0"
+    },
+    {
+      "file": "web/main.js",
+      "bytes": 53248,
+      "sha256": "eb4eaf40387064391e283f65c9207810a7cbd2e09f62d5e60b306a638038e7d1"
+    },
+    {
+      "file": "web/world.js",
+      "bytes": 33885,
+      "sha256": "764ab15dfd9a9433b941631f36c81940920cffbe30c321694816cbdfe097d5a8"
+    },
+    {
+      "file": "web/inhabitants.js",
+      "bytes": 17181,
+      "sha256": "f0133b6198ff8678182fe0657ac5a88395bdcfd964b81a19b7119a273b56cf4c"
+    },
+    {
+      "file": "web/index.html",
+      "bytes": 8636,
+      "sha256": "363fc6a08c244a417bdb288991c14fd58c31d89d36310c92b192d16c6d0e626b"
+    },
+    {
+      "file": "web/style.css",
+      "bytes": 28543,
+      "sha256": "ddc17439e0863c02e2fcb73ae39721b6a44320668d0c7193662d205fa8910c1f"
+    }
+  ],
+  "downloadedModelCountUnchanged": 26,
+  "runtimeLimits": {
+    "contactFragmentsPerMaterial": 32,
+    "batterySaverFragmentsPerMaterial": 12,
+    "fireflies": 12,
+    "batterySaverFireflies": 4,
+    "gardenLeaves": 8,
+    "batterySaverGardenLeaves": 3,
+    "mothWings": 12,
+    "batterySaverMothWings": 4,
+    "haulActiveLifetimeSeconds": 20
+  },
+  "validation": "Actual WebGL renders, unit tests, lifecycle, stock stages, save invariance, offline-after-load, fixed allocation and phone layout checks. Physical Android device and audible mix unverified.",
+  "apkBuilt": false
+}
