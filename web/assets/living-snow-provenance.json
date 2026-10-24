@@ -1,0 +1,36 @@
+{
+  "createdOn": "2026-10-23",
+  "scope": "Original procedural visuals and animation for the Living Snow source preview. Existing downloaded models and illustration terms remain in the earlier manifests.",
+  "license": "MIT (original project code)",
+  "networkRequired": false,
+  "authoringMethod": "Original meshes, materials, shaders and animation code using the existing bundled three.js runtime; no external authoring service or additional downloads.",
+  "sources": [
+    {
+      "file": "web/living-details.js",
+      "bytes": 18601,
+      "sha256": "dd0cab66628c0302a3ac709bf577f0d858e260c5dcfe2a40545bb143d3a96120"
+    },
+    {
+      "file": "web/life-motion.js",
+      "bytes": 1363,
+      "sha256": "bca639eb41fe678172968b53f935720670da3848f89133c2d53d432984df2086"
+    }
+  ],
+  "visualAssets": [
+    "Snow grain/ripple and moving cloud-shadow material",
+    "Instanced sculpted drifts",
+    "Faceted icicles",
+    "Reed stems and seedheads",
+    "Woven cloth and scarf material",
+    "Linen clothesline and pegs",
+    "Hanging porch lamps",
+    "Greenhouse vent and leaves",
+    "Shared breath, powder, branch snow and spark particles"
+  ],
+  "reusedOriginalAssets": [
+    "web/world.js particleTexture radial canvas mask",
+    "web/journey-art.js original Pip bird geometry, with added wing pivots"
+  ],
+  "downloadedAssetCountUnchanged": 26,
+  "validation": "Actual WebGL rendering, fixed-pool and freeze checks; no new glTF or raster download requires upstream validation."
+}

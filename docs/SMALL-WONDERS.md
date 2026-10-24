@@ -1,5 +1,7 @@
 # Small Wonders of Frosthollow
 
+Historical source milestone: `7de8fee329fbb90330f1389f7013443984141d0d`. These additions remain included in the newer [Living Snow preview](LIVING-SNOW.md).
+
 Twenty additions to the source/browser preview, 2026-10-23. Everything remains offline in the same permanent valley. No APK was built, signed or released. Existing saves, native package/signing identity, drag movement and earlier content are retained.
 
 Open the forecast button, then **Open the valley notebook**. Its six tabs group the activities. Crew also links to camp life, and Settings → Comfort opens the sound mixer. These additions use existing interaction sheets rather than adding more HUD cards.

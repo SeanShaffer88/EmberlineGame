@@ -6,9 +6,15 @@ An original offline Android survival adventure. The rails end in **Frosthollow**
 
 ![Emberline gameplay](docs/gameplay.png)
 
-## Unreleased Small Wonders preview
+## Unreleased Living Snow preview
 
-The `feature/play-feel` branch contains the next source-only update. **No new APK has been built or released.** Twenty additions bring an illustrated naturalist notebook, eight finds, scenic viewpoints and benches, relaxed fishing and a fish journal, a collection cabinet, mastery rewards, crew jobs and stories, radio recordings, salvage exchanges, trail signs and bridge lamps, a train whistle, aurora and water details, wildlife tracks, river/bird ambience, a sound mixer, and explored-route previews. All rewards are earned in the same permanent offline valley.
+The `feature/play-feel` branch now includes twenty more visual improvements: textured snow, sculpted drifts, roof icicles, moving cloud shadows, golden-hour light, creek mist, ground spindrift, swaying reeds, branch-snow showers, footstep powder, breath, scarves, hand-warming idles, eased turns, crew greetings, a clothesline, hanging porch lamps, workshop sparks, greenhouse vents and feeder flight/pecking animations. They respond to weather, movement and existing earned upgrades. See [the complete Living Snow notes and actual screenshots](docs/LIVING-SNOW.md).
+
+These additions use original procedural materials, meshes and bounded particles alongside the 26 existing bundled models. Everything stays offline in Frosthollow. No save format, gameplay economy, Android code or package identity changed. **No APK was built, signed or released.** Physical-phone performance is still unverified for this source preview.
+
+## Previous Small Wonders preview
+
+The Small Wonders additions remain included: an illustrated naturalist notebook, eight finds, scenic viewpoints and benches, relaxed fishing and a fish journal, a collection cabinet, mastery rewards, crew jobs and stories, radio recordings, salvage exchanges, trail signs and bridge lamps, a train whistle, aurora and water details, wildlife tracks, river/bird ambience, a sound mixer, and explored-route previews. All rewards are earned in the same permanent offline valley.
 
 Ten more CC0 prop models and an original notebook illustration are included locally. The previous map, meals, planner, photo mode, puzzles, decorations, friendships, outings, restoration and gathering systems remain. Drag anywhere on open play space to steer; lift to stop. Two fingers pan and zoom. Saves keep the existing format and optional new progress fields.
 
