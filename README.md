@@ -6,13 +6,13 @@ An original offline Android survival adventure. The rails end in **Frosthollow**
 
 ![Emberline gameplay](docs/gameplay.png)
 
-## Unreleased freedom and discovery preview
+## Unreleased Hearth & Horizon preview
 
-The `feature/play-feel` branch contains the next source-only update. **No new APK has been built or released.** Drag anywhere on open play space to steer continuously, then lift to stop. Two fingers pan and zoom; there is no fixed joystick or tap-to-walk. Object taps still select interactions, with automatic approach available from an action button.
+The `feature/play-feel` branch contains the next source-only update. **No new APK has been built or released.** The latest pass adds an exploration map and waypoints, pinned supply goals, three earned camp meals, a gentle day/evening cycle, comfort settings, and a paused photo mode. Everything remains local in the same permanent valley, with saved progress preserved.
 
-The preview adds a nearby-object chooser, optional safe continuous gathering, material finish effects and optional haptics, three environmental puzzles, eleven earned decorations, six friendship requests and perks, weather forecasts and exposed supplies, three named wildlife visitors, persistent packed trails, and three repeatable optional outings. Earlier tree fading, crew routines, conversations and restorations remain. Everything stays offline in the same valley.
+Drag anywhere on open play space to steer continuously; lift to stop. Two fingers pan and zoom. The previous nearby-object chooser, continuous gathering, finish effects, puzzles, decorations, friendships, weather discoveries, named wildlife, packed trails, optional outings, tree fading and restoration systems remain included.
 
-See [current controls, content and validation](docs/FREEDOM-AND-DISCOVERY.md). [Living valley notes](docs/LIVING-VALLEY.md) and [earlier camera/gathering notes](docs/PLAY-FEEL.md) describe historical milestones. The 0.2.0 download above remains the published Android build.
+See [current controls, content and validation](docs/HEARTH-HORIZON.md). [Freedom and discovery](docs/FREEDOM-AND-DISCOVERY.md), [Living valley](docs/LIVING-VALLEY.md), and [earlier camera/gathering notes](docs/PLAY-FEEL.md) record previous source milestones. The 0.2.0 download above remains the published Android build.
 
 ## A game you earn by playing
 
@@ -84,6 +84,7 @@ node tests/play-feel.mjs
 node tests/living-valley.mjs
 node tests/freedom.mjs
 node tests/selection.mjs
+node tests/hearth-horizon.mjs
 python tests/package-apk.test.py
 ```
 

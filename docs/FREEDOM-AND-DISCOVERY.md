@@ -1,5 +1,7 @@
 # Freedom and discovery preview
 
+Historical source milestone at `7e43bbf`. See [Hearth & Horizon](HEARTH-HORIZON.md) for the current source preview.
+
 Source-only development milestone, 2026-10-23, on `feature/play-feel`. No APK was built, signed, uploaded or released. Package identity, signing configuration and version remain unchanged. The published 0.2.0 APK does not contain these changes.
 
 ## Movement

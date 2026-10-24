@@ -6,7 +6,7 @@ export class DragControls {
   canvas.addEventListener('pointerdown',e=>{
    if(!view.inputEnabled?.())return;
    e.preventDefault();this.tap=null;canvas.setPointerCapture(e.pointerId);
-   this.points.set(e.pointerId,{x:e.clientX,y:e.clientY,ax:e.clientX,ay:e.clientY,drag:false,pan:e.button===2||e.button===1||e.shiftKey});
+   this.points.set(e.pointerId,{x:e.clientX,y:e.clientY,ax:e.clientX,ay:e.clientY,drag:false,pan:view.photoMode||e.button===2||e.button===1||e.shiftKey});
    if(this.points.size>1){this.multi=true;this.stop();for(const p of this.points.values())p.drag=true;}
   });
   canvas.addEventListener('pointermove',e=>{
@@ -21,13 +21,13 @@ export class DragControls {
    if(p.pan&&p.drag){const a=view.groundAt(p.x,p.y),b=view.groundAt(e.clientX,e.clientY);if(a&&b){view.focus.add(a.sub(b));view.manual=true;view.clampFocus();view.positionCamera();view.onCameraChange?.();}}
    else if(p.drag){
     if(m>90){p.ax=e.clientX-dx/m*90;p.ay=e.clientY-dy/m*90;}
-    view.onDrag?.(m>8?{x:dx/m,y:dy/m,speed:Math.min(1,(m-8)/48)}:null);
+    view.onDrag?.(m>8?{x:dx/m,y:dy/m,speed:Math.min(1,(m-8)/48*(view.state.settings.dragSensitivity||1))}:null);
     const guide=document.getElementById('drag-guide');if(guide){guide.hidden=false;guide.style.left=p.ax+'px';guide.style.top=p.ay+'px';guide.firstElementChild.style.transform=`translate(${dx/(m||1)*Math.min(m,42)}px,${dy/(m||1)*Math.min(m,42)}px)`;}
    }
    p.x=e.clientX;p.y=e.clientY;
   });
-  canvas.addEventListener('pointerup',e=>{const p=this.points.get(e.pointerId);if(!p)return;this.tap=!p.drag&&!p.pan&&!this.multi?{x:e.clientX,y:e.clientY}:null;this.points.delete(e.pointerId);this.stop();if(!this.points.size)this.multi=false;});
-  canvas.addEventListener('click',()=>{if(!this.tap||!view.inputEnabled?.())return;const p=this.tap;this.tap=null;view.pick(p.x,p.y);});
+  canvas.addEventListener('pointerup',e=>{const p=this.points.get(e.pointerId);if(!p)return;this.tap=!p.drag&&(!p.pan||view.photoMode)&&!this.multi?{x:e.clientX,y:e.clientY}:null;this.points.delete(e.pointerId);this.stop();if(!this.points.size)this.multi=false;});
+  canvas.addEventListener('click',()=>{if(!this.tap||!view.inputEnabled?.())return;const p=this.tap;this.tap=null;if(view.photoMode)view.onPhotoTap?.();else view.pick(p.x,p.y);});
   for(const event of ['pointercancel','lostpointercapture'])canvas.addEventListener(event,e=>{if(this.points.has(e.pointerId))this.reset();});
   window.addEventListener('blur',()=>this.reset());
   canvas.addEventListener('wheel',e=>{if(!view.inputEnabled?.())return;e.preventDefault();view.setZoom(view.zoomTarget+e.deltaY*.012);},{passive:false});

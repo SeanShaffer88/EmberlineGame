@@ -1,3 +1,5 @@
+import * as Camp from './camp.js';
+export * from './camp.js';
 import * as J from './journey.js';
 export * from './journey.js';
 import {RELICS, SECRET_SPOTS, GEAR, DIFFICULTIES, ACHIEVEMENTS, LIVERIES} from './content.js';
@@ -71,11 +73,32 @@ export function makeWorld(){
  return nodes;
 }
 export const WORLD=makeWorld();
-export function newGame(seed=78219){const s={version:VERSION,journey:J.newJourney(),seed:seed>>>0,gear:{axe:0,prybar:0,coat:0,boots:0,lantern:0},projects:{garden:0,platform:0,signal:0},discoveries:[],discoverySeen:[],conversations:{},relics:[],secretSeen:[],vault:false,achievements:[],contractSerial:0,contract:null,contractsCompleted:0,difficulty:'standard',livery:'classic',inventory:{wood:6,scrap:6,coal:3,food:5,planks:0,parts:0,medkit:0},buildings:{furnace:0,workshop:0,greenhouse:0,infirmary:0,engine:0},flags:{},stock:{},regrowth:{},completed:[],gathered:{},crafted:{},discovered:[],player:{x:0,z:3},energy:100,health:100,warmth:100,activeSeconds:0,restCount:0,harvest:0,companion:null,settings:{sound:true,music:true,quality:'balanced',zoom:24,haptics:'off'},started:false};reveal(s);return s;}
+export function newGame(seed=78219){const s={version:VERSION,camp:Camp.newCamp(),journey:J.newJourney(),seed:seed>>>0,gear:{axe:0,prybar:0,coat:0,boots:0,lantern:0},projects:{garden:0,platform:0,signal:0},discoveries:[],discoverySeen:[],conversations:{},relics:[],secretSeen:[],vault:false,achievements:[],contractSerial:0,contract:null,contractsCompleted:0,difficulty:'standard',livery:'classic',inventory:{wood:6,scrap:6,coal:3,food:5,planks:0,parts:0,medkit:0},buildings:{furnace:0,workshop:0,greenhouse:0,infirmary:0,engine:0},flags:{},stock:{},regrowth:{},completed:[],gathered:{},crafted:{},discovered:[],player:{x:0,z:3},energy:100,health:100,warmth:100,activeSeconds:0,restCount:0,harvest:0,companion:null,settings:{sound:true,music:true,quality:'balanced',zoom:24,haptics:'off',dragSensitivity:1,reducedMotion:false,steadyDaylight:false},started:false};reveal(s);return s;}
 export const maxHealth=s=>100+s.buildings.infirmary*15;
 export const currentQuest=s=>QUESTS.find(q=>!s.completed.includes(q.id));
 export function progress(s,q){if(!q)return 1;if(q.kind==='gather')return s.gathered[q.key]||0;if(q.kind==='crafted')return s.crafted[q.key]||0;if(q.kind==='building')return s.buildings[q.key]||0;return s.flags[q.key]?1:0;}
 export const canPay=(s,c)=>Object.entries(c).every(([k,v])=>(s.inventory[k]||0)>=v);
+export function pinGoal(s,kind,id,batches=1){
+ const catalog={recipe:RECIPES,building:BUILDINGS,project:PROJECTS,gear:GEAR};if(!Object.hasOwn(catalog,kind)||!Object.hasOwn(catalog[kind],id))return{ok:false,message:'Choose a known project.'};
+ if(kind==='recipe'){if(![1,5].includes(batches))return{ok:false,message:'Choose one or five batches.'};const baseline=s.crafted[id]||0,amount=(RECIPES[id].yield+(id==='planks'&&s.journey.friendships.oren===2?1:0))*batches;s.camp.pin={kind,id,baseline,target:baseline+amount};}
+ else{const levels={building:s.buildings,project:s.projects,gear:s.gear},level=levels[kind][id];if(level>=3)return{ok:false,message:'This improvement is complete.'};s.camp.pin={kind,id,target:level+1};}
+ return{ok:true,message:'Supplies pinned above the valley. Tap the list to review it.'};
+}
+export function goalInfo(s){
+ const p=s.camp.pin;if(!p)return null;let title,cost,done,reason='',panel;
+ if(p.kind==='recipe'){const r=RECIPES[p.id],remaining=Math.max(0,p.target-(s.crafted[p.id]||0)),yieldEach=r.yield+(p.id==='planks'&&s.journey.friendships.oren===2?1:0);done=!remaining;cost=Object.fromEntries(Object.entries(r.cost).map(([k,n])=>[k,n*Math.ceil(remaining/yieldEach)]));title=`Make ${p.target-p.baseline} ${ITEMS[p.id]}`;panel='craft';}
+ if(p.kind==='building'){done=s.buildings[p.id]>=p.target;cost=BUILDINGS[p.id].costs[p.target-1];title=BUILDINGS[p.id].name+' · level '+p.target;panel='build';if(p.id==='greenhouse'&&!s.flags.pump)reason='Repair the water pump first.';}
+ if(p.kind==='project'){done=s.projects[p.id]>=p.target;const info=projectInfo(s,p.id);cost=info.cost;reason=info.reason||'';title=PROJECTS[p.id].name+' · stage '+p.target;panel='build';}
+ if(p.kind==='gear'){done=s.gear[p.id]>=p.target;cost=GEAR[p.id].costs[p.target-1];reason=gearLock(s,p.id);title=GEAR[p.id].name+' · level '+p.target;panel='craft';}
+ if(done)cost={};return{title,cost,done,reason:done?'':reason,ready:!done&&!reason&&canPay(s,cost),panel};
+}
+export function mapNodes(s){return WORLD.filter(n=>{
+ if(n.type==='home'||n.type==='building')return true;if(!seen(s,n))return false;
+ if(n.type==='secret')return s.secretSeen.includes(n.id);
+ if(n.type==='discovery')return s.discoverySeen.includes(n.discovery);
+ if(n.type==='survivor'&&s.flags[n.id])return false;
+ return true;
+});}
 function pay(s,c){for(const [k,v]of Object.entries(c))s.inventory[k]-=v;}
 function add(s,items){for(const [k,v]of Object.entries(items))s.inventory[k]=(s.inventory[k]||0)+v;}
 export function settleQuests(s){const done=[];for(const q of QUESTS){if(s.completed.includes(q.id))continue;if(progress(s,q)<(q.amount||1))break;s.completed.push(q.id);add(s,q.reward);done.push(q);}return done;}
@@ -123,7 +146,7 @@ export function actionInfo(s,n){
  }
  if(stock(s,n)<=0)return{label:'Recovering',detail:n.type==='wolf'?'The trail is safe.':'Supplies replenish after resting or time at camp.',done:true,cost:{}};
  if(n.type==='wolf')return{label:'Drive off wolf',detail:'8 energy · up to 18 health · food and salvage',cost:{},energy:8};
- return{label:{tree:'Chop timber',scrap:'Gather salvage',coal:'Mine coal',food:'Pick berries'}[n.type],detail:`3 energy · ${stock(s,n)} harvests left`,cost:{},energy:3};
+ return{label:{tree:'Chop timber',scrap:'Gather salvage',coal:'Mine coal',food:'Pick berries'}[n.type],detail:`${Camp.gatherEnergy(s)} energy · ${stock(s,n)} harvests left`,cost:{},energy:Camp.gatherEnergy(s)};
 }
 export function interact(s,id){
  const n=WORLD.find(n=>n.id===id);if(!n)return{ok:false,message:'Unknown object.'};
@@ -160,8 +183,8 @@ export function returnHome(s){s.player={x:0,z:3};s.warmth=100;s.health=Math.max(
 export function rest(s){returnHome(s);const fed=s.inventory.food>0;if(fed)s.inventory.food--;s.energy=100;s.health=maxHealth(s);s.restCount++;if(s.contract?.kind==='endurance')s.contract.baseline=s.gathered[s.contract.item]||0;let replenished=0;for(const n of WORLD){if(!n.stock||n.type==='wolf')continue;if(stock(s,n)<n.stock){s.stock[n.id]=n.stock;replenished++;}}return{ok:true,message:fed?'A hot meal. Energy, warmth and health restored.':'Rested by the stove. Energy and health restored.',replenished};}
 export function consume(s,item){if(!['food','medkit'].includes(item)||s.inventory[item]<1)return{ok:false,message:'No supplies available.'};s.inventory[item]--;if(item==='food'){s.energy=clamp(s.energy+30,0,100);s.warmth=clamp(s.warmth+15,0,100);}else{s.health=clamp(s.health+60,0,maxHealth(s));}return{ok:true,message:item==='food'?'+30 energy · +15 warmth':'+60 health'};}
 export function tick(s,dt){
- dt=clamp(dt,0,1);s.activeSeconds+=dt;const distance=Math.hypot(s.player.x,s.player.z);const storm=J.weather(s).storm;
- if(distance<6){s.warmth=clamp(s.warmth+dt*5,0,100);s.energy=clamp(s.energy+dt*1.6,0,100);}else{s.warmth=clamp(s.warmth-dt*(storm?.8:.28)*(J.sheltered(s)?.45:1)*(s.journey.friendships.mira===2?.9:1)*DIFFICULTIES[s.difficulty].cold/(1+s.buildings.furnace*.6+s.gear.coat*.4),0,100);if(s.warmth===0)s.health-=dt*(s.companion==='mira'?.7:1)*DIFFICULTIES[s.difficulty].damage;}
+ dt=clamp(dt,0,1);s.activeSeconds+=dt;if(s.camp.meal&&!Camp.activeMeal(s))s.camp.meal=null;const distance=Math.hypot(s.player.x,s.player.z);const storm=J.weather(s).storm;
+ if(distance<6){s.warmth=clamp(s.warmth+dt*5,0,100);s.energy=clamp(s.energy+dt*1.6,0,100);}else{s.warmth=clamp(s.warmth-dt*(storm?.8:.28)*(J.sheltered(s)?.45:1)*(s.journey.friendships.mira===2?.9:1)*DIFFICULTIES[s.difficulty].cold*Camp.mealCold(s)/(1+s.buildings.furnace*.6+s.gear.coat*.4),0,100);if(s.warmth===0)s.health-=dt*(s.companion==='mira'?.7:1)*DIFFICULTIES[s.difficulty].damage;}
  if(s.health<=0)returnHome(s);
  if(s.buildings.greenhouse)s.harvest=clamp(s.harvest+dt*s.buildings.greenhouse/45,0,30);
  for(const n of WORLD)if(n.stock&&n.type!=='wolf'&&stock(s,n)<n.stock&&s.regrowth[n.id]&&s.activeSeconds>=s.regrowth[n.id]){s.stock[n.id]=n.stock;delete s.regrowth[n.id];}
@@ -201,8 +224,8 @@ export function deserialize(text){
  for(const kind of ['gathered','crafted'])for(const k of Object.keys(ITEMS))if(v[kind]?.[k]!==undefined)s[kind][k]=number(v[kind][k]);
  if(!Array.isArray(v.completed)||!Array.isArray(v.discovered)||v.discovered.length>4000)throw Error('Invalid progress.');
  s.completed=QUESTS.filter(q=>v.completed.includes(q.id)).map(q=>q.id);s.discovered=[...new Set(v.discovered.filter(k=>typeof k==='string'&&/^-?\d{1,2},-?\d{1,2}$/.test(k)))];
- s.journey=J.readJourney(v.journey,s);
- s.companion=CREW[v.companion]&&s.flags[v.companion]?v.companion:null;s.settings={sound:v.settings?.sound!==false,music:v.settings?.music!==false,quality:v.settings?.quality==='low'?'low':'balanced',zoom:Number.isFinite(v.settings?.zoom)?Math.max(16,Math.min(34,v.settings.zoom)):24,haptics:['off','light','full'].includes(v.settings?.haptics)?v.settings.haptics:'off'};s.started=v.started===true;
+ s.journey=J.readJourney(v.journey,s);s.camp=Camp.readCamp(v.camp,s,{recipe:RECIPES,building:BUILDINGS,project:PROJECTS,gear:GEAR});
+ s.companion=CREW[v.companion]&&s.flags[v.companion]?v.companion:null;s.settings={sound:v.settings?.sound!==false,music:v.settings?.music!==false,quality:v.settings?.quality==='low'?'low':'balanced',zoom:Number.isFinite(v.settings?.zoom)?Math.max(16,Math.min(34,v.settings.zoom)):24,haptics:['off','light','full'].includes(v.settings?.haptics)?v.settings.haptics:'off',dragSensitivity:[.75,1,1.5].includes(v.settings?.dragSensitivity)?v.settings.dragSensitivity:1,reducedMotion:v.settings?.reducedMotion===true,steadyDaylight:v.settings?.steadyDaylight===true};s.started=v.started===true;
  // A pre-update save may stand on a newly added project tile; it can walk out.
  if(!walkable(s,Math.round(s.player.x),Math.round(s.player.z))&&!WORLD.some(n=>n.type==='project'&&n.x===s.player.x&&n.z===s.player.z))s.player={x:0,z:3};reveal(s);return s;
 }
