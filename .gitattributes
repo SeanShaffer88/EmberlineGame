@@ -3,3 +3,4 @@
 *.apk binary
 *.zip binary
 web/vendor/* -whitespace
+web/assets/licenses/* -text -whitespace

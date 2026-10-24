@@ -1,0 +1,217 @@
+{
+  "checked_on": "2026-10-22",
+  "status": "Bundled in Emberline 0.2.0; winter palette and snow shading applied at runtime. Locomotive A is used by the earned Evergreen livery.",
+  "models": [
+    {
+      "file": "models/train-kit/train-locomotive-a.glb",
+      "creator": "Kenney; pack credits also include Guus Vermeulen and Tony Schaer",
+      "source": "https://kenney.nl/assets/train-kit",
+      "license": "CC0-1.0",
+      "archive_sha256": "cf50d77e8cbacbf38dd50826d4bce5392db8e4f67373d3c4e583b0ed0e474475",
+      "sha256": "8dfe9d20667c1534652286149fb0e1639ff48975a4187d3ad2fd956add0bba2a",
+      "bytes": 154620,
+      "local_dependencies": [
+        "Textures/colormap.png"
+      ],
+      "modification": "None; original GLB bytes"
+    },
+    {
+      "file": "models/train-kit/train-locomotive-b.glb",
+      "creator": "Kenney; pack credits also include Guus Vermeulen and Tony Schaer",
+      "source": "https://kenney.nl/assets/train-kit",
+      "license": "CC0-1.0",
+      "archive_sha256": "cf50d77e8cbacbf38dd50826d4bce5392db8e4f67373d3c4e583b0ed0e474475",
+      "sha256": "ed82b635fa1dedd8017e40442a88cc8e2f05362f696a7c8b6e516db9037f8450",
+      "bytes": 142648,
+      "local_dependencies": [
+        "Textures/colormap.png"
+      ],
+      "modification": "None; original GLB bytes"
+    },
+    {
+      "file": "models/train-kit/train-locomotive-passenger-a.glb",
+      "creator": "Kenney; pack credits also include Guus Vermeulen and Tony Schaer",
+      "source": "https://kenney.nl/assets/train-kit",
+      "license": "CC0-1.0",
+      "archive_sha256": "cf50d77e8cbacbf38dd50826d4bce5392db8e4f67373d3c4e583b0ed0e474475",
+      "sha256": "fc4eddc8056dd838747fa5cc4a2aae7f94379c00d202d2048461573887e371f3",
+      "bytes": 119852,
+      "local_dependencies": [
+        "Textures/colormap.png"
+      ],
+      "modification": "None; original GLB bytes"
+    },
+    {
+      "file": "models/train-kit/train-carriage-lumber.glb",
+      "creator": "Kenney; pack credits also include Guus Vermeulen and Tony Schaer",
+      "source": "https://kenney.nl/assets/train-kit",
+      "license": "CC0-1.0",
+      "archive_sha256": "cf50d77e8cbacbf38dd50826d4bce5392db8e4f67373d3c4e583b0ed0e474475",
+      "sha256": "c205eff406b60d1c3df668c688ec5841a476568aaccc970a195287aa863b9bf6",
+      "bytes": 110308,
+      "local_dependencies": [
+        "Textures/colormap.png"
+      ],
+      "modification": "None; original GLB bytes"
+    },
+    {
+      "file": "models/nature-kit/tree_pineDefaultA.glb",
+      "creator": "Kenney",
+      "source": "https://kenney.nl/assets/nature-kit",
+      "license": "CC0-1.0",
+      "archive_sha256": "fa7974a0d342bfe63c38664ba9f8ec1a4aab8ea25f099bdc56870e33588c4d9d",
+      "sha256": "744e840445f30141fc0097fb1e0b5c81365c80634fe3141391dadaa0a0a07046",
+      "bytes": 17220,
+      "local_dependencies": [],
+      "modification": "Scene root changed from child node 1 to existing identity-transform parent node 0 to resolve SCENE_NON_ROOT_NODE. Geometry, material data and binary chunks preserved.",
+      "source_file_sha256": "60d8f352fa3659ed275e06cbddfecf8f92c8effe2977c2f2d7b29b6c9b582e46"
+    },
+    {
+      "file": "models/nature-kit/tree_pineDefaultB.glb",
+      "creator": "Kenney",
+      "source": "https://kenney.nl/assets/nature-kit",
+      "license": "CC0-1.0",
+      "archive_sha256": "fa7974a0d342bfe63c38664ba9f8ec1a4aab8ea25f099bdc56870e33588c4d9d",
+      "sha256": "bb504167326883119e7a85ddfc97311e9f9529a4acd03cfbfa43a47eba6be08e",
+      "bytes": 18180,
+      "local_dependencies": [],
+      "modification": "Scene root changed from child node 1 to existing identity-transform parent node 0 to resolve SCENE_NON_ROOT_NODE. Geometry, material data and binary chunks preserved.",
+      "source_file_sha256": "a752ea5775c6fb17513f764d57ead534f44dfdd85188b842995ac9ba0e7065c1"
+    },
+    {
+      "file": "models/nature-kit/tree_pineSmallA.glb",
+      "creator": "Kenney",
+      "source": "https://kenney.nl/assets/nature-kit",
+      "license": "CC0-1.0",
+      "archive_sha256": "fa7974a0d342bfe63c38664ba9f8ec1a4aab8ea25f099bdc56870e33588c4d9d",
+      "sha256": "bf47b2daeebfcdcf3e35bb152e7a808ebe1e5fb607f3acc5c51ffae46e96f8cd",
+      "bytes": 12820,
+      "local_dependencies": [],
+      "modification": "Scene root changed from child node 1 to existing identity-transform parent node 0 to resolve SCENE_NON_ROOT_NODE. Geometry, material data and binary chunks preserved.",
+      "source_file_sha256": "be1a438bbb2e157266c1fb093b775bff8ce3e29a4c8f04aaf9d44c7a4e1f1ff0"
+    },
+    {
+      "file": "models/nature-kit/tree_pineTallA.glb",
+      "creator": "Kenney",
+      "source": "https://kenney.nl/assets/nature-kit",
+      "license": "CC0-1.0",
+      "archive_sha256": "fa7974a0d342bfe63c38664ba9f8ec1a4aab8ea25f099bdc56870e33588c4d9d",
+      "sha256": "cb74b48de7bf7817f0bf8face1643de0361833d4718396f4771a5e669f392605",
+      "bytes": 7200,
+      "local_dependencies": [],
+      "modification": "Scene root changed from child node 1 to existing identity-transform parent node 0 to resolve SCENE_NON_ROOT_NODE. Geometry, material data and binary chunks preserved.",
+      "source_file_sha256": "e0a56eb196d8a64ba86c7304d607136e17e6f9ad748dffcf86bd53b18b91b196"
+    },
+    {
+      "file": "models/nature-kit/rock_largeA.glb",
+      "creator": "Kenney",
+      "source": "https://kenney.nl/assets/nature-kit",
+      "license": "CC0-1.0",
+      "archive_sha256": "fa7974a0d342bfe63c38664ba9f8ec1a4aab8ea25f099bdc56870e33588c4d9d",
+      "sha256": "0633445c60a0d978273ba7ac6eef1edd3ca1d5e9a00dab988968b38e3a942cb7",
+      "bytes": 7552,
+      "local_dependencies": [],
+      "modification": "Scene root changed from child node 1 to existing identity-transform parent node 0 to resolve SCENE_NON_ROOT_NODE. Geometry, material data and binary chunks preserved.",
+      "source_file_sha256": "6dd15390fd96501dcd1454765a17ba61dbbd8d47705dfe5149c8dd92b353ce25"
+    },
+    {
+      "file": "models/nature-kit/rock_largeB.glb",
+      "creator": "Kenney",
+      "source": "https://kenney.nl/assets/nature-kit",
+      "license": "CC0-1.0",
+      "archive_sha256": "fa7974a0d342bfe63c38664ba9f8ec1a4aab8ea25f099bdc56870e33588c4d9d",
+      "sha256": "500af578eb66dedb7af8a9ada30b95c49c98fa2b4ea65887f95e21d4af51ed09",
+      "bytes": 8560,
+      "local_dependencies": [],
+      "modification": "Scene root changed from child node 1 to existing identity-transform parent node 0 to resolve SCENE_NON_ROOT_NODE. Geometry, material data and binary chunks preserved.",
+      "source_file_sha256": "caa8b025833d4dabf6d98fe2e96cf2fbd886693ac990df0db75f9d827194374b"
+    },
+    {
+      "file": "models/nature-kit/rock_smallA.glb",
+      "creator": "Kenney",
+      "source": "https://kenney.nl/assets/nature-kit",
+      "license": "CC0-1.0",
+      "archive_sha256": "fa7974a0d342bfe63c38664ba9f8ec1a4aab8ea25f099bdc56870e33588c4d9d",
+      "sha256": "8ff74c3eb7e4ed0fef352afd09d8066e89c56bae6e2d39108df7c039835b2cfd",
+      "bytes": 3044,
+      "local_dependencies": [],
+      "modification": "Scene root changed from child node 1 to existing identity-transform parent node 0 to resolve SCENE_NON_ROOT_NODE. Geometry, material data and binary chunks preserved.",
+      "source_file_sha256": "df9fff9d711e61370e8df0caa2514c89b8f8a8dc6c6fafaf4eb2ec79c5ae07c1"
+    },
+    {
+      "file": "models/nature-kit/log_stack.glb",
+      "creator": "Kenney",
+      "source": "https://kenney.nl/assets/nature-kit",
+      "license": "CC0-1.0",
+      "archive_sha256": "fa7974a0d342bfe63c38664ba9f8ec1a4aab8ea25f099bdc56870e33588c4d9d",
+      "sha256": "d8e772ca655f1f9238cdab40f4969ed03d369e0d5214825c62ea220f75019061",
+      "bytes": 10896,
+      "local_dependencies": [],
+      "modification": "Scene root changed from child node 1 to existing identity-transform parent node 0 to resolve SCENE_NON_ROOT_NODE. Geometry, material data and binary chunks preserved.",
+      "source_file_sha256": "90eaae4a01ba1f25c2f0c6d83087e4a7a8fac684f2452615245333968d118d68"
+    },
+    {
+      "file": "models/nature-kit/stump_round.glb",
+      "creator": "Kenney",
+      "source": "https://kenney.nl/assets/nature-kit",
+      "license": "CC0-1.0",
+      "archive_sha256": "fa7974a0d342bfe63c38664ba9f8ec1a4aab8ea25f099bdc56870e33588c4d9d",
+      "sha256": "6973eeb8b6bd84f4ab0f2c20587831a7787538abd745c7e75cc59f3d6134d55b",
+      "bytes": 5644,
+      "local_dependencies": [],
+      "modification": "Scene root changed from child node 1 to existing identity-transform parent node 0 to resolve SCENE_NON_ROOT_NODE. Geometry, material data and binary chunks preserved.",
+      "source_file_sha256": "e9b0f385f0ef98493ef716a055aa51e0b99efb8445279be7bb8bd83329a4c4af"
+    },
+    {
+      "file": "models/nature-kit/bridge_wood.glb",
+      "creator": "Kenney",
+      "source": "https://kenney.nl/assets/nature-kit",
+      "license": "CC0-1.0",
+      "archive_sha256": "fa7974a0d342bfe63c38664ba9f8ec1a4aab8ea25f099bdc56870e33588c4d9d",
+      "sha256": "fd665980b03aedeb34dc2f768ddd13efa0f64d0df7ad59ad2271059d30e33e78",
+      "bytes": 15692,
+      "local_dependencies": [],
+      "modification": "Scene root changed from child node 1 to existing identity-transform parent node 0 to resolve SCENE_NON_ROOT_NODE. Geometry, material data and binary chunks preserved.",
+      "source_file_sha256": "3da4c208b0f72b7f2ba42db521b62ec4b0278050c75256a6982c40d21aab5701"
+    },
+    {
+      "file": "models/nature-kit/campfire_stones.glb",
+      "creator": "Kenney",
+      "source": "https://kenney.nl/assets/nature-kit",
+      "license": "CC0-1.0",
+      "archive_sha256": "fa7974a0d342bfe63c38664ba9f8ec1a4aab8ea25f099bdc56870e33588c4d9d",
+      "sha256": "cc392092454db86589c3db03fe62755633c2d477a5d28e3fdbfab7e6aa9edef9",
+      "bytes": 17344,
+      "local_dependencies": [],
+      "modification": "Scene root changed from child node 1 to existing identity-transform parent node 0 to resolve SCENE_NON_ROOT_NODE. Geometry, material data and binary chunks preserved.",
+      "source_file_sha256": "54869db23243a3f4905bc00bd4cd93b1037b28556ab3ef93e7a893a093791e35"
+    },
+    {
+      "file": "models/nature-kit/tent_detailedOpen.glb",
+      "creator": "Kenney",
+      "source": "https://kenney.nl/assets/nature-kit",
+      "license": "CC0-1.0",
+      "archive_sha256": "fa7974a0d342bfe63c38664ba9f8ec1a4aab8ea25f099bdc56870e33588c4d9d",
+      "sha256": "3cabdd71d286822828c64aef3b962aa4cf2340a3ae667f35feed1dd71036f6e4",
+      "bytes": 15324,
+      "local_dependencies": [],
+      "modification": "Scene root changed from child node 1 to existing identity-transform parent node 0 to resolve SCENE_NON_ROOT_NODE. Geometry, material data and binary chunks preserved.",
+      "source_file_sha256": "d54d9665d07e0ff9680e56731c9f5338fc25d93788504d63b8375f54e6444193"
+    }
+  ],
+  "textures": [
+    {
+      "file": "models/train-kit/Textures/colormap.png",
+      "license": "CC0-1.0",
+      "source": "https://kenney.nl/assets/train-kit",
+      "sha256": "e264660f3fc9ecbd642bdb7fb7b7dc10755a061560a66651baf48274c729af09"
+    }
+  ],
+  "generated_art": {
+    "files": [
+      "title.png"
+    ],
+    "provenance": "Built-in image_gen; exact prompts in generation-prompts.json; original 2D illustrations, not 3D models or game screenshots.",
+    "sha256": "3535e994d3f646f8474da58dd9c000197594a519907988792ef28898fe07cce8"
+  }
+}

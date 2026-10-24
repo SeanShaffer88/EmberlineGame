@@ -25,7 +25,7 @@ $classFiles = @(Get-ChildItem -LiteralPath (Join-Path $stageRoot 'classes') -Fil
 Run-Checked (Join-Path $BuildTools 'd8.bat') (@('--release','--min-api','29','--lib',$AndroidJar,'--output',(Join-Path $stageRoot 'dex')) + $classFiles)
 Run-Checked $PythonExe @((Join-Path $PSScriptRoot 'package-apk.py'),(Join-Path $stageRoot 'base.apk'),(Join-Path $stageRoot 'dex/classes.dex'),(Join-Path $stageRoot 'packaged.apk'))
 Run-Checked (Join-Path $BuildTools 'zipalign.exe') @('-f','-P','16','4',(Join-Path $stageRoot 'packaged.apk'),(Join-Path $stageRoot 'aligned.apk'))
-$apk = Join-Path $buildRoot 'Emberline-0.1.1.apk'
+$apk = Join-Path $buildRoot 'Emberline-0.2.0.apk'
 Run-Checked (Join-Path $BuildTools 'apksigner.bat') @('sign','--ks',$KeyStore,'--ks-key-alias',$KeyAlias,'--ks-pass','env:EMBERLINE_STORE_PASS','--out',$apk,(Join-Path $stageRoot 'aligned.apk'))
 Run-Checked (Join-Path $BuildTools 'apksigner.bat') @('verify','--verbose','--print-certs',$apk)
 Run-Checked (Join-Path $BuildTools 'zipalign.exe') @('-c','-P','16','4',$apk)

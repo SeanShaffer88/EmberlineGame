@@ -1,17 +1,18 @@
 import * as T from './vendor/three.module.js';
+import {ValleyArt} from './art.js';
 import {WORLD,stock,key,LIVERIES} from './model.js';
 const C={snow:0xe4f2f5,snowShade:0xb4cedb,ice:0x65a9c0,fir:0x315d64,bark:0x715347,red:0xaf5148,roof:0x385964,wood:0xa77855,gold:0xffbc6d,metal:0x456273};
 export class WorldView{
  constructor(canvas,state,onTap){
   this.canvas=canvas;this.state=state;this.onTap=onTap;this.focus=new T.Vector3(0,0,0);this.manual=false;this.zoom=22;this.objects=new Map();this.materials=new Map();this.effects=[];this.clock=0;
-  this.renderer=new T.WebGLRenderer({canvas,antialias:true,alpha:false,powerPreference:'high-performance'});this.renderer.setPixelRatio(Math.min(devicePixelRatio,1.65));this.renderer.setClearColor(0xb8d3df);this.renderer.shadowMap.enabled=true;this.renderer.shadowMap.type=T.PCFSoftShadowMap;this.renderer.outputColorSpace=T.SRGBColorSpace;
+  this.renderer=new T.WebGLRenderer({canvas,antialias:true,alpha:false,powerPreference:'high-performance'});this.renderer.setPixelRatio(Math.min(devicePixelRatio,1.65));this.renderer.setClearColor(0xb8d3df);this.renderer.shadowMap.enabled=true;this.renderer.shadowMap.type=T.PCFSoftShadowMap;this.renderer.outputColorSpace=T.SRGBColorSpace;this.renderer.toneMapping=T.ACESFilmicToneMapping;this.renderer.toneMappingExposure=1.05;
   this.scene=new T.Scene();this.scene.fog=new T.FogExp2(0xb8d3df,.014);this.scene.add(new T.HemisphereLight(0xe9f8ff,0x728e9c,2.6));
   this.sun=new T.DirectionalLight(0xffe5be,3.1);this.sun.position.set(-12,28,12);this.sun.castShadow=true;this.sun.shadow.mapSize.set(1024,1024);Object.assign(this.sun.shadow.camera,{left:-24,right:24,top:24,bottom:-24,near:1,far:70});this.sun.shadow.bias=-.0005;this.scene.add(this.sun);
   this.camera=new T.OrthographicCamera(-10,10,16,-16,.1,100);this.ray=new T.Raycaster();this.groundPlane=new T.Plane(new T.Vector3(0,1,0),0);
   this.ground=this.box(this.scene,0,-.35,0,49,.6,48,C.snow);this.ground.receiveShadow=true;
   this.box(this.scene,0,-.02,-11,44,.08,2.2,C.ice);for(let i=-21;i<=21;i+=2){const shard=this.box(this.scene,i,.03,-10.4,.9,.08,.13,0xc4eef7);shard.rotation.y=i*.8;}
   // Fixed rail bed: the locomotive remains part of this settlement forever.
-  for(let x=-22;x<=22;x+=.65)this.box(this.scene,x,.02,-3.5,.22,.13,1.9,0x7993a0);
+  const ties=new T.InstancedMesh(new T.BoxGeometry(.22,.13,1.9),this.material(0x7993a0),68),tieMatrix=new T.Matrix4();for(let i=0;i<68;i++){tieMatrix.makeTranslation(-22+i*.65,.02,-3.5);ties.setMatrixAt(i,tieMatrix);}ties.receiveShadow=true;this.scene.add(ties);
   for(const z of [-4.13,-2.87])this.box(this.scene,0,.1,z,48,.14,.09,0x67828d);
   const rng=(n)=>Math.abs(Math.sin(n*127.1+311.7)*43758.5453)%1;
   for(let i=0;i<110;i++){const x=(rng(i)-.5)*46,z=(rng(i+91)-.5)*44;const d=this.mesh(new T.CircleGeometry(.15+rng(i+31)*.6,6),i%2?0xd3e7ec:0xeef8fa);d.rotation.x=-Math.PI/2;d.position.set(x,-.035,z);this.scene.add(d);}
@@ -38,14 +39,15 @@ export class WorldView{
   this.tool=new T.Group();this.box(this.tool,0,-.26,.12,.06,.65,.07,C.wood);this.box(this.tool,.13,-.48,.12,.36,.22,.1,0xb7ced1);this.hero.getObjectByName('arm1').add(this.tool);this.tool.visible=false;
   this.ring=this.mesh(new T.RingGeometry(.7,.78,40),0xffcd80);this.ring.rotation.x=-Math.PI/2;this.ring.position.y=.06;this.scene.add(this.ring);this.ring.visible=false;
   this.destination=this.mesh(new T.RingGeometry(.17,.25,24),0x2e8a96);this.destination.rotation.x=-Math.PI/2;this.destination.position.y=.09;this.scene.add(this.destination);this.destination.visible=false;
-  const fogGeo=new T.PlaneGeometry(1.02,1.02);fogGeo.rotateX(-Math.PI/2);this.fog=new T.InstancedMesh(fogGeo,new T.MeshBasicMaterial({color:0x94b4c6,transparent:true,opacity:.88,depthWrite:false}),41*40);this.scene.add(this.fog);this.fog.frustumCulled=false;
+  this.fogMask=document.createElement('canvas');this.fogMask.width=328;this.fogMask.height=320;this.fogSoft=document.createElement('canvas');this.fogSoft.width=328;this.fogSoft.height=320;this.fogTexture=new T.CanvasTexture(this.fogSoft);this.fogTexture.minFilter=T.LinearFilter;this.fogTexture.generateMipmaps=false;
+  const fogGeo=new T.PlaneGeometry(41,40);fogGeo.rotateX(-Math.PI/2);this.fog=new T.Mesh(fogGeo,new T.MeshBasicMaterial({color:0x94b4c6,alphaMap:this.fogTexture,transparent:true,opacity:.95,depthWrite:false}));this.fog.position.set(0,.045,-.5);this.scene.add(this.fog);
   this.weatherBlend=0;this.trees=[...this.objects.values()].filter(g=>g.userData.node.type==='tree');
   this.snowPositions=new Float32Array(360*3);for(let i=0;i<360;i++){this.snowPositions[i*3]=(rng(i+400)-.5)*32;this.snowPositions[i*3+1]=rng(i+600)*16;this.snowPositions[i*3+2]=(rng(i+800)-.5)*32;}const sg=new T.BufferGeometry();sg.setAttribute('position',new T.BufferAttribute(this.snowPositions,3));this.snow=new T.Points(sg,new T.PointsMaterial({color:0xffffff,size:2.1,map:this.particleTexture,transparent:true,opacity:.76,depthWrite:false}));this.snow.frustumCulled=false;this.scene.add(this.snow);
   // A fixed pool leaves a short trail without accumulating geometry or save data.
   const printGeo=new T.CircleGeometry(1,8);printGeo.rotateX(-Math.PI/2);
   this.footprints=new T.InstancedMesh(printGeo,new T.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.64,depthWrite:false}),128);this.footprints.frustumCulled=false;this.scene.add(this.footprints);
   this.prints=Array.from({length:128},()=>({age:75,x:0,z:0,angle:0}));this.printCursor=0;this.printSide=1;this.printDistance=0;this.lastPrintPosition=this.hero.position.clone();this.printTransform=new T.Object3D();this.printColor=new T.Color();this.printFresh=new T.Color(0x88a9bb);this.printSnow=new T.Color(C.snow);this.updateFootprints(0,null);
-  this.bindInput();this.resize();this.sync(true);window.addEventListener('resize',()=>this.resize());
+  this.art=new ValleyArt(this);this.bindInput();this.resize();this.sync(true);window.addEventListener('resize',()=>this.resize());
  }
  material(color){if(!this.materials.has(color))this.materials.set(color,new T.MeshStandardMaterial({color,roughness:1,flatShading:true}));return this.materials.get(color);}
  mesh(geo,color){const m=new T.Mesh(geo,this.material(color));m.castShadow=true;m.receiveShadow=true;return m;}
@@ -54,7 +56,7 @@ export class WorldView{
  glow(parent,x,y,z,r=.5){const m=new T.Mesh(new T.CircleGeometry(r,24),new T.MeshBasicMaterial({color:0xffc477,transparent:true,opacity:.18,depthWrite:false}));m.rotation.x=-Math.PI/2;m.position.set(x,y,z);parent.add(m);}
  tree(g,scale=1){this.cylinder(g,0,.6,0,.13,.19,1.2,C.bark);for(let i=0;i<3;i++){const y=1.05+i*.63,r=(1.0-i*.23)*scale;const cone=this.mesh(new T.ConeGeometry(r,1.45*scale,7),C.fir);cone.position.y=y;g.add(cone);const snow=this.mesh(new T.ConeGeometry(r*.88,1.13*scale,7),C.snow);snow.position.y=y+.21;g.add(snow);}g.rotation.y=scale;}
  cabin(g,color=C.wood,small=false){const w=small?1.15:1.7;this.box(g,0,.65,0,w,1.25,1.35,color);for(const side of [-1,1]){const roof=this.box(g,side*.42,1.45,0,1.12,.18,1.7,C.snow);roof.rotation.z=side*-.48;}this.box(g,0,.4,.694,.38,.8,.05,C.roof);for(const x of [-.57,.57])this.box(g,x,.8,.7,.25,.32,.055,C.gold);this.box(g,.55,1.75,-.3,.2,.65,.23,C.metal);this.glow(g,0,.04,1,1);}
- person(color){const g=new T.Group();this.cylinder(g,0,.11,0,.3,.3,.02,0x8dabb9);const body=this.box(g,0,.67,0,.45,.58,.3,color);this.cylinder(g,0,1.1,0,.235,.235,.3,color);this.box(g,0,1.1,.19,.28,.14,.06,0xeec49a);this.box(g,0,.65,-.23,.34,.39,.2,0x536b70);for(const s of [-1,1]){const leg=this.box(g,s*.13,.24,0,.16,.34,.18,0x344e60);leg.name='leg'+s;const arm=this.box(g,s*.3,.65,0,.13,.4,.17,color);arm.name='arm'+s;}return g;}
+ person(color){const g=new T.Group();this.cylinder(g,0,.11,0,.3,.3,.02,0x8dabb9);const body=this.box(g,0,.67,0,.45,.58,.3,color);this.cylinder(g,0,1.1,0,.235,.235,.3,color);this.box(g,0,1.1,.19,.28,.14,.06,0xeec49a);this.cylinder(g,0,1.03,0,.25,.25,.07,0x536b70);this.box(g,0,.91,.04,.47,.1,.35,0xc7d3c7);for(const eye of [-.075,.075])this.box(g,eye,1.13,.228,.025,.025,.018,0x344e60);this.box(g,0,.65,-.23,.34,.39,.2,0x536b70);for(const s of [-1,1]){const leg=this.box(g,s*.13,.24,0,.16,.34,.18,0x344e60);leg.name='leg'+s;const arm=this.box(g,s*.3,.65,0,.13,.4,.17,color);arm.name='arm'+s;}return g;}
  train(g){
   this.box(g,0,.48,0,2.6,.3,1.45,0x2f4656);const cab=this.box(g,-.7,1.25,0,1,1.4,1.35,C.red);cab.name='livery';this.box(g,-.7,2,0,1.3,.16,1.65,C.snow);
   const boiler=this.cylinder(g,.55,1.04,0,.53,.53,1.5,0x345665,12);boiler.rotation.z=Math.PI/2;
@@ -84,9 +86,9 @@ export class WorldView{
   else this.tower(g,n.id==='beacon');
   return g;
  }
- sync(force=false){const s=this.state,seen=new Set(s.discovered);for(const n of WORLD){const g=this.objects.get(n.id);g.visible=n.type==='home'||n.type==='building'||seen.has(key(n.x,n.z));if(n.type==='secret'){g.visible=s.secretSeen.includes(n.id);const found=n.id==='vault'?s.vault:s.relics.includes(n.relic);g.scale.y=found?.65:1;}if(n.stock){const depleted=stock(s,n)<=0;g.scale.y=depleted?.1:1;if(n.type==='wolf')g.visible=g.visible&&!depleted;}if(n.type==='building'){const level=s.buildings[n.id];g.scale.setScalar(level?1+level*.08:.85);if(g.userData.foundation){g.userData.foundation.visible=!level;g.userData.built.visible=!!level;}g.userData.upgrade.visible=!!level;}if(n.id==='home'){g.scale.y=1+s.buildings.engine*.06;g.getObjectByName('livery').material=this.material(LIVERIES[s.livery].color);}}
-  if(force||this.lastSeen!==s.discovered.length){const m=new T.Matrix4();let i=0;for(let z=-20;z<=19;z++)for(let x=-20;x<=20;x++){m.makeScale(1,1,1);m.setPosition(x,seen.has(key(x,z))?-4:.07,z);this.fog.setMatrixAt(i++,m);}this.fog.instanceMatrix.needsUpdate=true;this.lastSeen=s.discovered.length;}
-  this.companion.visible=!!s.companion;
+ sync(force=false){const s=this.state,seen=new Set(s.discovered);for(const n of WORLD){const g=this.objects.get(n.id);g.visible=n.type==='home'||n.type==='building'||seen.has(key(n.x,n.z));if(n.type==='secret'){g.visible=s.secretSeen.includes(n.id);const found=n.id==='vault'?s.vault:s.relics.includes(n.relic);g.scale.y=found?.65:1;}if(n.stock){const depleted=stock(s,n)<=0;g.scale.y=depleted?.1:1;if(n.type==='wolf')g.visible=g.visible&&!depleted;}if(n.type==='building'){const level=s.buildings[n.id];g.scale.setScalar(level?1+level*.08:.85);if(g.userData.foundation){g.userData.foundation.visible=!level;g.userData.built.visible=!!level;}g.userData.upgrade.visible=!!level;}if(n.id==='home'){const paint=g.getObjectByName('livery');if(paint)paint.material=this.material(LIVERIES[s.livery].color);}}
+  if(force||this.lastSeen!==s.discovered.length){const ctx=this.fogMask.getContext('2d');ctx.fillStyle='white';ctx.fillRect(0,0,328,320);ctx.fillStyle='black';for(let z=-20;z<=19;z++)for(let x=-20;x<=20;x++)if(seen.has(key(x,z))){ctx.beginPath();ctx.arc((x+20.5)*8,(z+20.5)*8,8.5,0,Math.PI*2);ctx.fill();}const soft=this.fogSoft.getContext('2d');soft.fillStyle='white';soft.fillRect(0,0,328,320);soft.filter='blur(5px)';soft.drawImage(this.fogMask,0,0);soft.filter='none';this.fogTexture.needsUpdate=true;this.lastSeen=s.discovered.length;}
+  this.art?.sync();this.companion.visible=!!s.companion;
   for(const [id,person]of Object.entries(this.residents)){person.visible=!!s.flags[id]&&s.companion!==id;const remote=this.objects.get(id).getObjectByName('survivor');if(remote)remote.visible=!s.flags[id];}
  }
  impact(n){this.burstOrigin={x:n.x,z:n.z};this.burstLife=1;this.burst.material.color.set(n.type==='tree'?0xf1d9a5:n.type==='coal'?0xa9c5d0:0xffdeb0);}
@@ -129,7 +131,7 @@ export class WorldView{
    tree.rotation.z=-(.012+strength*.026)*gust+Math.sin(this.clock*1.3+phase)*(.008+strength*.013);
    tree.rotation.x=Math.sin(this.clock*.87+phase)*(.006+strength*.012);
   }
-  this.sun.intensity=3.1-strength*.85;this.scene.fog.density=.014+strength*.009;
+  const dusk=(1-Math.cos(this.state.activeSeconds/240*Math.PI))*.5;this.sun.intensity=3.1-strength*.85-dusk*.35;this.sun.color.setHex(dusk>.6?0xffd6a3:0xffe5be);this.scene.fog.density=.014+strength*.009;
   this.snow.geometry.setDrawRange(0,Math.round((this.lowQuality?90:180)*(1+strength)));
   this.snow.material.size=2.1+strength*.7;
   for(let i=0;i<360;i++){
@@ -147,9 +149,9 @@ export class WorldView{
  update(dt,moving,working){this.clock+=dt;const s=this.state;const target=new T.Vector3(s.player.x,0,s.player.z);if(moving)target.set(moving.x,0,moving.z);this.hero.position.copy(target);if(moving?.angle!==undefined)this.hero.rotation.y=moving.angle;
   const pace=moving?.walking?Math.sin(this.clock*14):Math.sin(this.clock*2)*.04;this.hero.position.y=moving?.walking?Math.abs(pace)*.07:0;for(const sign of [-1,1]){this.hero.getObjectByName('leg'+sign).rotation.x=pace*sign*.6;this.hero.getObjectByName('arm'+sign).rotation.x=working?Math.sin(this.clock*18)*.9:pace*-sign*.4;}
   this.companion.position.lerp(target.clone().add(new T.Vector3(-.8,0,.7)),dt*3);this.companion.rotation.y=this.hero.rotation.y;
-  this.tool.visible=working;for(const [i,id]of ['mira','oren','ivo'].entries()){const resident=this.residents[id],base=[[-4,2],[2,4],[4,-1]][i],a=this.clock*.18+i*2;resident.position.set(base[0]+Math.sin(a)*.5,Math.abs(Math.sin(a*8))*.025,base[1]+Math.cos(a)*.35);resident.rotation.y=Math.atan2(Math.cos(a)*.5,-Math.sin(a)*.35);for(const sign of [-1,1]){resident.getObjectByName('leg'+sign).rotation.x=Math.sin(a*8)*sign*.15;resident.getObjectByName('arm'+sign).rotation.x=Math.sin(a*8)*-sign*.1;}}
+  this.tool.visible=working;this.art.update(dt,moving);
   if(this.burstLife>0){this.burstLife=Math.max(0,this.burstLife-dt*1.8);const p=1-this.burstLife;for(let i=0;i<28;i++){const a=i*2.4,r=p*(.5+(i%7)*.14);this.burstPositions[i*3]=this.burstOrigin.x+Math.cos(a)*r;this.burstPositions[i*3+1]=.4+Math.sin(p*Math.PI)*(.5+(i%4)*.2);this.burstPositions[i*3+2]=this.burstOrigin.z+Math.sin(a)*r;}this.burst.geometry.attributes.position.needsUpdate=true;this.burst.material.opacity=this.burstLife;}
-  if(!this.manual)this.focus.lerp(target.clone().multiplyScalar(.75),Math.min(1,dt*2));this.camera.position.copy(this.focus).add(new T.Vector3(15,22,18));this.camera.lookAt(this.focus);
+  if(!this.manual)this.focus.lerp(target.clone().multiplyScalar(.75).add(new T.Vector3(-1.2,0,-1.8)),Math.min(1,dt*2));this.camera.position.copy(this.focus).add(new T.Vector3(15,22,18));this.camera.lookAt(this.focus);
   this.updateWeather(dt);this.updateFootprints(dt,moving);
   const f=this.objects.get('furnace').getObjectByName('flame');f.scale.setScalar(1+Math.sin(this.clock*8)*.15);this.ring.scale.setScalar(1+Math.sin(this.clock*3)*.03);this.renderer.render(this.scene,this.camera);
  }

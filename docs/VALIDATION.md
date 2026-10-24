@@ -1,65 +1,48 @@
-# Validation record — Emberline 0.1.1 — 2026-10-22
+# Validation record — Emberline 0.2.0
 
-This is a **playable preview**, not a claim of a completed device certification or parity with a commercial game.
+Checks performed 2026-10-22; release packaged 2026-10-23.
 
-## Game rules
+This is a playable preview. No physical Galaxy S24 Ultra was connected, and this record does not claim commercial-game parity, device certification, sustained phone performance or an end-to-end human campaign playtest.
 
-15 automated test groups passed again under Node.js for this update. They cover deterministic initial state; proximity, energy, harvest quantities and depletion; recipe spending and invalid counts; free recovery without resources; bridge access without world reset; save round trips and malformed input; active-time simulation; greenhouse production; all 16 story milestones completed with normal gathering/crafting/movement; upgrade limits, companions, wildlife and beacon requirements; all eight secrets and final vault; earned equipment and masterwork gating; 100 successive contracts completed with normal game actions; seeded contract variation and endurance resets; and difficulty without content restrictions.
+## Rules, save compatibility and asset provenance
 
-Tests run in `tests/model.test.mjs`. The complete campaign and 100-contract simulations do not advance real travel time, render graphics, or establish human play balance.
+`npm test`: 17 groups pass (16 rules/save groups and one asset-integrity group). Coverage includes the full 16-milestone campaign with ordinary economy/movement, all eight keepsakes and the vault, 100 successive contracts, upgrades, inventory bounds, recovery, active-time-only progression, bridge access without resetting the world, malformed saves, and difficulty without content locks. The new migration check loads a 0.1.x save without a music preference, preserving inventory, buildings, recruitment and master mute; a disabled music preference survives roundtrip.
 
-## Rendered browser/touch verification
+All 16 bundled GLBs and the train palette texture match their provenance hashes. Every external glTF reference resolves locally inside the asset directory. The curated model subset previously passed Khronos glTF Validator 2.0.0-dev.3.10 with zero errors/warnings; the identical validated bytes are shipped. Model scene roots, lengths, licenses and title-art hash are checked in `tests/assets.test.mjs`. Source/asset licenses and image generation prompts are included.
 
-Separate headless Chrome sessions with software WebGL2 and touch input checked:
+## Browser and touch checks
 
-- First launch, title, field guide, original 3D scene, crafting, settlement and journal UI.
-- Touch raycasting, walking to a resource, two harvests, quest rewards, crafting and a permanent Hearth upgrade.
-- Save/reload preserving inventory, harvested nodes, buildings, difficulty, secrets, badges and contracts.
-- Free rest, graphics/sound settings, and rejection of invalid imports without changing progress.
-- Gameplay and menus continuing after external connectivity was disabled following asset loading.
-- No external resource requests and no uncaught JavaScript errors.
-- Portrait viewports 360×740, 412×915 and 480×1040, plus a landscape resize check. No horizontal document overflow; screenshots inspected for layout.
-- Secret discovery near a cairn, actual touch interaction, and the original lore dialog.
-- Contract board, free contract replacement, collection clues, 25 badges, equipment locks, six earned liveries, and difficulty selection.
-- A separately identified rescued-crew visual fixture: three camp remarks, remarks changing after the beacon, and an active companion disappearing from camp. This fixture is not evidence of completing the campaign through the touch UI.
-- Calling the Android-facing pause/resume hooks freezes/resumes simulation without elapsed-time catch-up.
+Headless Chrome with software WebGL2, touch input and 412×915 viewport was used, with additional 360×740, 480×1040 and landscape layout checks. Reports and screenshots are generated in ignored `build/`.
 
-This update reran browser smoke, touch gathering/building, and startup-failure checks. A separate environmental QA run verified a touch-generated trail, changing tree transforms, increased snow and dimmer light in a storm fixture, and reduced snow density in Battery saver, with no JavaScript exceptions. Screenshots were visually inspected. Storm state was explicitly set for this visual check; it is not campaign-completion evidence.
+- `browser-smoke.mjs`: title/field guide, loaded scene, crafting, build/journal menus, reload, free rest, graphics/audio settings, invalid-import preservation and viewport overflow checks pass. No external requests or uncaught JS errors.
+- `touch-flow.mjs`: real raycast selection on the new pine, walking, two harvests, first quest reward, crafting, permanent Hearth upgrade and reload persistence pass. Menus and gameplay continue after browser disconnection. The representative capture reported 374 draw calls / 12,670 triangles; this is not a phone frame-rate measurement.
+- `replay-ui.mjs`: difficulty, contracts, lore, badges, earned equipment/liveries, lifecycle pause/resume, secret touch interaction, save persistence and rescued-crew remarks pass.
+- `startup.mjs`: injected missing modules and early exceptions show retry/details without overwriting a save; retry restores the saved game.
+- `art-audio.mjs`: all 16 models and the palette texture load with no CSP, console, shader or JS errors and no external resource requests. An older save retains progress. Master audio and independent music settings work; lifecycle pause suspends AudioContext. OfflineAudioContext produces finite, non-silent, unclipped note/footstep samples. This is synthesis validation, not a speaker listening test.
+- Explicit upgraded/storm fixtures check visible wagon, porch, lamps and building rewards, moving crew/hare/trees, unchanged home coordinates, storm intensity and Battery saver. The upgrade screenshot is a constructed visual fixture, not campaign-completion evidence.
+- Injected failures of all optional models retain playable original geometry and functional startup/crafting. The model loader has an eight-second timeout; the existing bootstrap watchdog remains enabled.
 
-Reports are produced in `build/browser-results.json`, `build/touch-results.json`, and `build/replay-ui-results.json`. Screenshots are browser captures, not photographs or screenshots of a Galaxy S24 Ultra. Software renderer speed is not a mobile performance measurement.
+Screenshots of initial, upgraded and native scenes were inspected. The square fog boundary was replaced with a soft local mask, snow exposure was reduced, coal models were bounded to avoid oversized resource silhouettes, and the detailed bridge is displayed only after its repair flag is earned.
 
 ## Android package
 
-Built with OpenJDK 17.0.20.1, Android 31 platform stubs, and Android build-tools 35.0.0. Package: `com.seanshaffer.emberline`, versionCode 2, versionName 0.1.1, minSdk 29, targetSdk 35. Release signing is separate from the source tree; debugging is disabled. APK signature and 16 KB ZIP alignment checks pass. There are no native `.so` libraries, so there is no bundled ELF page-size or ABI-specific dependency.
+Package `com.seanshaffer.emberline`, versionCode 3, versionName 0.2.0, minSdk 29, targetSdk 35. Built using OpenJDK 17.0.20.1, platform 31 stubs and Android build-tools 35.0.0. There are no native `.so` libraries. Production WebView debugging is disabled.
 
-Signer certificate SHA-256: `6adb1d3400cdf72d42797af9235b1b70fba217131e2c2cef3e12dc0d310dce09`.
+- Size: **3,067,448 bytes**.
+- SHA-256: `991f7cac61e9ef645f6e3d37edbc10b72935c1576e0da7fab29d6fabce33802f`.
+- Signer SHA-256: `6adb1d3400cdf72d42797af9235b1b70fba217131e2c2cef3e12dc0d310dce09` (unchanged).
+- APK signature, ZIP alignment and CRC checks pass. All **38 web assets** match the tested working source byte for byte; raw ZIP entry names contain no backslashes.
+- `tests/package-apk.test.py` passes the original raw-backslash packaging regression.
+- No Android permissions are requested, including INTERNET. Local GLB fetches are allowed only to the app's intercepted origin; external requests/navigation are blocked. No CDN, service worker, account or runtime server is required.
 
-ZIP CRC checks pass; all 11 bundled web files match the tested source byte for byte. The APK is 488,617 bytes; SHA-256: `81b474ca320d8ac6f862b13d28ab2a85a8bc18663de9f8c87f7eb349ae024f14`.
+## Native Android checks
 
-The manifest requests no permissions, including no INTERNET, billing, advertising ID, analytics, or storage permissions. The user-selected document provider is used for save export/import. Assets, code and sounds are local; no service-worker cache or remote service is needed.
+AOSP Android 15 / API 35 x86_64 emulator, Android System WebView 124.0.6367.219, 720×1560 screen and software GPU. Airplane mode remained enabled. Audio output is disabled on this emulator.
 
-## Startup regression and native Android checks
+Installed 0.2.0 over the existing 0.1.1 package with the same signing identity. The game resumed with nine timber, two planks, five food, six gathered timber, depleted tree stock and Battery saver preserved. The new train, trees and winter materials rendered.
 
-The reported 0.1.0 loading-screen hang was reproduced in the Android emulator. Its AAPT2-generated archive contained raw backslashes in nested vendor paths, so Android could not open the renderer dependency. The earlier Windows ZIP inspection had silently normalized those filenames and missed the problem. A regression fixture now writes a genuine backslash entry and verifies canonical output, DEX inclusion, resource compression, and CRCs. The final APK has no raw backslash entries.
+Touch-selected the new pine, walked to it and harvested six timber; the first quest completed. Crafted two more planks and received the crafting milestone reward. Reinstalled the final package over this progress, cold-launched and exported through Android's document picker. The exported JSON confirmed 12 timber, four planks, eight food, ten salvage, two completed milestones and first-pine stock two. Music defaulted on and Battery saver stayed selected. Turning music off and importing that backup through the native picker restored the music-on preference and settlement. Balanced graphics also rendered on the emulator. After retaining the exported test save, cleared only the emulator app data and verified a clean first launch reaches the illustrated title in airplane mode. No Emberline or AndroidRuntime errors were observed in the final native checks.
 
-A classic bootstrap script now catches failed module loads and early exceptions, offers retry, and displays Android/WebView details. Browser failure-injection checks confirm that both failure paths preserve the saved settlement and that retry restores it. An error after startup does not cover the running game.
+## Practical limits
 
-An AOSP Android 15 / API 35 x86_64 emulator, Android System WebView 124.0.6367.219, 720×1560 screen, and software GPU were used. Airplane mode remained enabled for native game checks. No physical phone was connected.
-
-Native checks completed during this update:
-
-- Installed the repaired APK over the original using the same package and signing certificate; loading reaches the rendered game.
-- Started a game, dismissed the guide, selected a tree by touch, walked to it, and gathered six timber.
-- Crafted two planks; inventory became nine timber and two planks, with the harvested tree stock reduced by one.
-- Force-stopped/relaunched and backgrounded/resumed the Activity. Exported JSON confirmed the resource counts, harvested stock, and Battery saver setting survived.
-- Exported through Android's native document picker; consumed one food; imported the exported file through the native picker and observed food restored from four to five.
-- Installed the final movement build over that save, cold-launched in airplane mode, and verified retained inventory/settings, version 0.1.1, responsive walking, and visible footprints.
-- Inspected screenshots for status/navigation-bar spacing. The final walking check produced no Emberline or AndroidRuntime error log entries.
-
-The exact final APK was signature/alignment/CRC checked and its 11 web assets compared byte for byte with the working source. Debugging is disabled in the release.
-
-## Outstanding physical-phone checks
-
-The requested target remains Galaxy S24 Ultra. Samsung/WebView GPU compatibility, sustained frame rate, audio quality, touch feel, battery behavior, and device-specific document providers still require a physical-phone playtest. Emulator speed does not measure phone performance. Full campaign and long replay runs were verified in model tests, not played end to end on Android.
-
-Recommended phone check: update without uninstalling → cold-launch in airplane mode → walk and gather → craft → close/relaunch → verify progress → export/import backup → background/resume. Keep the same signing identity for future updates.
+The original startup defect remains covered by canonical packaging and startup diagnostics. Emulator and desktop checks cannot establish Samsung GPU behavior, sustained frame rate, battery drain, touch feel or audible mix quality on the Galaxy S24 Ultra. A device playtest remains necessary for those. The campaign and long contract sequence were verified in pure model tests, not played end to end on Android.

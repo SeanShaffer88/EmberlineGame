@@ -85,7 +85,7 @@ public final class MainActivity extends Activity {
                 String path = uri.getPath();
                 if (path == null || path.equals("/")) path = "/index.html";
                 if (path.contains("..") || path.contains("\\") || path.indexOf('\0') >= 0) return denied();
-                String mime = path.endsWith(".js") ? "text/javascript" : path.endsWith(".css") ? "text/css" : path.endsWith(".html") ? "text/html" : path.endsWith(".svg") ? "image/svg+xml" : "text/plain";
+                String mime = path.endsWith(".js") ? "text/javascript" : path.endsWith(".css") ? "text/css" : path.endsWith(".html") ? "text/html" : path.endsWith(".svg") ? "image/svg+xml" : path.endsWith(".png") ? "image/png" : path.endsWith(".glb") ? "model/gltf-binary" : path.endsWith(".json") ? "application/json" : "text/plain";
                 try {
                     return new WebResourceResponse(mime, "UTF-8", 200, "OK", Collections.singletonMap("Cache-Control", "no-store"), getAssets().open(path.substring(1)));
                 } catch (Exception error) { Log.e("Emberline", "Bundled asset unavailable: " + path, error); return denied(); }

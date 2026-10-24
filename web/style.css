@@ -7,3 +7,8 @@
 .camp-remark{border-left:3px solid #d9b776;padding:10px 0 10px 14px;color:#526e77;font-style:italic;line-height:1.65}
 
 #loading h2{font-size:24px}#loading>p{max-width:340px;padding:0 20px;line-height:1.5}#startup-details{max-width:90vw;max-height:40vh;overflow:auto;white-space:pre-wrap;word-break:break-word;text-align:left;background:#eff5f4;padding:16px;border-radius:12px;font:12px/1.5 monospace}#loading>.primary{min-width:180px;margin-top:12px}
+
+/* Original title illustration, bundled locally. Gameplay remains live 3D. */
+#welcome{background:linear-gradient(180deg,#dcebf4bb 0%,#dcebf400 43%,#18314000 59%,#122e40ed 100%),url('./assets/title.png') center 54% / cover no-repeat;background-color:#c8dce6}
+.welcome-top{color:#315362;text-shadow:0 1px 8px #eef7ff}.welcome-title{margin-top:22px}.welcome-title h1{color:#203e4f;text-shadow:0 2px 12px #e6f4f4aa}.welcome-title p{color:#355869;font-weight:650}.welcome-bottom p,.welcome-bottom small{color:#f1f2e9;text-shadow:0 1px 6px #163b4c}.welcome-rule{background:#e2b56e}.welcome-bottom .primary{background:#e5b66e;color:#263e45;box-shadow:0 6px 24px #071d304d}
+@media(max-height:620px){.welcome-top{margin-top:14px}.welcome-title{margin-top:8px}.welcome-title h1{font-size:42px;margin:6px 0}.welcome-title p{font-size:12px}.welcome-bottom{margin-bottom:14px}.welcome-bottom p{margin:8px 0;font-size:10px}.welcome-bottom small{margin-top:9px}}

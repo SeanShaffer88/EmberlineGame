@@ -1,0 +1,16 @@
+{
+  "tool": "built-in image_gen",
+  "date": "2026-10-22",
+  "assets": [
+    {
+      "file": "Authoring reference: Emberline-key-art-v1.png (not bundled)",
+      "prompt": "Use case: stylized-concept. Asset type: original portrait title-screen background illustration for the offline Android survival game Emberline, also the visual target for its next art pass. Create a polished 2:3 portrait illustration with a warm, handmade stylized 3D-diorama look: broad beveled shapes, painterly surfaces, rich but restrained color, beautifully modeled snow caps. One compact permanent settlement in a single snowy valley. The focal point in the middle/lower half is a distinctive small brick-red and deep-teal steam locomotive with brass details, a connected cozy cabin coach, glowing amber windows, and a chimney plume bent by a gentle winter wind. The locomotive is stationary on short snow-covered rails and has become a home, with a wooden workbench, split firewood, a compact greenhouse and a small stone hearth nearby. Three small bundled survivor figures contribute scale and warmth without becoming portrait subjects. Surround with irregular snow-laden spruce trees, soft blue-gray rock formations, a little frozen stream crossed by a simple wooden bridge, and readable footprint paths in the snow. Cold cyan/blue shadows and warm amber firelight. Sparse airborne snow catches the light. Composition: quiet, uncluttered upper quarter of soft blue winter sky and distant mountains suitable for a separately rendered title; generous quiet lower margin for separate buttons; detailed but readable middle scene. Inviting, resilient, mysterious, satisfying, premium indie-game art. No text, no logos, no watermark, no interface, no fake screenshot border. Original designs; not a reproduction of an existing game's assets."
+    },
+    {
+      "file": "title.png",
+      "prompt": "Use case: style-transfer. Create a stylized game-art variant of the supplied Emberline winter-settlement illustration. Keep the overall scene: one permanent steam-train home, cabin coach, tiny crew, greenhouse, hearth, pine trees, snowy valley, bridge and frozen stream, cold blues and warm amber windows. Strongly simplify and stylize EVERYTHING into polished chunky 3D game art: broad beveled low-poly shapes, rounded toy-like proportions, deliberately hand-painted surfaces, larger simple snow caps, sparse clean detail, soft ambient occlusion, orthographic diorama feeling. This must look like an attractive stylized mobile-game art direction, not a photograph or a realistic miniature. Enlarge the train settlement in the composition so it occupies most of the middle two-thirds; reduce the distant mountain detail. Give the trees distinct simple layered silhouettes with irregular snow caps. Maintain a quiet blue upper quarter and a quiet snow lower margin so the UI can add a title and buttons separately. No lettering, logos, interface, watermark, or frame. Preserve the cozy, resilient atmosphere; keep all designs original.",
+      "reference": "Emberline-key-art-v1.png (authoring reference, not a runtime dependency)"
+    }
+  ],
+  "note": "Original AI-generated 2D illustrations. Not runtime 3D models or screenshots of the shipped game."
+}
