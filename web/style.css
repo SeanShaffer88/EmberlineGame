@@ -15,3 +15,29 @@
 #welcome{background:linear-gradient(180deg,#dcebf4bb 0%,#dcebf400 43%,#18314000 59%,#122e40ed 100%),url('./assets/title.png') center 54% / cover no-repeat;background-color:#c8dce6}
 .welcome-top{color:#315362;text-shadow:0 1px 8px #eef7ff}.welcome-title{margin-top:22px}.welcome-title h1{color:#203e4f;text-shadow:0 2px 12px #e6f4f4aa}.welcome-title p{color:#355869;font-weight:650}.welcome-bottom p,.welcome-bottom small{color:#f1f2e9;text-shadow:0 1px 6px #163b4c}.welcome-rule{background:#e2b56e}.welcome-bottom .primary{background:#e5b66e;color:#263e45;box-shadow:0 6px 24px #071d304d}
 @media(max-height:620px){.welcome-top{margin-top:14px}.welcome-title{margin-top:8px}.welcome-title h1{font-size:42px;margin:6px 0}.welcome-title p{font-size:12px}.welcome-bottom{margin-bottom:14px}.welcome-bottom p{margin:8px 0;font-size:10px}.welcome-bottom small{margin-top:9px}}
+
+/* Compact exploration HUD: preserve large touch targets while revealing the valley. */
+#hud{--hud-top:max(8px,env(safe-area-inset-top))}
+.topbar,.vitals,.resources,.quest-card,.bottom{width:calc(100% - 24px);max-width:480px}
+.topbar{top:var(--hud-top);height:44px;gap:10px}.brand .eyebrow{font-size:7px;letter-spacing:2.8px}.brand strong{font-size:20px}.weather b{font-size:17px}.weather span{font-size:9px;margin-top:2px}
+.icon-button,.world-tools button,.action-title .icon-button{width:44px;height:44px;min-width:44px;min-height:44px;border-radius:13px}
+.vitals{top:calc(var(--hud-top) + 50px);height:42px;padding:6px 8px;border-radius:13px}.vitals>div{gap:6px;padding:0 7px}.vitals small{font-size:7px;letter-spacing:.6px}.vitals b{font-size:12px}.vitals i{margin-top:2px;height:2px}.vitals svg{width:16px}
+.resources{top:calc(var(--hud-top) + 96px);gap:5px}.resource{min-height:44px;padding:6px 10px;font-size:12px;border-radius:11px;gap:6px}.resource svg{width:17px}
+.quest-card{top:calc(var(--hud-top) + 144px);min-height:50px;padding:7px 10px;gap:8px;border-radius:12px}.quest-icon{width:29px;height:32px;border-radius:9px}.quest-copy{gap:2px}.quest-copy small{display:none}.quest-copy b{font-size:12px}.quest-copy>span{font-size:10px}
+.world-tools{right:max(12px,calc((100% - 480px)/2));top:calc(var(--hud-top) + 210px);gap:6px}.world-tools button{font-size:23px}.world-tools #center[aria-pressed="false"]{border-color:#c69854;background:#f5e7c9}
+.bottom{bottom:max(8px,env(safe-area-inset-bottom));gap:7px}.home-button{min-height:44px;padding:8px 12px}.home-button small{margin-left:1px}nav{padding:5px;border-radius:17px}nav button{min-height:48px;padding:5px 3px;gap:3px}nav button svg{width:20px;height:20px}.save-status{font-size:8px;height:12px}
+.stick{left:0;bottom:calc(100% - 40px);width:104px;height:104px;background:#203b4b20;border:2px solid #ffffffad}.stick:before{content:'';position:absolute;inset:35px;border:1px solid #f6faf680;border-radius:50%}.stick.active{background:#203b4b38}
+body.stick-right .stick{left:auto;right:0}body.stick-right .home-button{align-self:flex-start}
+#place-name{bottom:210px;left:max(16px,calc((100% - 470px)/2));opacity:.75}#place-name b{font-size:9px;letter-spacing:2.4px}#place-name>span:last-child{font-size:9px}
+.action-card{bottom:210px;max-width:430px;width:calc(100% - 24px);padding:12px;border-radius:17px;gap:6px}.action-title h3{font-size:16px}.action-title small{font-size:7px;letter-spacing:1px}.action-card .cost{margin:3px 0}.action-card p{line-height:1.4}.action-card .primary{min-height:46px;padding:10px}
+#activity{bottom:210px;min-width:220px;max-width:calc(100% - 24px);padding:6px 7px 6px 14px;border-radius:15px;gap:12px}.activity-copy{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}.activity-copy b{font-size:12px}.activity-copy small{font-size:9px;color:#bbced1}#activity button{width:44px;height:44px;min-width:44px;margin:0;border-radius:10px;background:#ffffff12}#work-progress{appearance:none;border:0;background:#ffffff24;border-radius:4px;width:100%;height:5px;overflow:hidden}#work-progress::-webkit-progress-bar{background:#ffffff24;border-radius:4px}#work-progress::-webkit-progress-value{background:#efbf78;border-radius:4px}
+#toast{top:calc(max(8px,env(safe-area-inset-top)) + 208px);max-width:calc(100% - 120px);font-size:11px;padding:10px 14px;transform:translateX(-50%)}
+.resource.reward{animation:resource-reward .6s ease}.floater{font-size:13px;font-weight:850;pointer-events:none;border:1px solid #f7d89870;background:#244759ed}
+@keyframes resource-reward{40%{background:#ffe2a9;box-shadow:0 0 0 3px #eac18155;transform:translateY(-2px)}}
+@media(orientation:landscape) and (max-height:600px){
+ .topbar,.vitals,.resources,.quest-card{left:12px;transform:none;width:230px;max-width:none}.topbar{gap:5px}.brand strong{font-size:17px}.weather span{font-size:8px}.vitals{padding:6px 2px}.vitals>div{padding:0 4px;gap:3px}.vitals svg{display:none}.resource{padding:5px;gap:4px}.resource svg{width:14px}.quest-card{padding:7px}.quest-copy b{font-size:11px}.quest-copy>span{font-size:9px}
+ .bottom{right:12px;left:auto;transform:none;width:calc(100% - 280px);max-width:460px}.stick{position:fixed;left:24px;bottom:16px}.world-tools{top:14px;right:12px}.world-tools button{width:44px;height:44px}#place-name{display:none}
+ .action-card{left:auto;right:66px;transform:none;top:12px;bottom:auto;width:calc(100% - 330px);max-width:430px;padding:9px}.action-title small{display:none}.action-title h3{font-size:14px}.action-card .cost{font-size:9px}.action-card .primary{min-height:44px}.action-card p{font-size:10px}
+ #activity{top:18px;bottom:auto;left:60%;min-width:210px}#toast{top:220px;left:130px;max-width:235px;font-size:10px}
+ body.stick-right .stick{right:24px;left:auto}body.stick-right .bottom{right:140px;max-width:420px;width:calc(100% - 405px)}body.stick-right .home-button{align-self:flex-end}
+}

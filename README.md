@@ -6,6 +6,10 @@ An original offline Android survival adventure. The rails end in **Frosthollow**
 
 ![Emberline gameplay](docs/gameplay.png)
 
+## Unreleased camera, controls and gathering preview
+
+The `feature/play-feel` branch contains the next source-only update. No new APK has been built or released for these changes. See [the preview notes](docs/PLAY-FEEL.md) for the changes, validation and proposed next work. The 0.2.0 download above remains the published Android build.
+
 ## A game you earn by playing
 
 - One continuous valley and a stationary train. No zone transitions, relocation, or forced base reset.
@@ -73,6 +77,7 @@ node tests/replay-ui.mjs
 node tests/startup.mjs
 node tests/art-audio.mjs
 node tests/joystick.mjs
+node tests/play-feel.mjs
 python tests/package-apk.test.py
 ```
 

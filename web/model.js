@@ -65,7 +65,7 @@ export function makeWorld(){
  return nodes;
 }
 export const WORLD=makeWorld();
-export function newGame(seed=78219){const s={version:VERSION,seed:seed>>>0,gear:{axe:0,prybar:0,coat:0,boots:0,lantern:0},relics:[],secretSeen:[],vault:false,achievements:[],contractSerial:0,contract:null,contractsCompleted:0,difficulty:'standard',livery:'classic',inventory:{wood:6,scrap:6,coal:3,food:5,planks:0,parts:0,medkit:0},buildings:{furnace:0,workshop:0,greenhouse:0,infirmary:0,engine:0},flags:{},stock:{},regrowth:{},completed:[],gathered:{},crafted:{},discovered:[],player:{x:0,z:3},energy:100,health:100,warmth:100,activeSeconds:0,restCount:0,harvest:0,companion:null,settings:{sound:true,music:true,quality:'balanced'},started:false};reveal(s);return s;}
+export function newGame(seed=78219){const s={version:VERSION,seed:seed>>>0,gear:{axe:0,prybar:0,coat:0,boots:0,lantern:0},relics:[],secretSeen:[],vault:false,achievements:[],contractSerial:0,contract:null,contractsCompleted:0,difficulty:'standard',livery:'classic',inventory:{wood:6,scrap:6,coal:3,food:5,planks:0,parts:0,medkit:0},buildings:{furnace:0,workshop:0,greenhouse:0,infirmary:0,engine:0},flags:{},stock:{},regrowth:{},completed:[],gathered:{},crafted:{},discovered:[],player:{x:0,z:3},energy:100,health:100,warmth:100,activeSeconds:0,restCount:0,harvest:0,companion:null,settings:{sound:true,music:true,quality:'balanced',zoom:24,stickSide:'left'},started:false};reveal(s);return s;}
 export const maxHealth=s=>100+s.buildings.infirmary*15;
 export const currentQuest=s=>QUESTS.find(q=>!s.completed.includes(q.id));
 export function progress(s,q){if(!q)return 1;if(q.kind==='gather')return s.gathered[q.key]||0;if(q.kind==='crafted')return s.crafted[q.key]||0;if(q.kind==='building')return s.buildings[q.key]||0;return s.flags[q.key]?1:0;}
@@ -154,6 +154,6 @@ export function deserialize(text){
  for(const kind of ['gathered','crafted'])for(const k of Object.keys(ITEMS))if(v[kind]?.[k]!==undefined)s[kind][k]=number(v[kind][k]);
  if(!Array.isArray(v.completed)||!Array.isArray(v.discovered)||v.discovered.length>4000)throw Error('Invalid progress.');
  s.completed=QUESTS.filter(q=>v.completed.includes(q.id)).map(q=>q.id);s.discovered=[...new Set(v.discovered.filter(k=>typeof k==='string'&&/^-?\d{1,2},-?\d{1,2}$/.test(k)))];
- s.companion=CREW[v.companion]&&s.flags[v.companion]?v.companion:null;s.settings={sound:v.settings?.sound!==false,music:v.settings?.music!==false,quality:v.settings?.quality==='low'?'low':'balanced'};s.started=v.started===true;
+ s.companion=CREW[v.companion]&&s.flags[v.companion]?v.companion:null;s.settings={sound:v.settings?.sound!==false,music:v.settings?.music!==false,quality:v.settings?.quality==='low'?'low':'balanced',zoom:Number.isFinite(v.settings?.zoom)?Math.max(16,Math.min(34,v.settings.zoom)):24,stickSide:v.settings?.stickSide==='right'?'right':'left'};s.started=v.started===true;
  if(!walkable(s,s.player.x,s.player.z))s.player={x:0,z:3};reveal(s);return s;
 }
