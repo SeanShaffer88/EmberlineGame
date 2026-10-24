@@ -1,5 +1,6 @@
 import {RELICS, SECRET_SPOTS, GEAR, DIFFICULTIES, ACHIEVEMENTS, LIVERIES} from './content.js';
-export {RELICS, GEAR, DIFFICULTIES, ACHIEVEMENTS, LIVERIES};
+import {PROJECTS, DISCOVERIES, CONVERSATIONS, conversationAvailable, crewRoutine} from './valley.js';
+export {RELICS, GEAR, DIFFICULTIES, ACHIEVEMENTS, LIVERIES, PROJECTS, DISCOVERIES, CONVERSATIONS, conversationAvailable, crewRoutine};
 // Pure, deterministic game rules. No renderer, clock, network or Android dependencies.
 export const VERSION=1;
 export const ITEMS={wood:'Timber',scrap:'Salvage',coal:'Coal',food:'Food',planks:'Planks',parts:'Parts',medkit:'Medkits'};
@@ -62,10 +63,12 @@ export function makeWorld(){
   nodes.push({id:`n${nodes.length}`,type,name:{tree:'Snow pine',scrap:'Abandoned supplies',coal:'Coal outcrop',food:'Winter berries',wolf:'Frost wolf'}[type],x:px,z:pz,stock:type==='wolf'?1:3,seed:rng()});taken.add(key(px,pz));
  }
  for(const [id,type,x,z] of [['first-pine','tree',4,6],['near-pine','tree',-4,7],['near-scrap','scrap',7,2],['near-coal','coal',-7,2],['near-food','food',1,7]])nodes.push({id,type,name:{tree:'Snow pine',scrap:'Abandoned supplies',coal:'Coal outcrop',food:'Winter berries'}[type],x,z,stock:4,seed:.5});
+ // Append content so every original resource ID, seed and position stays stable.
+ nodes.push(...Object.entries(PROJECTS).map(([id,p])=>({id:'project-'+id,type:'project',project:id,name:p.name,x:p.x,z:p.z})),...Object.entries(DISCOVERIES).map(([id,d])=>({id:'discovery-'+id,type:'discovery',discovery:id,name:'Something beneath the snow',x:d.x,z:d.z})));
  return nodes;
 }
 export const WORLD=makeWorld();
-export function newGame(seed=78219){const s={version:VERSION,seed:seed>>>0,gear:{axe:0,prybar:0,coat:0,boots:0,lantern:0},relics:[],secretSeen:[],vault:false,achievements:[],contractSerial:0,contract:null,contractsCompleted:0,difficulty:'standard',livery:'classic',inventory:{wood:6,scrap:6,coal:3,food:5,planks:0,parts:0,medkit:0},buildings:{furnace:0,workshop:0,greenhouse:0,infirmary:0,engine:0},flags:{},stock:{},regrowth:{},completed:[],gathered:{},crafted:{},discovered:[],player:{x:0,z:3},energy:100,health:100,warmth:100,activeSeconds:0,restCount:0,harvest:0,companion:null,settings:{sound:true,music:true,quality:'balanced',zoom:24,stickSide:'left'},started:false};reveal(s);return s;}
+export function newGame(seed=78219){const s={version:VERSION,seed:seed>>>0,gear:{axe:0,prybar:0,coat:0,boots:0,lantern:0},projects:{garden:0,platform:0,signal:0},discoveries:[],discoverySeen:[],conversations:{},relics:[],secretSeen:[],vault:false,achievements:[],contractSerial:0,contract:null,contractsCompleted:0,difficulty:'standard',livery:'classic',inventory:{wood:6,scrap:6,coal:3,food:5,planks:0,parts:0,medkit:0},buildings:{furnace:0,workshop:0,greenhouse:0,infirmary:0,engine:0},flags:{},stock:{},regrowth:{},completed:[],gathered:{},crafted:{},discovered:[],player:{x:0,z:3},energy:100,health:100,warmth:100,activeSeconds:0,restCount:0,harvest:0,companion:null,settings:{sound:true,music:true,quality:'balanced',zoom:24},started:false};reveal(s);return s;}
 export const maxHealth=s=>100+s.buildings.infirmary*15;
 export const currentQuest=s=>QUESTS.find(q=>!s.completed.includes(q.id));
 export function progress(s,q){if(!q)return 1;if(q.kind==='gather')return s.gathered[q.key]||0;if(q.kind==='crafted')return s.crafted[q.key]||0;if(q.kind==='building')return s.buildings[q.key]||0;return s.flags[q.key]?1:0;}
@@ -74,9 +77,9 @@ function pay(s,c){for(const [k,v]of Object.entries(c))s.inventory[k]-=v;}
 function add(s,items){for(const [k,v]of Object.entries(items))s.inventory[k]=(s.inventory[k]||0)+v;}
 export function settleQuests(s){const done=[];for(const q of QUESTS){if(s.completed.includes(q.id))continue;if(progress(s,q)<(q.amount||1))break;s.completed.push(q.id);add(s,q.reward);done.push(q);}return done;}
 export const stock=(s,n)=>s.stock[n.id]??n.stock??1;
-export function reveal(s){const seen=new Set(s.discovered);const r=5+(s.companion==='ivo'?2:0)+(s.gear?.lantern||0);for(let z=-r;z<=r;z++)for(let x=-r;x<=r;x++)if(x*x+z*z<=r*r&&Math.abs(s.player.x+x)<=20&&s.player.z+z>=-20&&s.player.z+z<=19)seen.add(key(s.player.x+x,s.player.z+z));s.discovered=[...seen];for(const n of WORLD)if(n.type==='secret'&&Math.hypot(n.x-s.player.x,n.z-s.player.z)<=2+(s.gear.lantern>=2?1:0)&&!s.secretSeen.includes(n.id))s.secretSeen.push(n.id);}
+export function reveal(s){const seen=new Set(s.discovered);const r=5+(s.companion==='ivo'?2:0)+(s.gear?.lantern||0);for(let z=-r;z<=r;z++)for(let x=-r;x<=r;x++)if(x*x+z*z<=r*r&&Math.abs(s.player.x+x)<=20&&s.player.z+z>=-20&&s.player.z+z<=19)seen.add(key(s.player.x+x,s.player.z+z));s.discovered=[...seen];for(const n of WORLD)if(n.type==='secret'&&Math.hypot(n.x-s.player.x,n.z-s.player.z)<=2+(s.gear.lantern>=2?1:0)&&!s.secretSeen.includes(n.id))s.secretSeen.push(n.id);for(const [id,d]of Object.entries(DISCOVERIES))if(s.projects[d.project]===3&&Math.hypot(d.x-s.player.x,d.z-s.player.z)<=2&&!s.discoverySeen.includes(id))s.discoverySeen.push(id);}
 export const seen=(s,n)=>s.discovered.includes(key(n.x,n.z));
-export function walkable(s,x,z){if(Math.abs(x)>20||z< -20||z>19)return false;if(z===-11&&(!s.flags.bridge||Math.abs(x-2)>1))return false;if(z<-11&&!s.flags.bridge)return false;if(z>=-4&&z<=-3&&x>=-4&&x<=4)return false;return !WORLD.some(n=>n.x===x&&n.z===z&&n.type!=='wolf'&&n.id!=='bridge'&&stock(s,n)>0);}
+export function walkable(s,x,z){if(Math.abs(x)>20||z< -20||z>19)return false;if(z===-11&&(!s.flags.bridge||Math.abs(x-2)>1))return false;if(z<-11&&!s.flags.bridge)return false;if(z>=-4&&z<=-3&&x>=-4&&x<=4)return false;return !WORLD.some(n=>n.x===x&&n.z===z&&n.type!=='wolf'&&n.type!=='discovery'&&n.id!=='bridge'&&stock(s,n)>0);}
 export function pathTo(s,x,z,adjacent=false){
  const queue=[[s.player.x,s.player.z]],visited=new Map([[key(s.player.x,s.player.z),null]]);let end=null;
  for(let i=0;i<queue.length;i++){const [cx,cz]=queue[i];if((adjacent?Math.abs(cx-x)+Math.abs(cz-z)<=1:cx===x&&cz===z)){end=[cx,cz];break;}for(const [dx,dz]of [[1,0],[-1,0],[0,1],[0,-1]]){const nx=cx+dx,nz=cz+dz,k=key(nx,nz);if(!visited.has(k)&&walkable(s,nx,nz)){visited.set(k,[cx,cz]);queue.push([nx,nz]);}}}
@@ -85,6 +88,8 @@ export function pathTo(s,x,z,adjacent=false){
 export function move(s,x,z){if(!Number.isInteger(x)||!Number.isInteger(z)||Math.abs(s.player.x-x)+Math.abs(s.player.z-z)!==1||!walkable(s,x,z))return false;s.player={x,z};reveal(s);if(s.contract?.kind==='survey'&&Math.hypot(x-s.contract.x,z-s.contract.z)<=1.5)s.contract.visited=true;return true;}
 export function actionInfo(s,n){
  if(!n)return null;
+ if(n.type==='project')return projectInfo(s,n.project);
+ if(n.type==='discovery'){const d=DISCOVERIES[n.discovery],found=s.discoveries.includes(n.discovery);return{label:found?'Discovery kept':'Brush away the snow',detail:found?d.decoration:'A small trace of someone who lived here before. 3 energy.',cost:{},energy:3,done:found,reason:s.projects[d.project]!==3||!s.discoverySeen.includes(n.discovery)?'Finish the restoration and follow its clue.':''};}
  if(n.type==='secret'){if(n.id==='vault')return{label:s.vault?'Vault opened':'Open Ada’s vault',detail:s.vault?'The keeper’s gift lives on in your settlement.':s.relics.length<8?'Eight keepsakes hold the key.': 'A gift left for whoever came after.',cost:{},done:s.vault,reason:s.relics.length<8?'Find the eight keepsakes first.':'',energy:5};return{label:s.relics.includes(n.relic)?'Keepsake found':'Search the cairn',detail:s.relics.includes(n.relic)?RELICS[n.relic].text:'5 energy · something lies beneath the snow',cost:{},done:s.relics.includes(n.relic),energy:5};}
  if(n.type==='home')return {label:'Rest at home',detail:'Restore energy, warmth and health',cost:{}};
  if(n.type==='building')return {label:'Open settlement',detail:BUILDINGS[n.id].description,cost:{}};
@@ -103,6 +108,8 @@ export function interact(s,id){
  const info=actionInfo(s,n);if(info.done||info.reason)return{ok:false,message:info.detail};
  if(info.energy>s.energy)return{ok:false,message:'Low energy. Rest at the train for a free refill.'};
  if(!canPay(s,info.cost))return{ok:false,message:'Need '+costText(info.cost)};
+ if(n.type==='project'){pay(s,info.cost);s.projects[n.project]++;reveal(s);return{ok:true,message:`${n.name}: ${info.label} complete.`,restoration:n.project,finished:s.projects[n.project]===3};}
+ if(n.type==='discovery'){const d=DISCOVERIES[n.discovery];s.energy-=3;s.discoveries.push(n.discovery);add(s,d.reward);return{ok:true,message:'Found '+d.name,discovery:d};}
  if(n.type==='secret'){s.energy-=5;if(n.id==='vault'){s.vault=true;add(s,{parts:30,planks:30,coal:20});return{ok:true,message:'Ada’s last gift: supplies and Keeper’s gold livery.',secret:{name:'Her last gift',text:'You open the vault. Tools, fuel, and a gold paint tin wait inside. Ada never knew who would find this place. She left you a beginning.'}};}s.relics.push(n.relic);add(s,{parts:3,food:3});return{ok:true,message:'Found '+RELICS[n.relic].name,secret:RELICS[n.relic]};}
  if(n.type==='building'||n.type==='home')return{ok:false,message:'Use the settlement menu.'};
  if(n.type==='survivor'||n.type==='landmark'){pay(s,info.cost);s.flags[n.id]=true;return{ok:true,message:n.type==='survivor'?`${CREW[n.id].name} is safe at home!`:`${n.name} restored.`,quests:settleQuests(s)};}
@@ -110,6 +117,17 @@ export function interact(s,id){
  let loot;if(n.type==='wolf'){const damage=Math.round(18*(s.companion==='mira'?.7:1)*DIFFICULTIES[s.difficulty].damage);s.health-=damage;loot={food:4,scrap:3};}else{const item={tree:'wood',scrap:'scrap',coal:'coal',food:'food'}[n.type];const count=({tree:6,scrap:5,coal:4,food:4}[n.type])+s.buildings.workshop+(n.type==='tree'?s.gear.axe:['scrap','coal'].includes(n.type)?s.gear.prybar:0)+(n.type==='tree'&&s.companion==='oren'?1:0);loot={[item]:count};s.gathered[item]=(s.gathered[item]||0)+count;}
  add(s,loot);let message='+'+costText(loot);if(s.health<=0){returnHome(s);message+=' · The crew brought you home to recover.';}
  return{ok:true,message,loot,quests:settleQuests(s)};
+}
+export function projectInfo(s,id){
+ const p=PROJECTS[id],level=s.projects[id],stage=p.stages[level];
+ const reason=!s.flags[p.crew]?`Rescue ${CREW[p.crew].name} first.`:s.buildings[p.building]<1?`Requires ${BUILDINGS[p.building].name} level 1.`:'';
+ return{label:stage?.name||'Restoration complete',detail:stage?`Stage ${level+1} of 3 · ${reason||p.description}`:p.clue,cost:stage?.cost||{},done:!stage,reason:stage?reason:''};
+}
+export function converse(s,id,choice){
+ const c=CONVERSATIONS.find(c=>c.id===id);
+ if(!c||!conversationAvailable(s,c)||!Number.isInteger(choice)||!c.choices[choice])return{ok:false,message:'This conversation is not available yet.'};
+ // A conversation is a keepsake, never a currency or a repeatable reward.
+ s.conversations[id]=choice;return{ok:true,message:c.choices[choice][1],conversation:c,choice};
 }
 export function craft(s,id,count=1){const r=RECIPES[id];if(!r||!Number.isInteger(count)||count<1||count>50)return{ok:false,message:'Invalid recipe.'};const cost=Object.fromEntries(Object.entries(r.cost).map(([k,v])=>[k,v*count]));if(!canPay(s,cost))return{ok:false,message:'Need '+costText(cost)};pay(s,cost);s.inventory[id]+=r.yield*count;s.crafted[id]=(s.crafted[id]||0)+r.yield*count;return{ok:true,message:`Crafted ${r.yield*count} ${ITEMS[id]}.`,quests:settleQuests(s)};}
 export function upgrade(s,id){const b=BUILDINGS[id];if(!b)return{ok:false,message:'Unknown building.'};const level=s.buildings[id];if(level>=b.costs.length)return{ok:false,message:'Fully upgraded.'};if(id==='greenhouse'&&!s.flags.pump)return{ok:false,message:'Repair the water pump first.'};const cost=b.costs[level];if(!canPay(s,cost))return{ok:false,message:'Need '+costText(cost)};pay(s,cost);s.buildings[id]++;return{ok:true,message:`${b.name} upgraded to level ${level+1}.`,quests:settleQuests(s)};}
@@ -137,6 +155,10 @@ export function serialize(s){return JSON.stringify(s);}
 export function deserialize(text){
  if(typeof text!=='string'||text.length>500000)throw Error('Invalid save size.');const v=JSON.parse(text);if(!v||v.version!==VERSION)throw Error('Unsupported save version.');const s=newGame();
  function number(x,max=1000000){if(typeof x!=='number'||!Number.isFinite(x)||x<0||x>max)throw Error('Invalid save value.');return x;}
+ for(const id of Object.keys(PROJECTS))s.projects[id]=Math.floor(number(v.projects?.[id]??0,3));
+ s.discoverySeen=Object.keys(DISCOVERIES).filter(id=>s.projects[DISCOVERIES[id].project]===3&&Array.isArray(v.discoverySeen)&&v.discoverySeen.includes(id));
+ s.discoveries=s.discoverySeen.filter(id=>Array.isArray(v.discoveries)&&v.discoveries.includes(id));
+ for(const c of CONVERSATIONS)if(Number.isInteger(v.conversations?.[c.id])&&c.choices[v.conversations[c.id]])s.conversations[c.id]=v.conversations[c.id];
  s.seed=number(v.seed??78219,4294967295);
  for(const k of Object.keys(GEAR))s.gear[k]=Math.floor(number(v.gear?.[k]??0,3));
  s.relics=Array.isArray(v.relics)?[...new Set(v.relics.filter(n=>Number.isInteger(n)&&n>=0&&n<8))]:[];
@@ -154,6 +176,7 @@ export function deserialize(text){
  for(const kind of ['gathered','crafted'])for(const k of Object.keys(ITEMS))if(v[kind]?.[k]!==undefined)s[kind][k]=number(v[kind][k]);
  if(!Array.isArray(v.completed)||!Array.isArray(v.discovered)||v.discovered.length>4000)throw Error('Invalid progress.');
  s.completed=QUESTS.filter(q=>v.completed.includes(q.id)).map(q=>q.id);s.discovered=[...new Set(v.discovered.filter(k=>typeof k==='string'&&/^-?\d{1,2},-?\d{1,2}$/.test(k)))];
- s.companion=CREW[v.companion]&&s.flags[v.companion]?v.companion:null;s.settings={sound:v.settings?.sound!==false,music:v.settings?.music!==false,quality:v.settings?.quality==='low'?'low':'balanced',zoom:Number.isFinite(v.settings?.zoom)?Math.max(16,Math.min(34,v.settings.zoom)):24,stickSide:v.settings?.stickSide==='right'?'right':'left'};s.started=v.started===true;
- if(!walkable(s,s.player.x,s.player.z))s.player={x:0,z:3};reveal(s);return s;
+ s.companion=CREW[v.companion]&&s.flags[v.companion]?v.companion:null;s.settings={sound:v.settings?.sound!==false,music:v.settings?.music!==false,quality:v.settings?.quality==='low'?'low':'balanced',zoom:Number.isFinite(v.settings?.zoom)?Math.max(16,Math.min(34,v.settings.zoom)):24};s.started=v.started===true;
+ // A pre-update save may stand on a newly added project tile; it can walk out.
+ if(!walkable(s,s.player.x,s.player.z)&&!WORLD.some(n=>n.type==='project'&&n.x===s.player.x&&n.z===s.player.z))s.player={x:0,z:3};reveal(s);return s;
 }

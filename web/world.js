@@ -1,11 +1,12 @@
 import * as T from './vendor/three.module.js';
 import {ValleyArt} from './art.js';
+import {makeRestoration,makeDiscovery,syncRestoration} from './valley-art.js';
 import {workProfile} from './feel.js';
 import {WORLD,stock,key,LIVERIES} from './model.js';
 const C={snow:0xe4f2f5,snowShade:0xb4cedb,ice:0x65a9c0,fir:0x315d64,bark:0x715347,red:0xaf5148,roof:0x385964,wood:0xa77855,gold:0xffbc6d,metal:0x456273};
 export class WorldView{
  constructor(canvas,state,onTap){
-  this.canvas=canvas;this.state=state;this.onTap=onTap;this.focus=new T.Vector3(state.player.x,0,state.player.z);this.manual=false;this.zoom=state.settings.zoom||24;this.zoomTarget=this.zoom;this.viewport=null;this.recoils=new Map();this.objects=new Map();this.materials=new Map();this.effects=[];this.clock=0;
+  this.canvas=canvas;this.state=state;this.onTap=onTap;this.focus=new T.Vector3(state.player.x,0,state.player.z);this.manual=false;this.zoom=state.settings.zoom||24;this.zoomTarget=this.zoom;this.viewport=null;this.viewportTarget=null;this.treeFades=new Map();this.occlusionAge=1;this.occluders=new Set();this.recoils=new Map();this.objects=new Map();this.materials=new Map();this.effects=[];this.clock=0;
   this.renderer=new T.WebGLRenderer({canvas,antialias:true,alpha:false,powerPreference:'high-performance'});this.renderer.setPixelRatio(Math.min(devicePixelRatio,1.65));this.renderer.setClearColor(0xb8d3df);this.renderer.shadowMap.enabled=true;this.renderer.shadowMap.type=T.PCFSoftShadowMap;this.renderer.outputColorSpace=T.SRGBColorSpace;this.renderer.toneMapping=T.ACESFilmicToneMapping;this.renderer.toneMappingExposure=1.05;
   this.scene=new T.Scene();this.scene.fog=new T.FogExp2(0xb8d3df,.014);this.scene.add(new T.HemisphereLight(0xe9f8ff,0x728e9c,2.6));
   this.sun=new T.DirectionalLight(0xffe5be,3.1);this.sun.position.set(-12,28,12);this.sun.castShadow=true;this.sun.shadow.mapSize.set(1024,1024);Object.assign(this.sun.shadow.camera,{left:-24,right:24,top:24,bottom:-24,near:1,far:70});this.sun.shadow.bias=-.0005;this.scene.add(this.sun);
@@ -33,7 +34,7 @@ export class WorldView{
    g.traverse(o=>{o.userData.node=n;});this.scene.add(g);this.objects.set(n.id,g);}
   this.hero=this.person(0xe8a84e);this.scene.add(this.hero);this.hero.position.set(state.player.x,0,state.player.z);
   this.companion=this.person(0x648fbd);this.companion.scale.setScalar(.87);this.scene.add(this.companion);
-  this.residents={};for(const [id,color]of Object.entries({mira:0x9c6067,oren:0x74875e,ivo:0x638fba})){const person=this.person(color);person.scale.setScalar(.85);this.scene.add(person);this.residents[id]=person;}
+  this.residents={};for(const [id,color]of Object.entries({mira:0x9c6067,oren:0x74875e,ivo:0x638fba})){const person=this.person(color);person.scale.setScalar(.85);this.scene.add(person);this.residents[id]=person;person.traverse(o=>o.userData.node={id:'crew-'+id,type:'crew',crew:id});}
   const sprite=document.createElement('canvas');sprite.width=sprite.height=32;const ctx=sprite.getContext('2d'),gradient=ctx.createRadialGradient(16,16,1,16,16,16);gradient.addColorStop(0,'rgba(255,255,255,1)');gradient.addColorStop(.45,'rgba(255,255,255,.7)');gradient.addColorStop(1,'rgba(255,255,255,0)');ctx.fillStyle=gradient;ctx.fillRect(0,0,32,32);this.particleTexture=new T.CanvasTexture(sprite);
   this.steamPositions=new Float32Array(24*3);const steamGeo=new T.BufferGeometry();steamGeo.setAttribute('position',new T.BufferAttribute(this.steamPositions,3));this.steam=new T.Points(steamGeo,new T.PointsMaterial({color:0xf6fbfb,size:16,map:this.particleTexture,transparent:true,opacity:.32,depthWrite:false}));this.scene.add(this.steam);
   this.burstPositions=new Float32Array(28*3);const burstGeo=new T.BufferGeometry();burstGeo.setAttribute('position',new T.BufferAttribute(this.burstPositions,3));this.burst=new T.Points(burstGeo,new T.PointsMaterial({color:0xffe3ad,size:4,transparent:true,opacity:0,depthWrite:false}));this.burst.frustumCulled=false;this.scene.add(this.burst);this.burstLife=0;
@@ -74,7 +75,9 @@ export class WorldView{
  }
  tower(g,beacon=false){for(const x of [-.55,.55])for(const z of [-.55,.55])this.box(g,x,1.8,z,.13,3.6,.13,C.metal);for(let y=.6;y<3.4;y+=.8)this.box(g,0,y,0,1.2,.12,1.2,C.metal);this.box(g,0,3.5,0,1.5,.18,1.5,C.snow);if(beacon){this.cylinder(g,0,3.98,0,.4,.4,.7,C.gold);}else{const dish=this.mesh(new T.SphereGeometry(.7,12,6,0,Math.PI),0xcadfe6);dish.position.set(0,3.9,0);dish.rotation.z=.5;g.add(dish);}}
  makeNode(n){const g=new T.Group();
-  if(n.type==='tree')this.tree(g,.85+(n.seed||.5)*.35);
+  if(n.type==='project')makeRestoration(this,n,g);
+  else if(n.type==='discovery')makeDiscovery(this,n,g);
+  else if(n.type==='tree')this.tree(g,.85+(n.seed||.5)*.35);
   else if(n.type==='coal'){for(let i=0;i<3;i++){const rock=this.mesh(new T.DodecahedronGeometry(.45+i*.12,0),i%2?0x4b5e6b:0x657d87);rock.position.set((i-1)*.35,.3,Math.sin(i*4)*.25);rock.scale.y=.8;g.add(rock);}this.box(g,0,.65,0,.65,.08,.35,C.snow);}
   else if(n.type==='scrap'){this.box(g,0,.3,0,.9,.6,.72,C.wood);this.box(g,0,.62,0,1,.08,.8,C.snow);for(const x of [-.28,.28])this.box(g,x,.3,.37,.08,.6,.02,C.metal);const barrel=this.cylinder(g,.5,.35,-.32,.27,.27,.7,C.red);this.cylinder(g,.5,.71,-.32,.28,.28,.04,C.snow);}
   else if(n.type==='food'){for(let i=0;i<4;i++){const bush=this.mesh(new T.IcosahedronGeometry(.4,0),0x657f7c);bush.position.set(Math.sin(i*2)*.35,.25,Math.cos(i*2)*.35);g.add(bush);const berry=this.mesh(new T.IcosahedronGeometry(.1,0),0xc75e58);berry.position.set(bush.position.x,.56,bush.position.z);g.add(berry);}}
@@ -91,23 +94,55 @@ export class WorldView{
   else this.tower(g,n.id==='beacon');
   return g;
  }
- sync(force=false){const s=this.state,seen=new Set(s.discovered);for(const n of WORLD){const g=this.objects.get(n.id);g.visible=n.type==='home'||n.type==='building'||seen.has(key(n.x,n.z));if(n.type==='secret'){g.visible=s.secretSeen.includes(n.id);const found=n.id==='vault'?s.vault:s.relics.includes(n.relic);g.scale.y=found?.65:1;}if(n.stock){const depleted=stock(s,n)<=0;g.scale.y=depleted?.1:1;if(n.type==='wolf')g.visible=g.visible&&!depleted;}if(n.type==='building'){const level=s.buildings[n.id];g.scale.setScalar(level?1+level*.08:.85);if(g.userData.foundation){g.userData.foundation.visible=!level;g.userData.built.visible=!!level;}g.userData.upgrade.visible=!!level;}if(n.id==='home'){const paint=g.getObjectByName('livery');if(paint)paint.material=this.material(LIVERIES[s.livery].color);}}
+ sync(force=false){const s=this.state,seen=new Set(s.discovered);for(const n of WORLD){const g=this.objects.get(n.id);g.visible=n.type==='home'||n.type==='building'||seen.has(key(n.x,n.z));syncRestoration(s,n,g);if(n.type==='secret'){g.visible=s.secretSeen.includes(n.id);const found=n.id==='vault'?s.vault:s.relics.includes(n.relic);g.scale.y=found?.65:1;}if(n.stock){const depleted=stock(s,n)<=0;g.scale.y=depleted?.1:1;if(n.type==='wolf')g.visible=g.visible&&!depleted;}if(n.type==='building'){const level=s.buildings[n.id];g.scale.setScalar(level?1+level*.08:.85);if(g.userData.foundation){g.userData.foundation.visible=!level;g.userData.built.visible=!!level;}g.userData.upgrade.visible=!!level;}if(n.id==='home'){const paint=g.getObjectByName('livery');if(paint)paint.material=this.material(LIVERIES[s.livery].color);}}
   if(force||this.lastSeen!==s.discovered.length){const ctx=this.fogMask.getContext('2d');ctx.fillStyle='white';ctx.fillRect(0,0,328,320);ctx.fillStyle='black';for(let z=-20;z<=19;z++)for(let x=-20;x<=20;x++)if(seen.has(key(x,z))){ctx.beginPath();ctx.arc((x+20.5)*8,(z+20.5)*8,8.5,0,Math.PI*2);ctx.fill();}const soft=this.fogSoft.getContext('2d');soft.fillStyle='white';soft.fillRect(0,0,328,320);soft.filter='blur(5px)';soft.drawImage(this.fogMask,0,0);soft.filter='none';this.fogTexture.needsUpdate=true;this.lastSeen=s.discovered.length;}
-  this.art?.sync();this.companion.visible=!!s.companion;
+  this.art?.sync();this.companion.visible=!!s.companion;if(s.companion)this.companion.traverse(o=>o.userData.node={id:'crew-'+s.companion,type:'crew',crew:s.companion});
   for(const [id,person]of Object.entries(this.residents)){person.visible=!!s.flags[id]&&s.companion!==id;const remote=this.objects.get(id).getObjectByName('survivor');if(remote)remote.visible=!s.flags[id];}
  }
  impact(n,complete=false){this.burstOrigin={x:n.x,z:n.z};this.burstLife=complete?1:.75;const profile=workProfile(n.type);this.burst.material.color.setHex(profile.color);this.burst.material.size=n.type==='food'?5:n.type==='coal'?3:4;this.recoils.set(n.id,.18);}
  setPath(points=[]){const count=Math.min(120,points.length);for(let i=0;i<count;i++){this.routePositions[i*3]=points[i][0];this.routePositions[i*3+1]=.07;this.routePositions[i*3+2]=points[i][1];}this.routeDots.geometry.setDrawRange(0,count);this.routeDots.geometry.attributes.position.needsUpdate=true;}
- workVisibility(node){
-  const id=node?.type==='tree'?node.id:null;if(id===this.workTarget)return;
-  for(const item of this.fadedWorkMeshes||[]){item.mesh.material=item.original;item.mesh.castShadow=item.shadow;for(const material of item.copies)material.dispose();}
-  this.fadedWorkMeshes=[];this.workTarget=id;if(!id)return;
-  // Clone only the active tree's materials. Other instances retain their opacity.
-  this.objects.get(id).traverse(mesh=>{if(!mesh.isMesh)return;const source=Array.isArray(mesh.material)?mesh.material:[mesh.material];if(source.every(m=>!m.visible))return;const copies=source.map(m=>{const copy=m.clone();copy.onBeforeCompile=m.onBeforeCompile;copy.customProgramCacheKey=m.customProgramCacheKey;copy.transparent=true;copy.opacity=.45;copy.depthWrite=false;return copy;});this.fadedWorkMeshes.push({mesh,original:mesh.material,shadow:mesh.castShadow,copies});mesh.material=Array.isArray(mesh.material)?copies:copies[0];mesh.castShadow=false;});
+ updateTreeFades(dt,working){
+  this.workTarget=working?.type==='tree'?working.id:null;
+  this.occlusionAge+=dt;
+  if(this.occlusionAge>=.1){
+   this.occlusionAge=0;this.occluders.clear();this.scene.updateMatrixWorld(true);
+   const target=this.hero.position.clone(),direction=new T.Vector3(15,22,18).normalize(),right=new T.Vector3(18,0,-15).normalize();
+   const nearby=this.trees.filter(g=>g.visible&&stock(this.state,g.userData.node)>0&&g.position.distanceTo(target)<7);
+   const ray=new T.Raycaster();ray.far=12;
+   for(const [side,height]of [[0,1.05],[-.23,.65],[.23,.65]]){
+    const origin=target.clone().addScaledVector(right,side);origin.y+=height;origin.addScaledVector(direction,12);ray.set(origin,direction.clone().negate());
+    for(const hit of ray.intersectObjects(nearby,true)){
+     if(hit.object.name==='touch-target')continue;
+     const materials=Array.isArray(hit.object.material)?hit.object.material:[hit.object.material];
+     if(materials.every(m=>!m.visible))continue;
+     this.occluders.add(hit.object.userData.node.id);
+    }
+   }
+  }
+  const wanted=new Set(this.occluders);if(this.workTarget)wanted.add(this.workTarget);
+  for(const id of wanted){
+   let entry=this.treeFades.get(id);
+   if(!entry){
+    entry={alpha:1,lastHit:this.clock,meshes:[]};
+    // GLB instances share originals. Copies are local to faded trees and are
+    // disposed after recovery; no permanent material growth from exploring.
+    this.objects.get(id).traverse(mesh=>{if(!mesh.isMesh||mesh.name==='touch-target')return;const source=Array.isArray(mesh.material)?mesh.material:[mesh.material];if(source.every(m=>!m.visible))return;
+     const copies=source.map(m=>{const copy=m.clone();copy.onBeforeCompile=m.onBeforeCompile;copy.customProgramCacheKey=m.customProgramCacheKey;copy.transparent=true;copy.depthWrite=false;return copy;});
+     entry.meshes.push({mesh,original:mesh.material,shadow:mesh.castShadow,copies,opacity:source.map(m=>m.opacity)});mesh.material=Array.isArray(mesh.material)?copies:copies[0];mesh.castShadow=false;
+    });this.treeFades.set(id,entry);
+   }
+   entry.lastHit=this.clock;
+  }
+  for(const [id,entry]of this.treeFades){
+   const fading=wanted.has(id)||this.clock-entry.lastHit<.25,goal=fading?.24:1;
+   entry.alpha+=(goal-entry.alpha)*(1-Math.exp(-dt*(fading?12:7)));
+   for(const item of entry.meshes)item.copies.forEach((m,i)=>m.opacity=item.opacity[i]*entry.alpha);
+   if(!fading&&entry.alpha>.995){for(const item of entry.meshes){item.mesh.material=item.original;item.mesh.castShadow=item.shadow;item.copies.forEach(m=>m.dispose());}this.treeFades.delete(id);}
+  }
  }
  select(n){this.selected=n;this.ring.visible=!!n;if(n)this.ring.position.set(n.x,.07,n.z);}
  resize(){const w=this.canvas.clientWidth,h=this.canvas.clientHeight;this.renderer.setSize(w,h,false);this.updateProjection();}
- setViewport(bounds){this.viewport=bounds;this.updateProjection();}
+ setViewport(bounds){this.viewportTarget={...bounds};if(!this.viewport){this.viewport={...bounds};this.updateProjection();}}
  updateProjection(){const w=this.canvas.clientWidth,h=this.canvas.clientHeight,a=w/h,b=this.viewport,span=this.zoom*Math.min(1,h/700);const cx=b?(b.left+b.right)/2:w/2,cy=b?(b.top+b.bottom)/2:h/2;const sx=(.5-cx/w)*span*a,sy=(cy/h-.5)*span;this.camera.left=-span*a/2+sx;this.camera.right=span*a/2+sx;this.camera.top=span/2+sy;this.camera.bottom=-span/2+sy;this.camera.updateProjectionMatrix();}
  setZoom(value,immediate=false){this.zoomTarget=T.MathUtils.clamp(value,16,34);const changed=this.state.settings.zoom!==this.zoomTarget;this.state.settings.zoom=this.zoomTarget;if(immediate){this.zoom=this.zoomTarget;this.updateProjection();}this.onCameraChange?.(changed);}
  setQuality(low){this.lowQuality=low;this.renderer.setPixelRatio(low?1:Math.min(devicePixelRatio,1.65));this.renderer.shadowMap.enabled=!low;this.resize();}
@@ -125,7 +160,7 @@ export class WorldView{
   });
   this.canvas.addEventListener('pointerup',e=>{const p=pointers.get(e.pointerId);if(!p)return;tap=!p.drag&&!pinching?{x:e.clientX,y:e.clientY}:null;pointers.delete(e.pointerId);if(!pointers.size)pinching=false;});
   // Show interaction UI only after the browser has chosen this click's target.
-  this.canvas.addEventListener('click',()=>{if(!tap)return;const point=tap;tap=null;const p=this.groundAt(point.x,point.y);const hits=this.ray.intersectObjects([...this.objects.values()].filter(o=>o.visible),true);const candidates=hits.filter(h=>{if(!h.object.userData.node)return false;for(let o=h.object;o;o=o.parent)if(!o.visible)return false;return true;});const hit=candidates.find(h=>h.object.name!=='touch-target')||candidates[0];this.onTap(hit?.object.userData.node||null,p);});
+  this.canvas.addEventListener('click',()=>{if(!tap)return;const point=tap;tap=null;const p=this.groundAt(point.x,point.y);const hits=this.ray.intersectObjects([...this.objects.values(),...Object.values(this.residents),this.companion].filter(o=>o.visible),true);const candidates=hits.filter(h=>{if(!h.object.userData.node)return false;for(let o=h.object;o;o=o.parent)if(!o.visible)return false;return true;});const hit=candidates.find(h=>h.object.name!=='touch-target')||candidates[0];this.onTap(hit?.object.userData.node||null,p);});
   const release=e=>{pointers.delete(e.pointerId);tap=null;if(!pointers.size)pinching=false;};
   this.canvas.addEventListener('pointercancel',release);
   this.canvas.addEventListener('lostpointercapture',e=>{if(pointers.has(e.pointerId))release(e);});
@@ -186,11 +221,11 @@ export class WorldView{
  update(dt,moving,working){this.clock+=dt;const s=this.state;const target=new T.Vector3(s.player.x,0,s.player.z);if(moving)target.set(moving.x,0,moving.z);this.hero.position.copy(target);if(moving?.angle!==undefined)this.hero.rotation.y=moving.angle;
   const pace=moving?.walking?Math.sin(this.clock*14):Math.sin(this.clock*2)*.04;this.hero.position.y=moving?.walking?Math.abs(pace)*.07:0;for(const sign of [-1,1]){this.hero.getObjectByName('leg'+sign).rotation.x=pace*sign*.6;this.hero.getObjectByName('arm'+sign).rotation.x=working?(workProfile(working.node.type).tool?-.4+Math.cos((working.progress-.2)/.3*Math.PI*2)*1.2:Math.sin(working.progress*Math.PI*6)*.35-.65):pace*-sign*.4;}
   this.companion.position.lerp(target.clone().add(new T.Vector3(-.8,0,.7)),dt*3);this.companion.rotation.y=this.hero.rotation.y;
-  this.workVisibility(working?.node);const profile=working?workProfile(working.node.type):null;this.tool.visible=!!profile?.tool;for(const [id,tool]of Object.entries(this.tools))tool.visible=id===profile?.tool;
+  const profile=working?workProfile(working.node.type):null;this.tool.visible=!!profile?.tool;for(const [id,tool]of Object.entries(this.tools))tool.visible=id===profile?.tool;
   this.workRing.visible=!!working;if(working){this.workRing.position.set(working.node.x,.1,working.node.z);this.workRing.geometry.setDrawRange(0,Math.max(6,Math.floor(working.progress*60)*6));}this.art.update(dt,moving);
   if(this.burstLife>0){this.burstLife=Math.max(0,this.burstLife-dt*1.8);const p=1-this.burstLife;for(let i=0;i<28;i++){const a=i*2.4,r=p*(.5+(i%7)*.14);this.burstPositions[i*3]=this.burstOrigin.x+Math.cos(a)*r;this.burstPositions[i*3+1]=.4+Math.sin(p*Math.PI)*(.5+(i%4)*.2);this.burstPositions[i*3+2]=this.burstOrigin.z+Math.sin(a)*r;}this.burst.geometry.attributes.position.needsUpdate=true;this.burst.material.opacity=this.burstLife;}
-  if(!this.manual){const aim=target.clone();if(this.selected)aim.lerp(new T.Vector3(this.selected.x,0,this.selected.z),.65);const homeBias=this.selected?0:Math.max(0,1-Math.hypot(target.x,target.z-1)/10);aim.add(new T.Vector3(-1.2*homeBias,0,-.5-1.7*homeBias));this.focus.lerp(aim,1-Math.exp(-dt*4));}if(Math.abs(this.zoom-this.zoomTarget)>.005){this.zoom+=(this.zoomTarget-this.zoom)*(1-Math.exp(-dt*10));this.updateProjection();}this.positionCamera();
-  this.updateWeather(dt);this.updateFootprints(dt,moving);
+  if(!this.manual){const aim=target.clone();if(this.selected)aim.lerp(new T.Vector3(this.selected.x,0,this.selected.z),.65);const homeBias=this.selected?0:Math.max(0,1-Math.hypot(target.x,target.z-1)/10);aim.add(new T.Vector3(-1.2*homeBias,0,-.5-1.7*homeBias));this.focus.lerp(aim,1-Math.exp(-dt*4));}if(Math.abs(this.zoom-this.zoomTarget)>.005){this.zoom+=(this.zoomTarget-this.zoom)*(1-Math.exp(-dt*10));this.updateProjection();}if(this.viewport&&this.viewportTarget){let changed=false;for(const key of ['left','right','top','bottom']){const delta=this.viewportTarget[key]-this.viewport[key];if(Math.abs(delta)>.05){this.viewport[key]+=delta*(1-Math.exp(-dt*7));changed=true;}}if(changed)this.updateProjection();}this.positionCamera();
+  this.updateWeather(dt);this.updateTreeFades(dt,working?.node);this.updateFootprints(dt,moving);
   for(const [id,left]of this.recoils){const node=this.objects.get(id),remaining=Math.max(0,left-dt),kick=Math.sin(remaining/.18*Math.PI*3)*remaining*.22;if(node.userData.node.type==='tree')node.rotation.z+=kick;else node.rotation.z=kick;if(remaining)this.recoils.set(id,remaining);else this.recoils.delete(id);}
   if(this.destination.visible)this.destination.scale.setScalar(1+Math.sin(this.clock*5)*.12);
   const f=this.objects.get('furnace').getObjectByName('flame');f.scale.setScalar(1+Math.sin(this.clock*8)*.15);this.ring.scale.setScalar(1+Math.sin(this.clock*3)*.03);this.renderer.render(this.scene,this.camera);

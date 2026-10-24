@@ -6,9 +6,9 @@ An original offline Android survival adventure. The rails end in **Frosthollow**
 
 ![Emberline gameplay](docs/gameplay.png)
 
-## Unreleased camera, controls and gathering preview
+## Unreleased living valley preview
 
-The `feature/play-feel` branch contains the next source-only update. No new APK has been built or released for these changes. See [the preview notes](docs/PLAY-FEEL.md) for the changes, validation and proposed next work. The 0.2.0 download above remains the published Android build.
+The `feature/play-feel` branch contains the next source-only update. No new APK has been built or released for these changes. The joystick is removed in this preview. Tap-to-walk, drag/pinch camera controls, automatic foreground tree fading, three staged restorations with hidden discoveries, and crew routines and conversations are included. See [the current preview notes](docs/LIVING-VALLEY.md) for details and validation; [the earlier camera/gathering notes](docs/PLAY-FEEL.md) record the previous milestone. The 0.2.0 download above remains the published Android build.
 
 ## A game you earn by playing
 
@@ -36,7 +36,7 @@ The campaign ends with the beacon; the valley remains playable for contracts, se
 
 Requires Android 10 or newer and Android System WebView with WebGL2 support. There are no native ABI-specific libraries in the APK. A modern WebView is required; if rendering is unavailable, the app shows a message instead of overwriting progress. Update an existing installation with the same package and signing identity to keep saves. Uninstalling deletes app-private saves, so export a backup first.
 
-Tap snow to walk, or hold the bottom-left joystick (WASD or arrow keys in a browser); drag the world to pan. Tap an object and its action button to gather, rescue, or restore. Use Craft and Build for improvements, Crew for companions and crops, and Pack for food or medicine. Tap the quest card for Story, Contracts, Secrets, and Badges. Return & rest is always available, even without food. The compass recenters the camera; the plus/minus button changes zoom.
+In the published 0.2.0 APK, tap snow to walk, or hold the bottom-left joystick (WASD or arrow keys in a browser); drag the world to pan. Tap an object and its action button to gather, rescue, or restore. Use Craft and Build for improvements, Crew for companions and crops, and Pack for food or medicine. Tap the quest card for Story, Contracts, Secrets, and Badges. Return & rest is always available, even without food. The compass recenters the camera; the plus/minus button changes zoom.
 
 ## What changed in 0.2.0
 
@@ -76,8 +76,8 @@ node tests/touch-flow.mjs
 node tests/replay-ui.mjs
 node tests/startup.mjs
 node tests/art-audio.mjs
-node tests/joystick.mjs
 node tests/play-feel.mjs
+node tests/living-valley.mjs
 python tests/package-apk.test.py
 ```
 
@@ -103,7 +103,7 @@ $env:EMBERLINE_STORE_PASS = $null
 
 The output is `build/Emberline-0.2.0.apk`. The script verifies raw ZIP paths, CRCs, the APK signature, and alignment. Nested asset paths must use forward slashes; Python on Windows can conceal raw backslashes in ZipInfo.filename, so validation uses orig_filename. A fresh staging directory prevents stale class files entering subsequent builds. Private release keys and passwords are never included in the source archive.
 
-Game rules: `web/model.js`. Content: `web/content.js`. Rendering: `web/world.js`; models and living scenery: `web/art.js`. Touch/UI/save orchestration: `web/main.js`. Original procedural sound: `web/audio.js`. Android wrapper: `android/src/com/seanshaffer/emberline/MainActivity.java`.
+Game rules: `web/model.js`. Content: `web/content.js`; restoration stories, conversations and active-time routines: `web/valley.js`. Rendering: `web/world.js`; models and living scenery: `web/art.js`; original restoration meshes: `web/valley-art.js`. Touch/UI/save orchestration: `web/main.js`. Original procedural sound: `web/audio.js`. Android wrapper: `android/src/com/seanshaffer/emberline/MainActivity.java`.
 
 See [validation](docs/VALIDATION.md) and [third-party notices](THIRD-PARTY-NOTICES.md). Original project code is MIT licensed; Kenney models/textures are CC0. Asset provenance and applicable notices are retained.
 

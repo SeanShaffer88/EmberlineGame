@@ -25,10 +25,9 @@ try{
  await touch('touchEnd',[[1,110,440]]);await touch('touchEnd',[]);await page.waitForTimeout(400);
  const pinched=await snapshot();assert.ok(pinched.zoom<start.zoom-3&&pinched.zoom>=16);assert.deepEqual(pinched.player,start.player);assert.ok(await page.locator('#action-card').isHidden());assert.ok(await page.locator('#activity').isHidden());assert.equal(await page.locator('#center').getAttribute('aria-pressed'),'false');
  await page.locator('#center').click();assert.equal((await snapshot()).manual,false);
- await page.locator('#menu').click();await page.locator('#stick-side').click();assert.equal((await snapshot()).settings.stickSide,'right');await page.locator('#close-sheet').click();
- const stick=await page.locator('#stick').boundingBox();assert.ok(stick.x>250);assert.ok(!overlaps(stick,await page.locator('#home-button').boundingBox()));
- const zoom=(await snapshot()).target;await page.reload();await page.locator('#menu').waitFor();assert.equal((await snapshot()).settings.zoom,zoom);assert.equal((await snapshot()).settings.stickSide,'right');
- checks.push('Pinch zoom never walks or selects, compass resumes follow, zoom and joystick side survive reload');
+ assert.equal(await page.locator('#stick').count(),0);
+ const zoom=(await snapshot()).target;await page.reload();await page.locator('#menu').waitFor();assert.equal((await snapshot()).settings.zoom,zoom);
+ checks.push('Pinch never walks or selects, compass resumes follow, zoom survives reload and no joystick exists');
  // Follow a far-away explorer fixture to guard against position-dependent camera drift.
  await page.evaluate(async()=>{const {state:s,view:v}=await import('./main.js');s.player={x:13,z:8};v.center();});await page.waitForTimeout(1200);
  const far=await snapshot();assert.ok(far.hero.x>70&&far.hero.x<342&&far.hero.y>far.bounds.top&&far.hero.y<far.bounds.bottom,'far explorer remains in clear viewing area');
@@ -53,7 +52,7 @@ try{
   await page.waitForFunction(({item,amount})=>window.feelGame.state.gathered[item]===amount,{item,amount});assert.equal((await snapshot()).stock[id],3);assert.deepEqual(await page.evaluate(type=>window.strikeKinds.filter(k=>k===type),n.type),[n.type,n.type,n.type]);await page.locator('#perform-action').waitFor();await page.locator('#dismiss-action').click();
  }
  checks.push('Coal uses a pick, salvage a prybar and berries bare hands; all have timed feedback and one correct reward');
- for(const size of [{width:360,height:740},{width:915,height:412}]){await page.setViewportSize(size);for(const side of ['left','right']){if((await snapshot()).settings.stickSide!==side){await page.locator('#menu').click();await page.locator('#stick-side').click();await page.locator('#close-sheet').click();}await page.waitForTimeout(500);const a=await page.locator('#stick').boundingBox();assert.ok(!overlaps(a,await page.locator('nav').boundingBox()),`${side} joystick/nav`);assert.ok(!overlaps(a,await page.locator('#home-button').boundingBox()),`${side} joystick/rest`);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);await page.screenshot({path:`build/screenshots/play-feel-${size.width}x${size.height}-${side}.png`});}}
- checks.push('Small portrait and landscape controls stay separate on both handed layouts without horizontal overflow');
+ for(const size of [{width:360,height:740},{width:915,height:412}]){await page.setViewportSize(size);await page.waitForTimeout(900);assert.equal(await page.locator('#stick').count(),0);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);assert.ok(!overlaps(await page.locator('nav').boundingBox(),await page.locator('#home-button').boundingBox()));await page.screenshot({path:`build/screenshots/play-feel-${size.width}x${size.height}.png`});}
+ checks.push('Small portrait and landscape layouts remain usable without horizontal overflow');
  assert.deepEqual(errors,[]);assert.deepEqual(external,[]);writeFileSync('build/play-feel-results.json',JSON.stringify({checks,errors,external},null,2));console.log(JSON.stringify({checks,errors,external},null,2));
 }finally{await browser.close();}

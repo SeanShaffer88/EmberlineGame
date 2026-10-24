@@ -1,6 +1,6 @@
 import * as T from './vendor/three.module.js';
 import {GLTFLoader} from './vendor/loaders/GLTFLoader.js';
-import {WORLD, key, LIVERIES} from './model.js';
+import {WORLD, key, LIVERIES, crewRoutine} from './model.js';
 
 const FILES={
  engine:'train-kit/train-locomotive-b',classic:'train-kit/train-locomotive-a',coach:'train-kit/train-locomotive-passenger-a',wagon:'train-kit/train-carriage-lumber',
@@ -144,14 +144,14 @@ export class ValleyArt {
   this.fireGlow.intensity=(2+s.buildings.furnace*.5)*(1+Math.sin(t*9)*.09);this.fireGlow.visible=!v.lowQuality;
   this.embers.children.forEach((e,i)=>{const p=(t*.4+i/10)%1;e.position.set(-3+Math.sin(i*4+t)*p*.3,p*1.5+.55,1+Math.cos(i*3)*p*.25);e.scale.setScalar(1-p);});
   if(this.flags)this.flags.children.forEach((f,i)=>f.rotation.x=Math.sin(t*3+i)*(.12+v.weatherBlend*.25));
-  for(const [i,id]of ['mira','oren','ivo'].entries()){
-   const p=v.residents[id],a=[[-4,2],[2,2],[2,-1]][i],b=[[-5,3],[-.5,-1],[5,2]][i],phase=(t*.045+i/3)%1;
-   const moving=phase<.35||(phase>.5&&phase<.85),u=phase<.5?Math.min(1,phase/.35):Math.max(0,1-(phase-.5)/.35);
-   p.position.set(a[0]+(b[0]-a[0])*u,moving?Math.abs(Math.sin(t*9))*.04:Math.sin(t*2+i)*.012,a[1]+(b[1]-a[1])*u);
-   p.rotation.y=Math.atan2(b[0]-a[0],b[1]-a[1])+(phase>.5?Math.PI:0);
-   const carry=phase>.5&&phase<.85;p.getObjectByName('carrying').visible=carry;
-   for(const sign of [-1,1]){p.getObjectByName('leg'+sign).rotation.x=moving?Math.sin(t*9)*sign*.4:0;p.getObjectByName('arm'+sign).rotation.x=carry?-1:moving?-Math.sin(t*9)*sign*.3:-.6+Math.sin(t*(id==='oren'?7:2))*.25;}
+  for(const id of ['mira','oren','ivo']){
+   const p=v.residents[id],routine=crewRoutine(s,id),rt=s.activeSeconds;
+   p.userData.routine=routine;p.position.set(routine.x,routine.walking?Math.abs(Math.sin(rt*9))*.04:0,routine.z);p.rotation.y=routine.angle;
+   p.getObjectByName('carrying').visible=routine.walking||routine.pose==='tend';
+   for(const sign of [-1,1]){p.getObjectByName('leg'+sign).rotation.x=routine.walking?Math.sin(rt*9)*sign*.4:0;p.getObjectByName('arm'+sign).rotation.x=routine.walking?-.9:routine.pose==='hammer'?-.7+Math.sin(rt*7)*.55:routine.pose==='survey'?-.6:routine.pose==='rest'?-.3:-.8+Math.sin(rt*2)*.18;}
   }
+  const pennant=v.objects.get('project-signal').getObjectByName('valley-pennant');pennant.rotation.y=Math.sin(t*2.2)*(.16+v.weatherBlend*.2);
+  for(const n of WORLD.filter(n=>n.type==='discovery')){const glint=v.objects.get(n.id).getObjectByName('discovery-glint');glint.rotation.y=t*.9;glint.position.y=.3+Math.sin(t*2+n.x)*.035;}
   for(const sign of [-1,1]){v.companion.getObjectByName('leg'+sign).rotation.x=motion?.walking?Math.sin(t*13)*sign*.5:0;v.companion.getObjectByName('arm'+sign).rotation.x=motion?.walking?-Math.sin(t*13)*sign*.3:0;}
   const hp=(t*.12)%1;this.hare.position.set(-6+Math.sin(t*.23)*.65,Math.max(0,Math.sin(hp*Math.PI*8))*.12,8+Math.cos(t*.23)*.6);this.hare.rotation.y=Math.atan2(Math.cos(t*.23),-Math.sin(t*.23));
   this.birds.visible=!v.lowQuality&&v.weatherBlend<.6;this.birds.position.set(Math.sin(t*.06)*10,5.5+Math.sin(t*.2)*.2,-6+Math.cos(t*.06)*5);this.birds.rotation.y=-t*.06;

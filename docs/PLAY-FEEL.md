@@ -1,5 +1,7 @@
 # Camera, controls and gathering preview
 
+Historical milestone at `fd16445`. The subsequent [living valley preview](LIVING-VALLEY.md) removes the joystick, updates camera framing and completes the first three follow-up ideas below. Use its current test commands; joystick-specific commands in this historical record apply to that earlier commit.
+
 Unreleased source update, 2026-10-23. **No APK build or new Android release.** The published 0.2.0 APK is unchanged. This remains one permanent valley with local saves, bundled assets and no purchases or runtime services.
 
 ## Changes
