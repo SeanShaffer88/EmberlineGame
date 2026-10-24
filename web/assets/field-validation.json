@@ -1,0 +1,632 @@
+{
+  "validator": "2.0.0-dev.3.10",
+  "models": 10,
+  "errors": 0,
+  "warnings": 0,
+  "reports": [
+    {
+      "file": "models/food-kit/pot-stew.glb",
+      "uri": "models/food-kit/pot-stew.glb",
+      "mimeType": "model/gltf-binary",
+      "validatorVersion": "2.0.0-dev.3.10",
+      "issues": {
+        "numErrors": 0,
+        "numWarnings": 0,
+        "numInfos": 2,
+        "numHints": 0,
+        "messages": [
+          {
+            "code": "URI_GLB",
+            "message": "URI is used in GLB container.",
+            "severity": 2,
+            "pointer": "/images/0/uri"
+          },
+          {
+            "code": "UNUSED_MESH_TANGENT",
+            "message": "Tangents are not used because the material has no normal texture.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/0/attributes/TANGENT"
+          }
+        ],
+        "truncated": false
+      },
+      "info": {
+        "version": "2.0",
+        "generator": "UnityGLTF",
+        "extensionsUsed": [
+          "KHR_texture_transform"
+        ],
+        "resources": [
+          {
+            "pointer": "/buffers/0",
+            "mimeType": "application/gltf-buffer",
+            "storage": "glb",
+            "byteLength": 27756
+          },
+          {
+            "pointer": "/images/0",
+            "mimeType": "image/png",
+            "storage": "external",
+            "uri": "Textures/colormap.png",
+            "image": {
+              "width": 512,
+              "height": 512,
+              "format": "rgb",
+              "primaries": "srgb",
+              "transfer": "srgb",
+              "bits": 8
+            }
+          }
+        ],
+        "animationCount": 0,
+        "materialCount": 1,
+        "hasMorphTargets": false,
+        "hasSkins": false,
+        "hasTextures": true,
+        "hasDefaultScene": true,
+        "drawCallCount": 1,
+        "totalVertexCount": 532,
+        "totalTriangleCount": 370,
+        "maxUVs": 1,
+        "maxInfluences": 0,
+        "maxAttributes": 4
+      }
+    },
+    {
+      "file": "models/food-kit/bowl-soup.glb",
+      "uri": "models/food-kit/bowl-soup.glb",
+      "mimeType": "model/gltf-binary",
+      "validatorVersion": "2.0.0-dev.3.10",
+      "issues": {
+        "numErrors": 0,
+        "numWarnings": 0,
+        "numInfos": 2,
+        "numHints": 0,
+        "messages": [
+          {
+            "code": "URI_GLB",
+            "message": "URI is used in GLB container.",
+            "severity": 2,
+            "pointer": "/images/0/uri"
+          },
+          {
+            "code": "UNUSED_MESH_TANGENT",
+            "message": "Tangents are not used because the material has no normal texture.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/0/attributes/TANGENT"
+          }
+        ],
+        "truncated": false
+      },
+      "info": {
+        "version": "2.0",
+        "generator": "UnityGLTF",
+        "extensionsUsed": [
+          "KHR_texture_transform"
+        ],
+        "resources": [
+          {
+            "pointer": "/buffers/0",
+            "mimeType": "application/gltf-buffer",
+            "storage": "glb",
+            "byteLength": 9420
+          },
+          {
+            "pointer": "/images/0",
+            "mimeType": "image/png",
+            "storage": "external",
+            "uri": "Textures/colormap.png",
+            "image": {
+              "width": 512,
+              "height": 512,
+              "format": "rgb",
+              "primaries": "srgb",
+              "transfer": "srgb",
+              "bits": 8
+            }
+          }
+        ],
+        "animationCount": 0,
+        "materialCount": 1,
+        "hasMorphTargets": false,
+        "hasSkins": false,
+        "hasTextures": true,
+        "hasDefaultScene": true,
+        "drawCallCount": 1,
+        "totalVertexCount": 188,
+        "totalTriangleCount": 132,
+        "maxUVs": 1,
+        "maxInfluences": 0,
+        "maxAttributes": 4
+      }
+    },
+    {
+      "file": "models/food-kit/cup-tea.glb",
+      "uri": "models/food-kit/cup-tea.glb",
+      "mimeType": "model/gltf-binary",
+      "validatorVersion": "2.0.0-dev.3.10",
+      "issues": {
+        "numErrors": 0,
+        "numWarnings": 0,
+        "numInfos": 2,
+        "numHints": 0,
+        "messages": [
+          {
+            "code": "URI_GLB",
+            "message": "URI is used in GLB container.",
+            "severity": 2,
+            "pointer": "/images/0/uri"
+          },
+          {
+            "code": "UNUSED_MESH_TANGENT",
+            "message": "Tangents are not used because the material has no normal texture.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/0/attributes/TANGENT"
+          }
+        ],
+        "truncated": false
+      },
+      "info": {
+        "version": "2.0",
+        "generator": "UnityGLTF",
+        "extensionsUsed": [
+          "KHR_texture_transform"
+        ],
+        "resources": [
+          {
+            "pointer": "/buffers/0",
+            "mimeType": "application/gltf-buffer",
+            "storage": "glb",
+            "byteLength": 8016
+          },
+          {
+            "pointer": "/images/0",
+            "mimeType": "image/png",
+            "storage": "external",
+            "uri": "Textures/colormap.png",
+            "image": {
+              "width": 512,
+              "height": 512,
+              "format": "rgb",
+              "primaries": "srgb",
+              "transfer": "srgb",
+              "bits": 8
+            }
+          }
+        ],
+        "animationCount": 0,
+        "materialCount": 1,
+        "hasMorphTargets": false,
+        "hasSkins": false,
+        "hasTextures": true,
+        "hasDefaultScene": true,
+        "drawCallCount": 1,
+        "totalVertexCount": 158,
+        "totalTriangleCount": 144,
+        "maxUVs": 1,
+        "maxInfluences": 0,
+        "maxAttributes": 4
+      }
+    },
+    {
+      "file": "models/food-kit/bread.glb",
+      "uri": "models/food-kit/bread.glb",
+      "mimeType": "model/gltf-binary",
+      "validatorVersion": "2.0.0-dev.3.10",
+      "issues": {
+        "numErrors": 0,
+        "numWarnings": 0,
+        "numInfos": 2,
+        "numHints": 0,
+        "messages": [
+          {
+            "code": "URI_GLB",
+            "message": "URI is used in GLB container.",
+            "severity": 2,
+            "pointer": "/images/0/uri"
+          },
+          {
+            "code": "UNUSED_MESH_TANGENT",
+            "message": "Tangents are not used because the material has no normal texture.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/0/attributes/TANGENT"
+          }
+        ],
+        "truncated": false
+      },
+      "info": {
+        "version": "2.0",
+        "generator": "UnityGLTF",
+        "extensionsUsed": [
+          "KHR_texture_transform"
+        ],
+        "resources": [
+          {
+            "pointer": "/buffers/0",
+            "mimeType": "application/gltf-buffer",
+            "storage": "glb",
+            "byteLength": 7740
+          },
+          {
+            "pointer": "/images/0",
+            "mimeType": "image/png",
+            "storage": "external",
+            "uri": "Textures/colormap.png",
+            "image": {
+              "width": 512,
+              "height": 512,
+              "format": "rgb",
+              "primaries": "srgb",
+              "transfer": "srgb",
+              "bits": 8
+            }
+          }
+        ],
+        "animationCount": 0,
+        "materialCount": 1,
+        "hasMorphTargets": false,
+        "hasSkins": false,
+        "hasTextures": true,
+        "hasDefaultScene": true,
+        "drawCallCount": 1,
+        "totalVertexCount": 154,
+        "totalTriangleCount": 116,
+        "maxUVs": 1,
+        "maxInfluences": 0,
+        "maxAttributes": 4
+      }
+    },
+    {
+      "file": "models/food-kit/fish.glb",
+      "uri": "models/food-kit/fish.glb",
+      "mimeType": "model/gltf-binary",
+      "validatorVersion": "2.0.0-dev.3.10",
+      "issues": {
+        "numErrors": 0,
+        "numWarnings": 0,
+        "numInfos": 2,
+        "numHints": 0,
+        "messages": [
+          {
+            "code": "URI_GLB",
+            "message": "URI is used in GLB container.",
+            "severity": 2,
+            "pointer": "/images/0/uri"
+          },
+          {
+            "code": "UNUSED_MESH_TANGENT",
+            "message": "Tangents are not used because the material has no normal texture.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/0/attributes/TANGENT"
+          }
+        ],
+        "truncated": false
+      },
+      "info": {
+        "version": "2.0",
+        "generator": "UnityGLTF",
+        "extensionsUsed": [
+          "KHR_texture_transform"
+        ],
+        "resources": [
+          {
+            "pointer": "/buffers/0",
+            "mimeType": "application/gltf-buffer",
+            "storage": "glb",
+            "byteLength": 29864
+          },
+          {
+            "pointer": "/images/0",
+            "mimeType": "image/png",
+            "storage": "external",
+            "uri": "Textures/colormap.png",
+            "image": {
+              "width": 512,
+              "height": 512,
+              "format": "rgb",
+              "primaries": "srgb",
+              "transfer": "srgb",
+              "bits": 8
+            }
+          }
+        ],
+        "animationCount": 0,
+        "materialCount": 1,
+        "hasMorphTargets": false,
+        "hasSkins": false,
+        "hasTextures": true,
+        "hasDefaultScene": true,
+        "drawCallCount": 1,
+        "totalVertexCount": 593,
+        "totalTriangleCount": 233,
+        "maxUVs": 1,
+        "maxInfluences": 0,
+        "maxAttributes": 4
+      }
+    },
+    {
+      "file": "models/food-kit/mug.glb",
+      "uri": "models/food-kit/mug.glb",
+      "mimeType": "model/gltf-binary",
+      "validatorVersion": "2.0.0-dev.3.10",
+      "issues": {
+        "numErrors": 0,
+        "numWarnings": 0,
+        "numInfos": 2,
+        "numHints": 0,
+        "messages": [
+          {
+            "code": "URI_GLB",
+            "message": "URI is used in GLB container.",
+            "severity": 2,
+            "pointer": "/images/0/uri"
+          },
+          {
+            "code": "UNUSED_MESH_TANGENT",
+            "message": "Tangents are not used because the material has no normal texture.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/0/attributes/TANGENT"
+          }
+        ],
+        "truncated": false
+      },
+      "info": {
+        "version": "2.0",
+        "generator": "UnityGLTF",
+        "extensionsUsed": [
+          "KHR_texture_transform"
+        ],
+        "resources": [
+          {
+            "pointer": "/buffers/0",
+            "mimeType": "application/gltf-buffer",
+            "storage": "glb",
+            "byteLength": 18480
+          },
+          {
+            "pointer": "/images/0",
+            "mimeType": "image/png",
+            "storage": "external",
+            "uri": "Textures/colormap.png",
+            "image": {
+              "width": 512,
+              "height": 512,
+              "format": "rgb",
+              "primaries": "srgb",
+              "transfer": "srgb",
+              "bits": 8
+            }
+          }
+        ],
+        "animationCount": 0,
+        "materialCount": 1,
+        "hasMorphTargets": false,
+        "hasSkins": false,
+        "hasTextures": true,
+        "hasDefaultScene": true,
+        "drawCallCount": 1,
+        "totalVertexCount": 356,
+        "totalTriangleCount": 232,
+        "maxUVs": 1,
+        "maxInfluences": 0,
+        "maxAttributes": 4
+      }
+    },
+    {
+      "file": "models/nature-kit/flower_purpleA.glb",
+      "uri": "models/nature-kit/flower_purpleA.glb",
+      "mimeType": "model/gltf-binary",
+      "validatorVersion": "2.0.0-dev.3.10",
+      "issues": {
+        "numErrors": 0,
+        "numWarnings": 0,
+        "numInfos": 2,
+        "numHints": 0,
+        "messages": [
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/0/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/1/attributes/TEXCOORD_0"
+          }
+        ],
+        "truncated": false
+      },
+      "info": {
+        "version": "2.0",
+        "generator": "UniGLTF-1.27",
+        "extensionsUsed": [
+          "KHR_materials_unlit"
+        ],
+        "resources": [
+          {
+            "pointer": "/buffers/0",
+            "mimeType": "application/gltf-buffer",
+            "storage": "glb",
+            "byteLength": 5200
+          }
+        ],
+        "animationCount": 0,
+        "materialCount": 2,
+        "hasMorphTargets": false,
+        "hasSkins": false,
+        "hasTextures": false,
+        "hasDefaultScene": true,
+        "drawCallCount": 2,
+        "totalVertexCount": 268,
+        "totalTriangleCount": 76,
+        "maxUVs": 1,
+        "maxInfluences": 0,
+        "maxAttributes": 3
+      }
+    },
+    {
+      "file": "models/nature-kit/mushroom_tanGroup.glb",
+      "uri": "models/nature-kit/mushroom_tanGroup.glb",
+      "mimeType": "model/gltf-binary",
+      "validatorVersion": "2.0.0-dev.3.10",
+      "issues": {
+        "numErrors": 0,
+        "numWarnings": 0,
+        "numInfos": 2,
+        "numHints": 0,
+        "messages": [
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/0/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/1/attributes/TEXCOORD_0"
+          }
+        ],
+        "truncated": false
+      },
+      "info": {
+        "version": "2.0",
+        "generator": "UniGLTF-1.27",
+        "extensionsUsed": [
+          "KHR_materials_unlit"
+        ],
+        "resources": [
+          {
+            "pointer": "/buffers/0",
+            "mimeType": "application/gltf-buffer",
+            "storage": "glb",
+            "byteLength": 13056
+          }
+        ],
+        "animationCount": 0,
+        "materialCount": 2,
+        "hasMorphTargets": false,
+        "hasSkins": false,
+        "hasTextures": false,
+        "hasDefaultScene": true,
+        "drawCallCount": 2,
+        "totalVertexCount": 708,
+        "totalTriangleCount": 144,
+        "maxUVs": 1,
+        "maxInfluences": 0,
+        "maxAttributes": 3
+      }
+    },
+    {
+      "file": "models/nature-kit/grass_leafs.glb",
+      "uri": "models/nature-kit/grass_leafs.glb",
+      "mimeType": "model/gltf-binary",
+      "validatorVersion": "2.0.0-dev.3.10",
+      "issues": {
+        "numErrors": 0,
+        "numWarnings": 0,
+        "numInfos": 1,
+        "numHints": 0,
+        "messages": [
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/0/attributes/TEXCOORD_0"
+          }
+        ],
+        "truncated": false
+      },
+      "info": {
+        "version": "2.0",
+        "generator": "UniGLTF-1.27",
+        "extensionsUsed": [
+          "KHR_materials_unlit"
+        ],
+        "resources": [
+          {
+            "pointer": "/buffers/0",
+            "mimeType": "application/gltf-buffer",
+            "storage": "glb",
+            "byteLength": 3120
+          }
+        ],
+        "animationCount": 0,
+        "materialCount": 1,
+        "hasMorphTargets": false,
+        "hasSkins": false,
+        "hasTextures": false,
+        "hasDefaultScene": true,
+        "drawCallCount": 1,
+        "totalVertexCount": 84,
+        "totalTriangleCount": 36,
+        "maxUVs": 1,
+        "maxInfluences": 0,
+        "maxAttributes": 3
+      }
+    },
+    {
+      "file": "models/nature-kit/sign.glb",
+      "uri": "models/nature-kit/sign.glb",
+      "mimeType": "model/gltf-binary",
+      "validatorVersion": "2.0.0-dev.3.10",
+      "issues": {
+        "numErrors": 0,
+        "numWarnings": 0,
+        "numInfos": 3,
+        "numHints": 0,
+        "messages": [
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/0/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/1/attributes/TEXCOORD_0"
+          },
+          {
+            "code": "UNUSED_OBJECT",
+            "message": "This object may be unused.",
+            "severity": 2,
+            "pointer": "/meshes/0/primitives/2/attributes/TEXCOORD_0"
+          }
+        ],
+        "truncated": false
+      },
+      "info": {
+        "version": "2.0",
+        "generator": "UniGLTF-1.27",
+        "extensionsUsed": [
+          "KHR_materials_unlit"
+        ],
+        "resources": [
+          {
+            "pointer": "/buffers/0",
+            "mimeType": "application/gltf-buffer",
+            "storage": "glb",
+            "byteLength": 2768
+          }
+        ],
+        "animationCount": 0,
+        "materialCount": 3,
+        "hasMorphTargets": false,
+        "hasSkins": false,
+        "hasTextures": false,
+        "hasDefaultScene": true,
+        "drawCallCount": 3,
+        "totalVertexCount": 210,
+        "totalTriangleCount": 44,
+        "maxUVs": 1,
+        "maxInfluences": 0,
+        "maxAttributes": 3
+      }
+    }
+  ]
+}

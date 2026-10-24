@@ -3,6 +3,7 @@ import {GLTFLoader} from './vendor/loaders/GLTFLoader.js';
 import {WORLD, key, LIVERIES, crewRoutine} from './model.js';
 
 const FILES={
+ stewPot:'food-kit/pot-stew',soupBowl:'food-kit/bowl-soup',teaCup:'food-kit/cup-tea',breadLoaf:'food-kit/bread',caughtFish:'food-kit/fish',campMug:'food-kit/mug',violet:'nature-kit/flower_purpleA',mushrooms:'nature-kit/mushroom_tanGroup',fern:'nature-kit/grass_leafs',trailSign:'nature-kit/sign',
  engine:'train-kit/train-locomotive-b',classic:'train-kit/train-locomotive-a',coach:'train-kit/train-locomotive-passenger-a',wagon:'train-kit/train-carriage-lumber',
  pineA:'nature-kit/tree_pineDefaultA',pineB:'nature-kit/tree_pineDefaultB',pineSmall:'nature-kit/tree_pineSmallA',pineTall:'nature-kit/tree_pineTallA',
  rockA:'nature-kit/rock_largeA',rockB:'nature-kit/rock_largeB',rockSmall:'nature-kit/rock_smallA',logs:'nature-kit/log_stack',stump:'nature-kit/stump_round',bridge:'nature-kit/bridge_wood',fire:'nature-kit/campfire_stones',tent:'nature-kit/tent_detailedOpen'
@@ -23,7 +24,7 @@ export class ValleyArt {
    }catch(e){this.report.failed.push({id,reason:String(e.message||e)});}
    finally{clearTimeout(timer);progress?.(++done,Object.keys(FILES).length);}
   }));
-  this.install();this.sync();return this.report;
+  this.install();this.v.field?.installAssets(this);this.sync();return this.report;
  }
  prepare(root,id){
   const materials=new Map();root.traverse(o=>{if(!o.isMesh)return;o.castShadow=true;o.receiveShadow=true;
@@ -31,10 +32,11 @@ export class ValleyArt {
     if(materials.has(source))return materials.get(source);
     const m=source.clone();m.roughness=.92;m.metalness=0;
     if(PALETTE[m.name])m.color.setHex(PALETTE[m.name]);
+    if(['violet','fern'].includes(id)&&/leaf|grass/i.test(m.name))m.color.setHex(0x658b72);
     // Upward-facing surfaces catch snow. The loaded model's actual contours
     // remain visible, including fir skirts and the train's pipes and wheels.
     const isTrain=['engine','classic','coach','wagon'].includes(id);
-    const snow=!['woodInner'].includes(m.name);
+    const snow=!['violet','fern'].includes(id)&&!FILES[id].startsWith('food-kit/')&&!['woodInner'].includes(m.name);
     m.onBeforeCompile=shader=>{
      shader.uniforms.emberLivery=this.livery;
      shader.vertexShader='varying float winterUp; varying vec3 winterPosition;\n'+shader.vertexShader;
@@ -44,9 +46,9 @@ export class ValleyArt {
       ${isTrain?`if(diffuseColor.r>diffuseColor.g*1.7 && diffuseColor.r>diffuseColor.b*1.5) diffuseColor.rgb=emberLivery;`:''}
       ${snow?`float snowEdge=sin(winterPosition.x*15.0+sin(winterPosition.z*9.0))*0.035;
       float snowMask=smoothstep(0.26+snowEdge,0.57+snowEdge,winterUp);
-      diffuseColor.rgb=mix(diffuseColor.rgb,vec3(0.79,0.9,0.93),snowMask*0.94);`:''}`);
+      diffuseColor.rgb=mix(diffuseColor.rgb,vec3(0.79,0.9,0.93),snowMask*${id==='mushrooms'?'.22':'.94'});`:''}`);
     };
-    m.customProgramCacheKey=()=>`winter-${isTrain}-${snow}`;
+    m.customProgramCacheKey=()=>`winter-${isTrain}-${snow}-${id==='mushrooms'?22:94}`;
     materials.set(source,m);return m;
    };
    o.material=Array.isArray(o.material)?o.material.map(convert):convert(o.material);

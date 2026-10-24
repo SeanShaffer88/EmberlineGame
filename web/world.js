@@ -1,3 +1,4 @@
+import {FieldArt,makeFieldNode} from './field-art.js';
 import * as T from './vendor/three.module.js';
 import {JourneyArt,makeJourneyNode,syncJourneyNode} from './journey-art.js';
 import {FinishFX} from './finish-fx.js';
@@ -57,7 +58,7 @@ export class WorldView{
   this.footprints=new T.InstancedMesh(printGeo,new T.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.64,depthWrite:false}),128);this.footprints.frustumCulled=false;this.scene.add(this.footprints);
   this.prints=Array.from({length:128},()=>({age:75,x:0,z:0,angle:0}));this.printCursor=0;this.printSide=1;this.printDistance=0;this.lastPrintPosition=this.hero.position.clone();this.printTransform=new T.Object3D();this.printColor=new T.Color();this.printFresh=new T.Color(0x88a9bb);this.printSnow=new T.Color(C.snow);this.updateFootprints(0,null);
   this.waypointMark=new T.Group();const marker=this.mesh(new T.RingGeometry(.28,.34,24),0xbe804d);marker.rotation.x=-Math.PI/2;marker.position.y=.07;this.waypointMark.add(marker);this.box(this.waypointMark,0,.48,0,.045,.9,.045,0x526d79);this.box(this.waypointMark,.2,.82,0,.4,.22,.025,0xe9b46d);this.scene.add(this.waypointMark);
-  this.finishFX=new FinishFX(this);this.art=new ValleyArt(this);this.journey=new JourneyArt(this);this.bindInput();this.resize();this.sync(true);window.addEventListener('resize',()=>this.resize());
+  this.finishFX=new FinishFX(this);this.art=new ValleyArt(this);this.journey=new JourneyArt(this);this.field=new FieldArt(this);this.bindInput();this.resize();this.sync(true);window.addEventListener('resize',()=>this.resize());
  }
  material(color){if(!this.materials.has(color))this.materials.set(color,new T.MeshStandardMaterial({color,roughness:1,flatShading:true}));return this.materials.get(color);}
  mesh(geo,color){const m=new T.Mesh(geo,this.material(color));m.castShadow=true;m.receiveShadow=true;return m;}
@@ -79,7 +80,8 @@ export class WorldView{
  }
  tower(g,beacon=false){for(const x of [-.55,.55])for(const z of [-.55,.55])this.box(g,x,1.8,z,.13,3.6,.13,C.metal);for(let y=.6;y<3.4;y+=.8)this.box(g,0,y,0,1.2,.12,1.2,C.metal);this.box(g,0,3.5,0,1.5,.18,1.5,C.snow);if(beacon){this.cylinder(g,0,3.98,0,.4,.4,.7,C.gold);}else{const dish=this.mesh(new T.SphereGeometry(.7,12,6,0,Math.PI),0xcadfe6);dish.position.set(0,3.9,0);dish.rotation.z=.5;g.add(dish);}}
  makeNode(n){const g=new T.Group();
-  if(n.type==='puzzle'||n.type==='drift')makeJourneyNode(this,n,g);
+  if(n.type==='field')makeFieldNode(this,n,g);
+  else if(n.type==='puzzle'||n.type==='drift')makeJourneyNode(this,n,g);
   else if(n.type==='project')makeRestoration(this,n,g);
   else if(n.type==='discovery')makeDiscovery(this,n,g);
   else if(n.type==='tree')this.tree(g,.85+(n.seed||.5)*.35);
@@ -101,7 +103,7 @@ export class WorldView{
  }
  sync(force=false){const s=this.state,seen=new Set(s.discovered);for(const n of WORLD){const g=this.objects.get(n.id);g.visible=n.type==='home'||n.type==='building'||seen.has(key(n.x,n.z));syncRestoration(s,n,g);syncJourneyNode(s,n,g);if(n.type==='secret'){g.visible=s.secretSeen.includes(n.id);const found=n.id==='vault'?s.vault:s.relics.includes(n.relic);g.scale.y=found?.65:1;}if(n.stock){const depleted=stock(s,n)<=0;g.scale.y=depleted?.1:1;if(n.type==='wolf')g.visible=g.visible&&!depleted;}if(n.type==='building'){const level=s.buildings[n.id];g.scale.setScalar(level?1+level*.08:.85);if(g.userData.foundation){g.userData.foundation.visible=!level;g.userData.built.visible=!!level;}g.userData.upgrade.visible=!!level;}if(n.id==='home'){const paint=g.getObjectByName('livery');if(paint)paint.material=this.material(LIVERIES[s.livery].color);}}
   if(force||this.lastSeen!==s.discovered.length){const ctx=this.fogMask.getContext('2d');ctx.fillStyle='white';ctx.fillRect(0,0,328,320);ctx.fillStyle='black';for(let z=-20;z<=19;z++)for(let x=-20;x<=20;x++)if(seen.has(key(x,z))){ctx.beginPath();ctx.arc((x+20.5)*8,(z+20.5)*8,8.5,0,Math.PI*2);ctx.fill();}const soft=this.fogSoft.getContext('2d');soft.fillStyle='white';soft.fillRect(0,0,328,320);soft.filter='blur(5px)';soft.drawImage(this.fogMask,0,0);soft.filter='none';this.fogTexture.needsUpdate=true;this.lastSeen=s.discovered.length;}
-  this.art?.sync();this.journey?.sync();this.warmGlows=[];this.scene.traverse(o=>{if(o.userData.warmGlow)this.warmGlows.push(o);});this.companion.visible=!!s.companion;if(s.companion)this.companion.traverse(o=>o.userData.node={id:'crew-'+s.companion,type:'crew',crew:s.companion});
+  this.art?.sync();this.journey?.sync();this.field?.sync();this.warmGlows=[];this.scene.traverse(o=>{if(o.userData.warmGlow)this.warmGlows.push(o);});this.companion.visible=!!s.companion;if(s.companion)this.companion.traverse(o=>o.userData.node={id:'crew-'+s.companion,type:'crew',crew:s.companion});
   for(const [id,person]of Object.entries(this.residents)){person.visible=!!s.flags[id]&&s.companion!==id;const remote=this.objects.get(id).getObjectByName('survivor');if(remote)remote.visible=!s.flags[id];}
  }
  finishGather(n){this.finishFX.start(n);}
@@ -217,7 +219,7 @@ export class WorldView{
   const pace=moving?.walking?Math.sin(this.clock*14):Math.sin(this.clock*2)*.04;this.hero.position.y=!s.settings.reducedMotion&&moving?.walking?Math.abs(pace)*.07:0;for(const sign of [-1,1]){this.hero.getObjectByName('leg'+sign).rotation.x=pace*sign*.6;this.hero.getObjectByName('arm'+sign).rotation.x=working?(workProfile(working.node.type).tool?-.4+Math.cos((working.progress-.2)/.3*Math.PI*2)*1.2:Math.sin(working.progress*Math.PI*6)*.35-.65):pace*-sign*.4;}
   this.companion.position.lerp(target.clone().add(new T.Vector3(-.8,0,.7)),animationDt*3);this.companion.rotation.y=this.hero.rotation.y;
   const profile=working?workProfile(working.node.type):null;this.tool.visible=!!profile?.tool;for(const [id,tool]of Object.entries(this.tools))tool.visible=id===profile?.tool;
-  this.workRing.visible=!!working;if(working){this.workRing.position.set(working.node.x,.1,working.node.z);this.workRing.geometry.setDrawRange(0,Math.max(6,Math.floor(working.progress*60)*6));}this.art.update(animationDt,moving);this.journey.update();this.finishFX.update(animationDt);if(s.settings.reducedMotion)this.finishFX.root.visible=false;this.waypointMark.visible=!!s.camp.waypoint;if(s.camp.waypoint)this.waypointMark.position.set(s.camp.waypoint.x,0,s.camp.waypoint.z);
+  this.workRing.visible=!!working;if(working){this.workRing.position.set(working.node.x,.1,working.node.z);this.workRing.geometry.setDrawRange(0,Math.max(6,Math.floor(working.progress*60)*6));}this.art.update(animationDt,moving);this.journey.update();this.field.update();this.finishFX.update(animationDt);if(s.settings.reducedMotion)this.finishFX.root.visible=false;this.waypointMark.visible=!!s.camp.waypoint;if(s.camp.waypoint)this.waypointMark.position.set(s.camp.waypoint.x,0,s.camp.waypoint.z);
   if(this.burstLife>0){this.burstLife=Math.max(0,this.burstLife-animationDt*1.8);const p=1-this.burstLife;for(let i=0;i<28;i++){const a=i*2.4,r=p*(.5+(i%7)*.14);this.burstPositions[i*3]=this.burstOrigin.x+Math.cos(a)*r;this.burstPositions[i*3+1]=.4+Math.sin(p*Math.PI)*(.5+(i%4)*.2);this.burstPositions[i*3+2]=this.burstOrigin.z+Math.sin(a)*r;}this.burst.geometry.attributes.position.needsUpdate=true;this.burst.material.opacity=s.settings.reducedMotion?0:this.burstLife;}
   if(!this.manual){const aim=target.clone();if(this.selected)aim.lerp(new T.Vector3(this.selected.x,0,this.selected.z),.65);const homeBias=this.selected?0:Math.max(0,1-Math.hypot(target.x,target.z-1)/10);aim.add(new T.Vector3(-1.2*homeBias,0,-.5-1.7*homeBias));this.focus.lerp(aim,1-Math.exp(-dt*4));}if(Math.abs(this.zoom-this.zoomTarget)>.005){this.zoom+=(this.zoomTarget-this.zoom)*(1-Math.exp(-dt*10));this.updateProjection();}if(this.viewport&&this.viewportTarget){let changed=false;for(const key of ['left','right','top','bottom']){const delta=this.viewportTarget[key]-this.viewport[key];if(Math.abs(delta)>.05){this.viewport[key]+=delta*(1-Math.exp(-dt*7));changed=true;}}if(changed)this.updateProjection();}this.positionCamera();
   this.updateWeather(animationDt);this.updateTreeFades(dt,working?.node);this.updateFootprints(animationDt,moving);

@@ -17,3 +17,9 @@ test('bundled art matches its recorded provenance and local texture dependencies
  }
  assert.equal(hash(readFileSync(root+'/title.png')),manifest.generated_art.sha256);
 });
+
+test('small-wonders models, texture and original notebook illustration match their provenance',()=>{
+ const m=JSON.parse(readFileSync(root+'/field-assets.json','utf8'));assert.equal(m.models.length,10);
+ for(const item of [...m.models,...m.textures]){const file=resolve(root,item.file),bytes=readFileSync(file);assert.equal(hash(bytes),item.sha256);assert.equal(item.license,'CC0-1.0');if(!item.file.endsWith('.glb'))continue;const g=JSON.parse(bytes.subarray(20,20+bytes.readUInt32LE(12)).toString());const children=new Set(g.nodes.flatMap(n=>n.children||[]));for(const scene of g.scenes)for(const n of scene.nodes)assert.ok(!children.has(n));for(const res of [...g.buffers,...g.images||[]])if(res.uri){const dep=resolve(dirname(file),res.uri);assert.ok(dep.startsWith(root+sep));assert.ok(readFileSync(dep).length);}}
+ assert.equal(hash(readFileSync(root+'/'+m.generated_art.file)),m.generated_art.sha256);const validation=JSON.parse(readFileSync(root+'/field-validation.json'));assert.equal(validation.errors,0);assert.equal(validation.warnings,0);
+});

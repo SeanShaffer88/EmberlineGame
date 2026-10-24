@@ -4,6 +4,8 @@ Source-only preview, 2026-10-23, on `feature/play-feel`. No APK was built, signe
 
 ## Six additions
 
+This document records source milestone `9927687`. The current preview is documented in [Small Wonders](SMALL-WONDERS.md).
+
 1. **An exploration map and waypoints.** The folded-map button opens a local map of the same valley. Unexplored terrain stays dark; secrets and restoration discoveries only appear after being noticed in the world. Home is always known. Discovered supplies can be shown separately; wolves use a distinct warning marker. Tap explored terrain, choose a familiar place, or use arrow keys and Enter to mark a waypoint. Its flag and distance appear in the valley. Marking never moves the explorer or reveals terrain. Clear it from the map whenever you like.
 
 2. **Pinned supplies.** Open the planner through Build, Craft or the valley overview. Choose a recipe batch, the next building level, an equipment level or a restoration stage. The existing quest card becomes a live supplies list, so the HUD does not take more space from the world. Partial crafting reduces the remaining ingredients; finishing marks the original target complete. Pinning spends nothing and never performs an action automatically. The planner can locate discovered raw supplies or open Craft for manufactured ingredients. Unpin to restore the story card.

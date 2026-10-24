@@ -6,13 +6,13 @@ An original offline Android survival adventure. The rails end in **Frosthollow**
 
 ![Emberline gameplay](docs/gameplay.png)
 
-## Unreleased Hearth & Horizon preview
+## Unreleased Small Wonders preview
 
-The `feature/play-feel` branch contains the next source-only update. **No new APK has been built or released.** The latest pass adds an exploration map and waypoints, pinned supply goals, three earned camp meals, a gentle day/evening cycle, comfort settings, and a paused photo mode. Everything remains local in the same permanent valley, with saved progress preserved.
+The `feature/play-feel` branch contains the next source-only update. **No new APK has been built or released.** Twenty additions bring an illustrated naturalist notebook, eight finds, scenic viewpoints and benches, relaxed fishing and a fish journal, a collection cabinet, mastery rewards, crew jobs and stories, radio recordings, salvage exchanges, trail signs and bridge lamps, a train whistle, aurora and water details, wildlife tracks, river/bird ambience, a sound mixer, and explored-route previews. All rewards are earned in the same permanent offline valley.
 
-Drag anywhere on open play space to steer continuously; lift to stop. Two fingers pan and zoom. The previous nearby-object chooser, continuous gathering, finish effects, puzzles, decorations, friendships, weather discoveries, named wildlife, packed trails, optional outings, tree fading and restoration systems remain included.
+Ten more CC0 prop models and an original notebook illustration are included locally. The previous map, meals, planner, photo mode, puzzles, decorations, friendships, outings, restoration and gathering systems remain. Drag anywhere on open play space to steer; lift to stop. Two fingers pan and zoom. Saves keep the existing format and optional new progress fields.
 
-See [current controls, content and validation](docs/HEARTH-HORIZON.md). [Freedom and discovery](docs/FREEDOM-AND-DISCOVERY.md), [Living valley](docs/LIVING-VALLEY.md), and [earlier camera/gathering notes](docs/PLAY-FEEL.md) record previous source milestones. The 0.2.0 download above remains the published Android build.
+Start through **the forecast button → Open the valley notebook**. Camp jobs and stories are also linked from Crew; the sound mixer is in Settings → Comfort. See [all twenty additions, assets and validation](docs/SMALL-WONDERS.md). [Hearth & Horizon](docs/HEARTH-HORIZON.md), [Freedom and discovery](docs/FREEDOM-AND-DISCOVERY.md), [Living valley](docs/LIVING-VALLEY.md), and [earlier camera/gathering notes](docs/PLAY-FEEL.md) record previous source milestones. The 0.2.0 download above remains the published Android build.
 
 ## A game you earn by playing
 
@@ -85,6 +85,7 @@ node tests/living-valley.mjs
 node tests/freedom.mjs
 node tests/selection.mjs
 node tests/hearth-horizon.mjs
+node tests/small-wonders.mjs
 python tests/package-apk.test.py
 ```
 

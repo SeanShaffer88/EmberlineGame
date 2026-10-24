@@ -5,7 +5,7 @@ import * as M from '../web/model.js';
 const visit=(s,id)=>{const n=M.WORLD.find(n=>n.id===id),path=M.pathTo(s,n.x,n.z,true);assert.ok(path,`reachable ${id}`);path.forEach(([x,z])=>assert.ok(M.move(s,x,z)));return n;};
 const ready=()=>{const s=M.newGame(90);for(const id of Object.keys(M.CREW))s.flags[id]=true;for(const id of Object.keys(M.BUILDINGS))s.buildings[id]=1;for(const item of Object.keys(M.ITEMS))s.inventory[item]=100;return s;};
 test('new places preserve every original resource ID and placement',()=>{
- const old=M.WORLD.filter(n=>!['project','discovery','puzzle','drift'].includes(n.type));
+ const old=M.WORLD.filter(n=>!['project','discovery','puzzle','drift','field'].includes(n.type));
  assert.equal(createHash('sha256').update(JSON.stringify(old)).digest('hex'),'ebebfc25808330ab5218419eb8c52353900073e0147f749c4e89ddd54f86d15e');
  assert.equal(new Set(M.WORLD.map(n=>M.key(n.x,n.z))).size,M.WORLD.length);
 });

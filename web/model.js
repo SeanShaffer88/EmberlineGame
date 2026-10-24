@@ -1,3 +1,5 @@
+import * as Field from './field.js';
+export * from './field.js';
 import * as Camp from './camp.js';
 export * from './camp.js';
 import * as J from './journey.js';
@@ -70,10 +72,11 @@ export function makeWorld(){
  // Append content so every original resource ID, seed and position stays stable.
  nodes.push(...Object.entries(PROJECTS).map(([id,p])=>({id:'project-'+id,type:'project',project:id,name:p.name,x:p.x,z:p.z})),...Object.entries(DISCOVERIES).map(([id,d])=>({id:'discovery-'+id,type:'discovery',discovery:id,name:'Something beneath the snow',x:d.x,z:d.z})));
  nodes.push(...Object.entries(J.PUZZLES).map(([id,p])=>({id:'puzzle-'+id,type:'puzzle',puzzle:id,name:p.name,x:p.x,z:p.z})),...Object.entries(J.DRIFTS).map(([id,p])=>({id:'drift-'+id,type:'drift',drift:id,name:p.name,x:p.x,z:p.z})));
+ nodes.push(...Field.fieldNodes());
  return nodes;
 }
 export const WORLD=makeWorld();
-export function newGame(seed=78219){const s={version:VERSION,camp:Camp.newCamp(),journey:J.newJourney(),seed:seed>>>0,gear:{axe:0,prybar:0,coat:0,boots:0,lantern:0},projects:{garden:0,platform:0,signal:0},discoveries:[],discoverySeen:[],conversations:{},relics:[],secretSeen:[],vault:false,achievements:[],contractSerial:0,contract:null,contractsCompleted:0,difficulty:'standard',livery:'classic',inventory:{wood:6,scrap:6,coal:3,food:5,planks:0,parts:0,medkit:0},buildings:{furnace:0,workshop:0,greenhouse:0,infirmary:0,engine:0},flags:{},stock:{},regrowth:{},completed:[],gathered:{},crafted:{},discovered:[],player:{x:0,z:3},energy:100,health:100,warmth:100,activeSeconds:0,restCount:0,harvest:0,companion:null,settings:{sound:true,music:true,quality:'balanced',zoom:24,haptics:'off',dragSensitivity:1,reducedMotion:false,steadyDaylight:false},started:false};reveal(s);return s;}
+export function newGame(seed=78219){const s={version:VERSION,field:Field.newField(),camp:Camp.newCamp(),journey:J.newJourney(),seed:seed>>>0,gear:{axe:0,prybar:0,coat:0,boots:0,lantern:0},projects:{garden:0,platform:0,signal:0},discoveries:[],discoverySeen:[],conversations:{},relics:[],secretSeen:[],vault:false,achievements:[],contractSerial:0,contract:null,contractsCompleted:0,difficulty:'standard',livery:'classic',inventory:{wood:6,scrap:6,coal:3,food:5,planks:0,parts:0,medkit:0},buildings:{furnace:0,workshop:0,greenhouse:0,infirmary:0,engine:0},flags:{},stock:{},regrowth:{},completed:[],gathered:{},crafted:{},discovered:[],player:{x:0,z:3},energy:100,health:100,warmth:100,activeSeconds:0,restCount:0,harvest:0,companion:null,settings:{sound:true,music:true,quality:'balanced',zoom:24,haptics:'off',dragSensitivity:1,reducedMotion:false,steadyDaylight:false,musicVolume:0.7,ambienceVolume:0.7,effectsVolume:0.8},started:false};reveal(s);return s;}
 export const maxHealth=s=>100+s.buildings.infirmary*15;
 export const currentQuest=s=>QUESTS.find(q=>!s.completed.includes(q.id));
 export function progress(s,q){if(!q)return 1;if(q.kind==='gather')return s.gathered[q.key]||0;if(q.kind==='crafted')return s.crafted[q.key]||0;if(q.kind==='building')return s.buildings[q.key]||0;return s.flags[q.key]?1:0;}
@@ -105,7 +108,7 @@ export function settleQuests(s){const done=[];for(const q of QUESTS){if(s.comple
 export const stock=(s,n)=>s.stock[n.id]??n.stock??1;
 export function reveal(s){const seen=new Set(s.discovered);const px=Math.round(s.player.x),pz=Math.round(s.player.z);const r=5+(s.companion==='ivo'?2:0)+(s.gear?.lantern||0);for(let z=-r;z<=r;z++)for(let x=-r;x<=r;x++)if(x*x+z*z<=r*r&&Math.abs(px+x)<=20&&pz+z>=-20&&pz+z<=19)seen.add(key(px+x,pz+z));s.discovered=[...seen];for(const n of WORLD)if(n.type==='secret'&&Math.hypot(n.x-s.player.x,n.z-s.player.z)<=2+(s.gear.lantern>=2?1:0)&&!s.secretSeen.includes(n.id))s.secretSeen.push(n.id);for(const [id,d]of Object.entries(DISCOVERIES))if(s.projects[d.project]===3&&Math.hypot(d.x-s.player.x,d.z-s.player.z)<=2&&!s.discoverySeen.includes(id))s.discoverySeen.push(id);}
 export const seen=(s,n)=>s.discovered.includes(key(n.x,n.z));
-export function walkable(s,x,z){if(Math.abs(x)>20||z< -20||z>19)return false;if(z===-11&&(!s.flags.bridge||Math.abs(x-2)>1))return false;if(z<-11&&!s.flags.bridge)return false;if(z>=-4&&z<=-3&&x>=-4&&x<=4)return false;return !WORLD.some(n=>n.x===x&&n.z===z&&n.type!=='wolf'&&n.type!=='discovery'&&n.type!=='puzzle'&&n.type!=='drift'&&n.id!=='bridge'&&stock(s,n)>0);}
+export function walkable(s,x,z){if(Math.abs(x)>20||z< -20||z>19)return false;if(z===-11&&(!s.flags.bridge||Math.abs(x-2)>1))return false;if(z<-11&&!s.flags.bridge)return false;if(z>=-4&&z<=-3&&x>=-4&&x<=4)return false;return !WORLD.some(n=>n.x===x&&n.z===z&&n.type!=='field'&&n.type!=='wolf'&&n.type!=='discovery'&&n.type!=='puzzle'&&n.type!=='drift'&&n.id!=='bridge'&&stock(s,n)>0);}
 export function pathTo(s,x,z,adjacent=false){
  const start=[Math.round(s.player.x),Math.round(s.player.z)],queue=[start],visited=new Map([[key(...start),null]]);let end=null;
  for(let i=0;i<queue.length;i++){const [cx,cz]=queue[i];if((adjacent?Math.abs(cx-x)+Math.abs(cz-z)<=1:cx===x&&cz===z)){end=[cx,cz];break;}for(const [dx,dz]of [[1,0],[-1,0],[0,1],[0,-1]]){const nx=cx+dx,nz=cz+dz,k=key(nx,nz);if(!visited.has(k)&&walkable(s,nx,nz)){visited.set(k,[cx,cz]);queue.push([nx,nz]);}}}
@@ -224,8 +227,16 @@ export function deserialize(text){
  for(const kind of ['gathered','crafted'])for(const k of Object.keys(ITEMS))if(v[kind]?.[k]!==undefined)s[kind][k]=number(v[kind][k]);
  if(!Array.isArray(v.completed)||!Array.isArray(v.discovered)||v.discovered.length>4000)throw Error('Invalid progress.');
  s.completed=QUESTS.filter(q=>v.completed.includes(q.id)).map(q=>q.id);s.discovered=[...new Set(v.discovered.filter(k=>typeof k==='string'&&/^-?\d{1,2},-?\d{1,2}$/.test(k)))];
- s.journey=J.readJourney(v.journey,s);s.camp=Camp.readCamp(v.camp,s,{recipe:RECIPES,building:BUILDINGS,project:PROJECTS,gear:GEAR});
- s.companion=CREW[v.companion]&&s.flags[v.companion]?v.companion:null;s.settings={sound:v.settings?.sound!==false,music:v.settings?.music!==false,quality:v.settings?.quality==='low'?'low':'balanced',zoom:Number.isFinite(v.settings?.zoom)?Math.max(16,Math.min(34,v.settings.zoom)):24,haptics:['off','light','full'].includes(v.settings?.haptics)?v.settings.haptics:'off',dragSensitivity:[.75,1,1.5].includes(v.settings?.dragSensitivity)?v.settings.dragSensitivity:1,reducedMotion:v.settings?.reducedMotion===true,steadyDaylight:v.settings?.steadyDaylight===true};s.started=v.started===true;
+ s.journey=J.readJourney(v.journey,s);s.field=Field.readField(v.field,s);s.camp=Camp.readCamp(v.camp,s,{recipe:RECIPES,building:BUILDINGS,project:PROJECTS,gear:GEAR});
+ s.companion=CREW[v.companion]&&s.flags[v.companion]&&!s.field.jobs[v.companion]?v.companion:null;s.settings={sound:v.settings?.sound!==false,music:v.settings?.music!==false,quality:v.settings?.quality==='low'?'low':'balanced',zoom:Number.isFinite(v.settings?.zoom)?Math.max(16,Math.min(34,v.settings.zoom)):24,haptics:['off','light','full'].includes(v.settings?.haptics)?v.settings.haptics:'off',dragSensitivity:[.75,1,1.5].includes(v.settings?.dragSensitivity)?v.settings.dragSensitivity:1,reducedMotion:v.settings?.reducedMotion===true,steadyDaylight:v.settings?.steadyDaylight===true,...Object.fromEntries(['musicVolume','ambienceVolume','effectsVolume'].map((k,i)=>[k,Number.isFinite(v.settings?.[k])?Math.max(0,Math.min(1,v.settings[k])):[.7,.7,.8][i]]))};s.started=v.started===true;
  // A pre-update save may stand on a newly added project tile; it can walk out.
  if(!walkable(s,Math.round(s.player.x),Math.round(s.player.z))&&!WORLD.some(n=>n.type==='project'&&n.x===s.player.x&&n.z===s.player.z))s.player={x:0,z:3};reveal(s);return s;
+}
+
+// Route previews use only known walkable tiles; they cannot disclose a hidden shortcut.
+export function exploredRoute(s){
+ const w=s.camp.waypoint;if(!w)return null;
+ const start=[Math.round(s.player.x),Math.round(s.player.z)],queue=[start],visited=new Map([[key(...start),null]]),known=new Set(s.discovered),adjacent=!walkable(s,w.x,w.z);let end=null;
+ for(let i=0;i<queue.length;i++){const [x,z]=queue[i];if(adjacent?Math.abs(x-w.x)+Math.abs(z-w.z)<=1:x===w.x&&z===w.z){end=[x,z];break;}for(const [dx,dz]of [[1,0],[-1,0],[0,1],[0,-1]]){const nx=x+dx,nz=z+dz,k=key(nx,nz);if(!visited.has(k)&&known.has(k)&&walkable(s,nx,nz)){visited.set(k,[x,z]);queue.push([nx,nz]);}}}
+ if(!end)return null;const path=[];while(visited.get(key(...end))){path.push(end);end=visited.get(key(...end));}return path.reverse();
 }

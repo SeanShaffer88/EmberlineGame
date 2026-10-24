@@ -44,6 +44,7 @@ const ROUTINES={
 };
 const offsets={mira:0,oren:21,ivo:42};
 export function crewRoutine(s,id){
+ if(s.field?.jobs[id]){const [x,z,pose]=({mira:[-4,5,'tend'],oren:[4,2,'hammer'],ivo:[-2,-1,'survey']})[id];return{x,z,pose,walking:false,angle:0,job:s.field.jobs[id].ends<=s.activeSeconds?'Finished work is ready to collect':'Working on your camp job'};}
  const stops=ROUTINES[id],segments=[];
  for(let i=0;i<stops.length;i++){
   const a=stops[i],b=stops[(i+1)%stops.length];segments.push({duration:a.wait,stop:a});

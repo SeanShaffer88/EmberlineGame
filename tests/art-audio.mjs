@@ -12,8 +12,8 @@ try{
  await page.addInitScript(data=>{if(!localStorage.getItem('emberline.save'))localStorage.setItem('emberline.save',data);},serialize(old));
  await page.goto('http://127.0.0.1:8844/');await page.locator('#menu').waitFor();
  const initial=await page.evaluate(async()=>{const {view,state}=await import('./main.js');return{report:view.art.report,wood:state.inventory.wood,music:state.settings.music,engine:state.buildings.engine,home:view.objects.get('home').position.toArray(),tree:view.objects.get('first-pine').children[0].userData.asset};});
- assert.equal(initial.report.loaded.length,16);assert.deepEqual(initial.report.failed,[]);assert.equal(initial.wood,71);assert.equal(initial.music,true);assert.equal(initial.engine,1);assert.equal(initial.tree,'pineSmall');assert.deepEqual(initial.home,[0,0,-3]);
- checks.push('All 16 local GLBs and palette texture load without CSP, shader or console errors; old save retains progress and gains the default music setting');
+ assert.equal(initial.report.loaded.length,26);assert.deepEqual(initial.report.failed,[]);assert.equal(initial.wood,71);assert.equal(initial.music,true);assert.equal(initial.engine,1);assert.equal(initial.tree,'pineSmall');assert.deepEqual(initial.home,[0,0,-3]);
+ checks.push('All 26 local GLBs and palette texture load without CSP, shader or console errors; old save retains progress and gains the default music setting');
  await page.locator('#menu').click();await page.waitForTimeout(300);
  assert.equal(await page.evaluate(async()=>(await import('./main.js')).sound.ctx.state),'running');
  await page.locator('#music').click();await page.waitForTimeout(600);
@@ -43,7 +43,7 @@ try{
  assert.ok(storm.blend>.8&&storm.full>300&&storm.low<190&&!storm.shadows);checks.push('Storm fixture strengthens snowfall; Battery saver reduces density and disables shadows');
  assert.deepEqual(errors,[]);assert.deepEqual(external,[]);
  const fallback=await browser.newPage();await fallback.route('**/assets/models/**',r=>r.abort());await fallback.goto('http://127.0.0.1:8844/');await fallback.locator('#start').waitFor();
- const failed=await fallback.evaluate(async()=>{const {view:v}=await import('./main.js');return{failed:v.art.report.failed.length,tree:!!v.objects.get('first-pine').children.length,train:!!v.objects.get('home').getObjectByName('livery')};});assert.equal(failed.failed,16);assert.ok(failed.tree&&failed.train);await fallback.locator('#start').click();await fallback.locator('#begin-exploring').click();await fallback.locator('[data-panel="craft"]').click();await fallback.locator('[data-craft="planks"][data-count="1"]').click();
+ const failed=await fallback.evaluate(async()=>{const {view:v}=await import('./main.js');return{failed:v.art.report.failed.length,tree:!!v.objects.get('first-pine').children.length,train:!!v.objects.get('home').getObjectByName('livery')};});assert.equal(failed.failed,26);assert.ok(failed.tree&&failed.train);await fallback.locator('#start').click();await fallback.locator('#begin-exploring').click();await fallback.locator('[data-panel="craft"]').click();await fallback.locator('[data-craft="planks"][data-count="1"]').click();
  assert.equal(await fallback.evaluate(async()=>(await import('./main.js')).state.inventory.planks),2);checks.push('Injected art failures leave a playable original-mesh fallback; startup and crafting still work');
  writeFileSync('build/art-audio-results.json',JSON.stringify({checks,audio,upgraded,storm,errors,external,visualFixture:true},null,2));console.log(JSON.stringify({checks,errors,external},null,2));
 }finally{await browser.close();}

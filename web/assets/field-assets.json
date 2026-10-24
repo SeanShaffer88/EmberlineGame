@@ -1,0 +1,156 @@
+{
+  "checked_on": "2026-10-23",
+  "scope": "Selected original pack files, dependency inspection, glTF validation and actual browser rendering; not a whole-pack audit.",
+  "models": [
+    {
+      "file": "models/food-kit/pot-stew.glb",
+      "creator": "Kenney",
+      "source": "https://kenney.nl/assets/food-kit",
+      "license": "CC0-1.0",
+      "archive_sha256": "cdad90853682499b94c9fda2f87678b24bfd8f3264e0ed323f6b6a27fd7c6f6f",
+      "source_file_sha256": "311ba282a85bd722b5093f512579a168e3da949617600196b60d782c11afd6b8",
+      "sha256": "311ba282a85bd722b5093f512579a168e3da949617600196b60d782c11afd6b8",
+      "bytes": 29560,
+      "local_dependencies": [
+        "Textures/colormap.png"
+      ],
+      "modification": "None; original GLB bytes."
+    },
+    {
+      "file": "models/food-kit/bowl-soup.glb",
+      "creator": "Kenney",
+      "source": "https://kenney.nl/assets/food-kit",
+      "license": "CC0-1.0",
+      "archive_sha256": "cdad90853682499b94c9fda2f87678b24bfd8f3264e0ed323f6b6a27fd7c6f6f",
+      "source_file_sha256": "0ff11d6a54ed9b0592ff24e02ca1dd4d12f47762dd7f571e985b48f3d1467e58",
+      "sha256": "0ff11d6a54ed9b0592ff24e02ca1dd4d12f47762dd7f571e985b48f3d1467e58",
+      "bytes": 11188,
+      "local_dependencies": [
+        "Textures/colormap.png"
+      ],
+      "modification": "None; original GLB bytes."
+    },
+    {
+      "file": "models/food-kit/cup-tea.glb",
+      "creator": "Kenney",
+      "source": "https://kenney.nl/assets/food-kit",
+      "license": "CC0-1.0",
+      "archive_sha256": "cdad90853682499b94c9fda2f87678b24bfd8f3264e0ed323f6b6a27fd7c6f6f",
+      "source_file_sha256": "c2d60aeca48197b75ddb9f1ba145bd5e9c9e66e720b8ab67947f0b2a49ee1edd",
+      "sha256": "c2d60aeca48197b75ddb9f1ba145bd5e9c9e66e720b8ab67947f0b2a49ee1edd",
+      "bytes": 9780,
+      "local_dependencies": [
+        "Textures/colormap.png"
+      ],
+      "modification": "None; original GLB bytes."
+    },
+    {
+      "file": "models/food-kit/bread.glb",
+      "creator": "Kenney",
+      "source": "https://kenney.nl/assets/food-kit",
+      "license": "CC0-1.0",
+      "archive_sha256": "cdad90853682499b94c9fda2f87678b24bfd8f3264e0ed323f6b6a27fd7c6f6f",
+      "source_file_sha256": "9bd9db117db654cf1157439d1257a8fc5915ea77a94fb876a5056522b9e49f46",
+      "sha256": "9bd9db117db654cf1157439d1257a8fc5915ea77a94fb876a5056522b9e49f46",
+      "bytes": 9468,
+      "local_dependencies": [
+        "Textures/colormap.png"
+      ],
+      "modification": "None; original GLB bytes."
+    },
+    {
+      "file": "models/food-kit/fish.glb",
+      "creator": "Kenney",
+      "source": "https://kenney.nl/assets/food-kit",
+      "license": "CC0-1.0",
+      "archive_sha256": "cdad90853682499b94c9fda2f87678b24bfd8f3264e0ed323f6b6a27fd7c6f6f",
+      "source_file_sha256": "5bb8109f83f7ec4609427c6d6de76572c4fc4d055dfc16d47f2c397290c0e29d",
+      "sha256": "5bb8109f83f7ec4609427c6d6de76572c4fc4d055dfc16d47f2c397290c0e29d",
+      "bytes": 31672,
+      "local_dependencies": [
+        "Textures/colormap.png"
+      ],
+      "modification": "None; original GLB bytes."
+    },
+    {
+      "file": "models/food-kit/mug.glb",
+      "creator": "Kenney",
+      "source": "https://kenney.nl/assets/food-kit",
+      "license": "CC0-1.0",
+      "archive_sha256": "cdad90853682499b94c9fda2f87678b24bfd8f3264e0ed323f6b6a27fd7c6f6f",
+      "source_file_sha256": "5215ef74dbbc3a1c0ecf8d0937adde745bbcbd65d8facd228d9f3371991da435",
+      "sha256": "5215ef74dbbc3a1c0ecf8d0937adde745bbcbd65d8facd228d9f3371991da435",
+      "bytes": 20236,
+      "local_dependencies": [
+        "Textures/colormap.png"
+      ],
+      "modification": "None; original GLB bytes."
+    },
+    {
+      "file": "models/nature-kit/flower_purpleA.glb",
+      "creator": "Kenney",
+      "source": "https://kenney.nl/assets/nature-kit",
+      "license": "CC0-1.0",
+      "archive_sha256": "fa7974a0d342bfe63c38664ba9f8ec1a4aab8ea25f099bdc56870e33588c4d9d",
+      "source_file_sha256": "f6fc34c96a03420a74fe36d4c2d0ec88f15204fcad99cd1416c3c4ecb22e48c4",
+      "sha256": "b50d7c5d9fb9eefafe19db513630cc9642c4c6265afe37f752b87a9e559174a6",
+      "bytes": 7112,
+      "local_dependencies": [],
+      "modification": "Scene roots normalized to existing parent roots; geometry and binary payload unchanged."
+    },
+    {
+      "file": "models/nature-kit/mushroom_tanGroup.glb",
+      "creator": "Kenney",
+      "source": "https://kenney.nl/assets/nature-kit",
+      "license": "CC0-1.0",
+      "archive_sha256": "fa7974a0d342bfe63c38664ba9f8ec1a4aab8ea25f099bdc56870e33588c4d9d",
+      "source_file_sha256": "2dc979485f164d7dce34329096271f44e0c9ea329c104251d94bcfbc8f8fe05e",
+      "sha256": "707e24f3174e4f5db9f117a12958e9fc89ea523ba0212f9481ce52edc17c9f99",
+      "bytes": 14956,
+      "local_dependencies": [],
+      "modification": "Scene roots normalized to existing parent roots; geometry and binary payload unchanged."
+    },
+    {
+      "file": "models/nature-kit/grass_leafs.glb",
+      "creator": "Kenney",
+      "source": "https://kenney.nl/assets/nature-kit",
+      "license": "CC0-1.0",
+      "archive_sha256": "fa7974a0d342bfe63c38664ba9f8ec1a4aab8ea25f099bdc56870e33588c4d9d",
+      "source_file_sha256": "8bc4c0b17c2e64c34e1acbf7c4a2fd8c04cfcd7155328e61767887b2ced112c7",
+      "sha256": "a06427e2ba743d868f708f5b38b29e183fe107f1c30d8fcf36da1e323776af99",
+      "bytes": 4608,
+      "local_dependencies": [],
+      "modification": "Scene roots normalized to existing parent roots; geometry and binary payload unchanged."
+    },
+    {
+      "file": "models/nature-kit/sign.glb",
+      "creator": "Kenney",
+      "source": "https://kenney.nl/assets/nature-kit",
+      "license": "CC0-1.0",
+      "archive_sha256": "fa7974a0d342bfe63c38664ba9f8ec1a4aab8ea25f099bdc56870e33588c4d9d",
+      "source_file_sha256": "c658c21672ecd63c5d3e53f06f875d68e6509edb1ab7e3b75374df7c61e7dd0c",
+      "sha256": "aac6c7e8358197f4495ff2152064c8aa15b4c4cca6aa0002c58316cb0d76067c",
+      "bytes": 5040,
+      "local_dependencies": [],
+      "modification": "Scene roots normalized to existing parent roots; geometry and binary payload unchanged."
+    }
+  ],
+  "textures": [
+    {
+      "file": "models/food-kit/Textures/colormap.png",
+      "sha256": "75baf74d9483a0fc56ac21ceba346fbe16fc24a2a1bf0524c53e6bbe802e1153",
+      "license": "CC0-1.0",
+      "source": "https://kenney.nl/assets/food-kit",
+      "creator": "Kenney",
+      "archive_sha256": "cdad90853682499b94c9fda2f87678b24bfd8f3264e0ed323f6b6a27fd7c6f6f"
+    }
+  ],
+  "generated_art": {
+    "file": "notebook.png",
+    "sha256": "a068c71fd5b00b61481e2dcd4f3b1ed5cb3571d4fa3129475fd009df6007d4c8",
+    "tool": "Built-in image_gen",
+    "prompt_file": "notebook-prompt.json",
+    "date": "2026-10-23",
+    "provenance": "Original generated illustration. Not a Kenney asset; no CC0 claim."
+  }
+}
