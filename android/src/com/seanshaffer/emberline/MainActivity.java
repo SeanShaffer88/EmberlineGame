@@ -103,6 +103,16 @@ public final class MainActivity extends Activity {
         catch (Exception e) { return false; }
     }
     public final class LocalBridge {
+        @JavascriptInterface public void haptic(int kind) {
+            if (kind != 0 && kind != 1) return;
+            runOnUiThread(() -> {
+                if (!web.hasWindowFocus()) return;
+                int feedback = kind == 1 && Build.VERSION.SDK_INT >= 30
+                        ? android.view.HapticFeedbackConstants.CONFIRM
+                        : android.view.HapticFeedbackConstants.KEYBOARD_TAP;
+                web.performHapticFeedback(feedback);
+            });
+        }
         @JavascriptInterface public String deviceInfo() {
             android.content.pm.PackageInfo provider = WebView.getCurrentWebViewPackage();
             return "Android " + Build.VERSION.RELEASE + " (API " + Build.VERSION.SDK_INT + ")\nWebView "

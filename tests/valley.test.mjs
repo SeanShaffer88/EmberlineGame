@@ -5,7 +5,7 @@ import * as M from '../web/model.js';
 const visit=(s,id)=>{const n=M.WORLD.find(n=>n.id===id),path=M.pathTo(s,n.x,n.z,true);assert.ok(path,`reachable ${id}`);path.forEach(([x,z])=>assert.ok(M.move(s,x,z)));return n;};
 const ready=()=>{const s=M.newGame(90);for(const id of Object.keys(M.CREW))s.flags[id]=true;for(const id of Object.keys(M.BUILDINGS))s.buildings[id]=1;for(const item of Object.keys(M.ITEMS))s.inventory[item]=100;return s;};
 test('new places preserve every original resource ID and placement',()=>{
- const old=M.WORLD.filter(n=>!['project','discovery'].includes(n.type));
+ const old=M.WORLD.filter(n=>!['project','discovery','puzzle','drift'].includes(n.type));
  assert.equal(createHash('sha256').update(JSON.stringify(old)).digest('hex'),'ebebfc25808330ab5218419eb8c52353900073e0147f749c4e89ddd54f86d15e');
  assert.equal(new Set(M.WORLD.map(n=>M.key(n.x,n.z))).size,M.WORLD.length);
 });
@@ -13,7 +13,7 @@ test('three restorations require proximity, crew and infrastructure; each has a 
  const fresh=M.newGame();visit(fresh,'project-garden');assert.equal(M.interact(fresh,'project-garden').ok,false);fresh.flags.mira=true;assert.match(M.actionInfo(fresh,M.WORLD.find(n=>n.id==='project-garden')).reason,/Greenhouse/);
  const s=ready();
  for(const [id,p]of Object.entries(M.PROJECTS)){
-  assert.equal(M.interact(s,'project-'+id).ok,false,'must visit');
+  s.player={x:0,z:0};assert.equal(M.interact(s,'project-'+id).ok,false,'must visit');
   visit(s,'discovery-'+p.discovery);assert.ok(!s.discoverySeen.includes(p.discovery));assert.equal(M.interact(s,'discovery-'+p.discovery).ok,false);
   visit(s,'project-'+id);
   for(let stage=0;stage<3;stage++){

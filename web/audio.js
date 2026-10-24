@@ -1,3 +1,4 @@
+import {weather} from './journey.js';
 // Original synthesized effects; no downloads, recordings or audio assets.
 export class Sound {
  constructor(enabled, music = () => true) { this.enabled = enabled; this.musicEnabled = music; this.note = 0; this.nextNote = 0; this.nextCrackle = 0; }
@@ -37,7 +38,7 @@ export class Sound {
  // no recordings, downloads, model inference, or wall-clock rewards are needed.
  update(state) {
   if (!this.ctx || this.ctx.state !== 'running' || !this.enabled()) return;
-  const c=this.ctx, now=c.currentTime, storm=Math.floor(state.activeSeconds/120)%3===2;
+  const c=this.ctx, now=c.currentTime, storm=weather(state).storm;
   const distance=Math.hypot(state.player.x+2,state.player.z),near=Math.max(0,1-distance/14);
   this.windGain.gain.setTargetAtTime(storm?.09:.038,now,1.2);
   this.windFilter.frequency.setTargetAtTime(storm?650:330,now,1.2);
@@ -73,6 +74,11 @@ export class Sound {
  play(kind = 'tap') {
   if (!this.enabled() || !this.ctx || this.ctx.state !== 'running') return;
   const now = this.ctx.currentTime;
+  if(/^note-[0-2]$/.test(kind)){const f=[392,523.25,783.99][+kind.slice(-1)];this.tone(f,now,.6,.035,'sine',f);this.tone(f*2,now,.3,.008,'sine',f*2);return;}
+  if(kind.startsWith('finish-')){const type=kind.slice(7);this.rustle(now,type==='tree'?480:type==='coal'?950:1800,.32,.07);this.tone(type==='food'?740:330,now+.04,.25,.025,'triangle',550);this.tone(660,now+.16,.24,.02);return;}
+  if(kind==='step-wood'){this.tone(130,now,.09,.022,'sine',70);this.rustle(now,650,.07,.015);return;}
+  if(kind==='step-metal'){this.tone(700,now,.13,.012,'triangle',480);return;}
+  if(kind==='step-packed'){this.rustle(now,1100,.085,.018);return;}
   if (kind === 'step') { this.rustle(now, 1800, .12, .023); return; }
   if (kind === 'tree') {
    this.tone(170, now, .16, .055, 'sine', 65);

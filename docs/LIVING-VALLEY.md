@@ -1,5 +1,7 @@
 # Living valley preview
 
+Historical milestone at commit `4dc3420`. Current controls and new systems are documented in [Freedom and discovery](FREEDOM-AND-DISCOVERY.md); this page retains the earlier tap-to-walk behavior for provenance.
+
 Source-only development update, 2026-10-23, on `feature/play-feel`. **No APK has been built, signed, or released for this update.** The published 0.2.0 APK is unchanged. The package version and save format remain unchanged; the preview identifies itself as “LIVING VALLEY PREVIEW” in Settings.
 
 ## Playing this update

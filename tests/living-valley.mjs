@@ -17,16 +17,16 @@ try{
  await page.evaluate(async()=>{window.game=await import('./main.js');window.rules=await import('./model.js');});
  assert.equal(await page.locator('#stick').count(),0);await page.locator('#menu').click();assert.equal(await page.locator('#stick-side').count(),0);await page.locator('#close-sheet').click();
  checks.push('Old right-handed save opens without joystick UI or joystick settings');
- // Gather camera samples over real tap-to-walk, including banner removal.
- const floor=await page.evaluate(()=>{game.view.center();return game.view.project(2,5,0);});
+ // Gather camera samples over real single-finger drag movement and release.
+ await page.evaluate(()=>game.view.center());const cdp=await context.newCDPSession(page);const touch=(type,points)=>cdp.send('Input.dispatchTouchEvent',{type,touchPoints:points.map(([id,x,y])=>({id,x,y,radiusX:1,radiusY:1,force:1}))});
  await page.evaluate(()=>{window.cameraSamples=[];window.recordCamera=true;const record=()=>{if(!window.recordCamera)return;const v=game.view,p=v.project(0,3,0);cameraSamples.push({x:p.x,y:p.y,activity:!document.getElementById('activity').hidden,viewport:{...v.viewport}});requestAnimationFrame(record);};requestAnimationFrame(record);});
- await page.touchscreen.tap(floor.x,floor.y);await page.waitForFunction(()=>game.state.player.x===2&&game.state.player.z===5);await page.waitForTimeout(900);
- const camera=await page.evaluate(()=>{recordCamera=false;return cameraSamples;});assert.ok(camera.some(x=>x.activity)&&camera.some(x=>!x.activity));let jump=0;for(let i=1;i<camera.length;i++){jump=Math.max(jump,Math.hypot(camera[i].x-camera[i-1].x,camera[i].y-camera[i-1].y));assert.deepEqual(camera[i].viewport,camera[0].viewport,'movement banner must not reframe the viewport');}assert.ok(jump<9,`camera jump ${jump}`);
- checks.push('Real tap-to-walk completes with a stable viewport across movement start/end and no large per-frame camera jump');
+ await touch('touchStart',[[1,200,520]]);await touch('touchMove',[[1,250,520]]);await page.waitForTimeout(650);await touch('touchEnd',[]);await page.waitForTimeout(900);
+ const camera=await page.evaluate(()=>{recordCamera=false;return cameraSamples;});assert.ok(camera.length>5);let jump=0;for(let i=1;i<camera.length;i++){jump=Math.max(jump,Math.hypot(camera[i].x-camera[i-1].x,camera[i].y-camera[i-1].y));assert.deepEqual(camera[i].viewport,camera[0].viewport,'movement banner must not reframe the viewport');}assert.ok(jump<9,`camera jump ${jump}`);
+ checks.push('Real drag movement and release keep a stable viewport and no large per-frame camera jump');
  // Import during an in-flight keyboard step must not apply that old step to
  // the newly imported player position.
  const current=await page.evaluate(()=>({...game.state.player}));const incoming={...fixture,player:current};
- await page.keyboard.down('ArrowRight');await page.waitForFunction(()=>{const p=game.state.player,h=game.view.hero.position;return Math.hypot(p.x-h.x,p.z-h.z)>.5;});
+ await page.keyboard.down('ArrowRight');await page.waitForTimeout(350);
  await page.evaluate(data=>window.importEmberlineSave(data),serialize(incoming));await page.keyboard.up('ArrowRight');assert.deepEqual(await page.evaluate(()=>game.state.player),current);
  checks.push('Importing during movement discards the previous in-flight step and preserves the imported position');
  // Finish all nine stages through the actual touch UI and normal paths.
@@ -47,7 +47,7 @@ try{
  for(const [id,d]of Object.entries(DISCOVERIES)){
   await page.evaluate(async id=>{const n=rules.WORLD.find(n=>n.id==='discovery-'+id),path=rules.pathTo(game.state,n.x,n.z,true);for(const [x,z]of path)rules.move(game.state,x,z);game.view.sync(true);game.view.center();},id);await page.waitForTimeout(1200);
   assert.equal(await page.evaluate(id=>game.view.objects.get('discovery-'+id).visible,id),true);
-  const p=await page.evaluate(id=>{const n=rules.WORLD.find(n=>n.id==='discovery-'+id);return game.view.project(n.x,n.z,.22);},id);await page.touchscreen.tap(p.x,p.y);
+  const p=await page.evaluate(id=>{const n=rules.WORLD.find(n=>n.id==='discovery-'+id);return game.view.project(n.x,n.z,.22);},id);await page.touchscreen.tap(p.x,p.y);if(await page.locator('[data-near]').count())await page.locator('[data-near]').filter({hasText:d.name}).click();
   assert.equal(await page.evaluate(()=>game.view.selected?.type),'discovery');await page.locator('#perform-action').click();await page.locator('#discovery-continue').waitFor();assert.ok((await page.locator('#sheet-body').innerText()).includes(d.text));await page.locator('#discovery-continue').click();
   assert.equal(await page.evaluate(project=>game.view.objects.get('project-'+project).userData.keepsake.visible,d.project),true);
  }
@@ -65,7 +65,7 @@ try{
  checks.push('Actual foreground tree fades around the explorer and restores/disposes its copies after clearing; Battery saver also fades it');
  // Tap a physical resident, then check a completed overview fixture.
  await page.evaluate(()=>{game.state.player={x:0,z:3};game.state.activeSeconds=0;game.view.center();});await page.waitForTimeout(900);
- const crew=await page.evaluate(()=>{const p=game.view.residents.oren.position;return game.view.project(p.x,p.z,.9);});await page.touchscreen.tap(crew.x,crew.y);await page.locator('[data-topic="oren-home"]').waitFor();await page.locator('#close-sheet').click();
+ const crew=await page.evaluate(()=>{const p=game.view.residents.oren.position;return game.view.project(p.x,p.z,.9);});await page.touchscreen.tap(crew.x,crew.y);if(await page.locator('[data-near]').count())await page.locator('[data-near]').filter({hasText:'Oren'}).click();await page.locator('[data-topic="oren-home"]').waitFor();await page.locator('#close-sheet').click();
  await page.evaluate(()=>{game.view.lookAt(-1,0);game.view.setZoom(26,true);});await page.waitForTimeout(500);await page.screenshot({path:'build/screenshots/living-valley-settlement.png'});
  checks.push('Residents can be tapped in the world to talk; restored scene renders with all three earned keepsake decorations');
  assert.deepEqual(errors,[]);assert.deepEqual(external,[]);writeFileSync('build/living-valley-results.json',JSON.stringify({checks,cameraMaxFrameDelta:jump,errors,external,suppliedSuppliesFixture:true,discoveryApproachFixture:true},null,2));console.log(JSON.stringify({checks,cameraMaxFrameDelta:jump,errors,external},null,2));

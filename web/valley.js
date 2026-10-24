@@ -1,3 +1,4 @@
+import {weather} from './journey.js';
 // Original, bundled Frosthollow stories and active-play routines. No wall clock.
 export const PROJECTS={
  garden:{name:'Winter garden',crew:'mira',building:'greenhouse',x:-1,z:4,description:'Turn a forgotten seed bed into a sheltered patch of green.',stages:[
@@ -50,7 +51,7 @@ export function crewRoutine(s,id){
  }
  const total=segments.reduce((n,p)=>n+p.duration,0);let time=(s.activeSeconds+offsets[id])%total;
  for(const seg of segments){if(time>=seg.duration){time-=seg.duration;continue;}const a=seg.stop,walking=!!seg.from,u=time/seg.duration;
-  const storm=Math.floor(s.activeSeconds/120)%3===2;
+  const storm=weather(s).storm;
   return {x:walking?seg.from.x+(seg.to.x-seg.from.x)*u:a.x,z:walking?seg.from.z+(seg.to.z-seg.from.z)*u:a.z,angle:walking?Math.atan2(seg.to.x-seg.from.x,seg.to.z-seg.from.z):a.pose==='rest'?Math.PI:0,walking,pose:walking?'carry':a.pose,job:walking?'Carrying supplies through camp':storm&&a.pose==='rest'?'Waiting out the snow over tea':a.project&&s.projects[a.project]===3?a.restored:a.job};
  }
 }

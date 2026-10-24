@@ -1,0 +1,7 @@
+import * as T from './vendor/three.module.js';
+import {workProfile,isGathering} from './feel.js';
+export class FinishFX{
+ constructor(view){this.v=view;this.time=2;this.bits=[];this.root=new T.Group();view.scene.add(this.root);this.material=new T.MeshStandardMaterial({color:0xe3b374,roughness:1});this.shapes={tree:new T.BoxGeometry(.22,.07,.07),coal:new T.DodecahedronGeometry(.07),scrap:new T.BoxGeometry(.11,.055,.1),food:new T.IcosahedronGeometry(.065)};for(let i=0;i<18;i++){const m=new T.Mesh(this.shapes.tree,this.material);m.castShadow=false;this.root.add(m);this.bits.push(m);}this.root.visible=false;}
+ start(n){if(!isGathering(n.type))return;this.time=0;this.origin={x:n.x,z:n.z};this.material.color.setHex(workProfile(n.type).color);this.root.visible=true;for(const bit of this.bits)bit.geometry=this.shapes[n.type];}
+ update(dt){if(this.time>=1.1)return;this.time+=dt;const t=this.time;this.root.visible=t<1.1;this.bits.forEach((bit,i)=>{const angle=i*2.4,r=.3+(i%5)*.09,collect=Math.max(0,(t-.55)/.55),x=this.origin.x+Math.cos(angle)*r*Math.min(t*3,1),z=this.origin.z+Math.sin(angle)*r*Math.min(t*3,1);bit.position.set(T.MathUtils.lerp(x,this.v.hero.position.x,collect),Math.max(.05,.3+Math.sin(Math.min(t/.8,1)*Math.PI)*(.4+i%3*.12))*(1-collect)+.6*collect,T.MathUtils.lerp(z,this.v.hero.position.z,collect));bit.rotation.set(t*(i%3+1),angle+t*2,t*2);bit.scale.setScalar(1-collect);});}
+}
