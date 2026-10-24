@@ -1,6 +1,6 @@
 # Validation record — Emberline 0.2.0
 
-Checks performed 2026-10-22; release packaged 2026-10-23.
+Art/audio checks performed 2026-10-22; integration with the upstream joystick and release checks performed 2026-10-23.
 
 This is a playable preview. No physical Galaxy S24 Ultra was connected, and this record does not claim commercial-game parity, device certification, sustained phone performance or an end-to-end human campaign playtest.
 
@@ -15,7 +15,8 @@ All 16 bundled GLBs and the train palette texture match their provenance hashes.
 Headless Chrome with software WebGL2, touch input and 412×915 viewport was used, with additional 360×740, 480×1040 and landscape layout checks. Reports and screenshots are generated in ignored `build/`.
 
 - `browser-smoke.mjs`: title/field guide, loaded scene, crafting, build/journal menus, reload, free rest, graphics/audio settings, invalid-import preservation and viewport overflow checks pass. No external requests or uncaught JS errors.
-- `touch-flow.mjs`: real raycast selection on the new pine, walking, two harvests, first quest reward, crafting, permanent Hearth upgrade and reload persistence pass. Menus and gameplay continue after browser disconnection. The representative capture reported 374 draw calls / 12,670 triangles; this is not a phone frame-rate measurement.
+- `touch-flow.mjs`: real raycast selection on the new pine, walking, two harvests, first quest reward, crafting, permanent Hearth upgrade and reload persistence pass. Menus and gameplay continue after browser disconnection. The representative capture reported 381 draw calls / 12,794 triangles; this is not a phone frame-rate measurement.
+- `joystick.mjs`: all four screen directions, release-to-stop, keyboard movement, selection cancellation, control spacing and position persistence pass. A regression checks that selecting a tree cannot activate the action button appearing under the same touch. Selection now opens on click after the browser chooses the target. Invisible resource hit areas make the slimmer models easier to tap, and raycasting skips hidden model variants.
 - `replay-ui.mjs`: difficulty, contracts, lore, badges, earned equipment/liveries, lifecycle pause/resume, secret touch interaction, save persistence and rescued-crew remarks pass.
 - `startup.mjs`: injected missing modules and early exceptions show retry/details without overwriting a save; retry restores the saved game.
 - `art-audio.mjs`: all 16 models and the palette texture load with no CSP, console, shader or JS errors and no external resource requests. An older save retains progress. Master audio and independent music settings work; lifecycle pause suspends AudioContext. OfflineAudioContext produces finite, non-silent, unclipped note/footstep samples. This is synthesis validation, not a speaker listening test.
@@ -26,10 +27,10 @@ Screenshots of initial, upgraded and native scenes were inspected. The square fo
 
 ## Android package
 
-Package `com.seanshaffer.emberline`, versionCode 3, versionName 0.2.0, minSdk 29, targetSdk 35. Built using OpenJDK 17.0.20.1, platform 31 stubs and Android build-tools 35.0.0. There are no native `.so` libraries. Production WebView debugging is disabled.
+Package `com.seanshaffer.emberline`, versionCode 4, versionName 0.2.0, minSdk 29, targetSdk 35. Built using OpenJDK 17.0.20.1, platform 31 stubs and Android build-tools 35.0.0. There are no native `.so` libraries. Production WebView debugging is disabled.
 
 - Size: **3,067,448 bytes**.
-- SHA-256: `991f7cac61e9ef645f6e3d37edbc10b72935c1576e0da7fab29d6fabce33802f`.
+- SHA-256: `fe7d6e8a1df895fc36f091d2beb082049b264591c2ecf054aa405650615221cf`.
 - Signer SHA-256: `6adb1d3400cdf72d42797af9235b1b70fba217131e2c2cef3e12dc0d310dce09` (unchanged).
 - APK signature, ZIP alignment and CRC checks pass. All **38 web assets** match the tested working source byte for byte; raw ZIP entry names contain no backslashes.
 - `tests/package-apk.test.py` passes the original raw-backslash packaging regression.
@@ -39,9 +40,17 @@ Package `com.seanshaffer.emberline`, versionCode 3, versionName 0.2.0, minSdk 29
 
 AOSP Android 15 / API 35 x86_64 emulator, Android System WebView 124.0.6367.219, 720×1560 screen and software GPU. Airplane mode remained enabled. Audio output is disabled on this emulator.
 
-Installed 0.2.0 over the existing 0.1.1 package with the same signing identity. The game resumed with nine timber, two planks, five food, six gathered timber, depleted tree stock and Battery saver preserved. The new train, trees and winter materials rendered.
+Installed the 0.2.0 art/audio candidate over the existing 0.1.1 package with the same signing identity. The game resumed with nine timber, two planks, five food, six gathered timber, depleted tree stock and Battery saver preserved. The new train, trees and winter materials rendered.
 
-Touch-selected the new pine, walked to it and harvested six timber; the first quest completed. Crafted two more planks and received the crafting milestone reward. Reinstalled the final package over this progress, cold-launched and exported through Android's document picker. The exported JSON confirmed 12 timber, four planks, eight food, ten salvage, two completed milestones and first-pine stock two. Music defaulted on and Battery saver stayed selected. Turning music off and importing that backup through the native picker restored the music-on preference and settlement. Balanced graphics also rendered on the emulator. After retaining the exported test save, cleared only the emulator app data and verified a clean first launch reaches the illustrated title in airplane mode. No Emberline or AndroidRuntime errors were observed in the final native checks.
+Touch-selected the new pine, walked to it and harvested six timber; the first quest completed. Crafted two more planks and received the crafting milestone reward. Reinstalled the candidate over this progress, cold-launched and exported through Android's document picker. The exported JSON confirmed 12 timber, four planks, eight food, ten salvage, two completed milestones and first-pine stock two. Music defaulted on and Battery saver stayed selected. Turning music off and importing that backup through the native picker restored the music-on preference and settlement. Balanced graphics also rendered on the emulator. After retaining the exported test save, cleared only the emulator app data.
+
+The final signed version-code-4 package, including the upstream joystick and tap fix, was installed and tested again on 2026-10-23. Clean first launch reached the illustrated title, field guide and fully rendered valley in airplane mode. Holding and releasing the joystick moved the character and left footprints. Tapping a pine at the future button location opened its card without starting work; a separate button tap walked to the pine and harvested six timber. Force-stop and cold launch preserved the character's position, 12 timber, six gathered timber and quest progress. No Emberline or AndroidRuntime errors were logged during these checks. Signature, ZIP paths, CRC, manifest and all 38 packaged web files were rechecked against this final APK.
+
+## Upstream integration and prior phone report
+
+Preserved the joystick, keyboard movement and layout changes merged upstream in commit d2a4646. The remote repository was renamed to SeanShaffer88/EmberlineGame. Version code is increased to 4 so this update can also supersede the version-code-3 0.1.2 branch.
+
+The upstream validation record reports that the owner played 0.1.1 on a Galaxy S24 Ultra with no problems and smooth play. This is a report about 0.1.1, not a physical test of the new art/audio/joystick build, and it is not a measured frame-rate or battery result.
 
 ## Practical limits
 

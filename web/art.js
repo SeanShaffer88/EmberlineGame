@@ -92,6 +92,13 @@ export class ValleyArt {
   }
   // Small boulders are decoration around existing resource nodes, never new blockers.
   for(const n of WORLD.filter(n=>n.type==='coal')){const g=v.objects.get(n.id);this.add('rockSmall',g,.3,.6,0,.2);g.traverse(o=>o.userData.node=n);}
+  // Thin trunks should not make the touch target harder to use than the
+  // original broad pines. Invisible volumes provide forgiving mobile taps.
+  const hitMaterial=new T.MeshBasicMaterial({visible:false});
+  const treeHit=new T.BoxGeometry(1.25,2.7,1.25),resourceHit=new T.BoxGeometry(1.25,.9,1.25);
+  for(const n of WORLD.filter(n=>['tree','coal','scrap','food'].includes(n.type))){
+   const hit=new T.Mesh(n.type==='tree'?treeHit:resourceHit,hitMaterial);hit.position.y=n.type==='tree'?1.35:.45;hit.name='touch-target';v.objects.get(n.id).add(hit);
+  }
   for(const n of WORLD)v.objects.get(n.id).traverse(o=>o.userData.node=n);
   v.sync(true);
  }

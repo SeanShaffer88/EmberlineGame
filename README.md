@@ -2,7 +2,7 @@
 
 An original offline Android survival adventure. The rails end in **Frosthollow**, and the train becomes your permanent home. Explore one continuous snowy valley, gather supplies, craft equipment, rescue a crew, and build a settlement that stays with you.
 
-**Version 0.2.0 is a playable preview.** The signed APK and source are available in Releases. It has passed model, browser/touch, and Android 15 emulator checks, including airplane-mode launch, gathering, crafting, save restoration, and native backup export/import. Audio, sustained GPU performance, battery use, and device-specific behavior still need physical-phone verification. The requested target is the Galaxy S24 Ultra.
+**Version 0.2.0 is a playable preview.** The signed APK and source are available in Releases. It has passed model, browser/touch, and Android 15 emulator checks, including airplane-mode launch, gathering, crafting, save restoration, and native backup export/import. Audio, sustained GPU performance, battery use, and device-specific behavior still need physical-phone verification. The owner reported smooth, problem-free play of 0.1.1 on a Galaxy S24 Ultra; the new 0.2.0 art/audio/joystick build still needs its own phone playtest.
 
 ![Emberline gameplay](docs/gameplay.png)
 
@@ -32,9 +32,11 @@ The campaign ends with the beacon; the valley remains playable for contracts, se
 
 Requires Android 10 or newer and Android System WebView with WebGL2 support. There are no native ABI-specific libraries in the APK. A modern WebView is required; if rendering is unavailable, the app shows a message instead of overwriting progress. Update an existing installation with the same package and signing identity to keep saves. Uninstalling deletes app-private saves, so export a backup first.
 
-Tap snow to walk; drag to pan. Tap an object and its action button to gather, rescue, or restore. Use Craft and Build for improvements, Crew for companions and crops, and Pack for food or medicine. Tap the quest card for Story, Contracts, Secrets, and Badges. Return & rest is always available, even without food. The compass recenters the camera; the plus/minus button changes zoom.
+Tap snow to walk, or hold the bottom-left joystick (WASD or arrow keys in a browser); drag the world to pan. Tap an object and its action button to gather, rescue, or restore. Use Craft and Build for improvements, Crew for companions and crops, and Pack for food or medicine. Tap the quest card for Story, Contracts, Secrets, and Badges. Return & rest is always available, even without food. The compass recenters the camera; the plus/minus button changes zoom.
 
 ## What changed in 0.2.0
+
+The merged movement joystick is included alongside tap-to-walk, with keyboard equivalents in browser previews. Resource touch areas are more forgiving, and selecting an object cannot accidentally activate the button appearing beneath that same tap.
 
 The new art pass adds 16 curated CC0 models, an original title illustration, winter surface shading, smoother exploration fog and softer exposure. Earned building upgrades now decorate the same permanent settlement. Crew work routines, birds, a hare and its tracks, fire embers and additional chimney smoke bring the valley to life. An original local musical arrangement and layered ambience grow with the settlement; music has its own switch.
 
@@ -70,6 +72,7 @@ node tests/touch-flow.mjs
 node tests/replay-ui.mjs
 node tests/startup.mjs
 node tests/art-audio.mjs
+node tests/joystick.mjs
 python tests/package-apk.test.py
 ```
 

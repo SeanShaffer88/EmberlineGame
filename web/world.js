@@ -97,8 +97,18 @@ export class WorldView{
  setQuality(low){this.lowQuality=low;this.renderer.setPixelRatio(low?1:Math.min(devicePixelRatio,1.65));this.renderer.shadowMap.enabled=!low;this.resize();}
  project(x,z,y=1){const v=new T.Vector3(x,y,z).project(this.camera);return{x:(v.x+1)/2*this.canvas.clientWidth,y:(1-v.y)/2*this.canvas.clientHeight};}
  groundAt(x,y){const r=this.canvas.getBoundingClientRect();this.ray.setFromCamera(new T.Vector2((x-r.left)/r.width*2-1,-(y-r.top)/r.height*2+1),this.camera);return this.ray.ray.intersectPlane(this.groundPlane,new T.Vector3());}
- bindInput(){let down=null;this.canvas.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY,lastX:e.clientX,lastY:e.clientY,drag:false};this.canvas.setPointerCapture(e.pointerId);});this.canvas.addEventListener('pointermove',e=>{if(!down)return;if(Math.hypot(e.clientX-down.x,e.clientY-down.y)>10)down.drag=true;if(down.drag){const a=this.groundAt(down.lastX,down.lastY),b=this.groundAt(e.clientX,e.clientY);if(a&&b){this.focus.add(a.sub(b));this.focus.x=T.MathUtils.clamp(this.focus.x,-18,18);this.focus.z=T.MathUtils.clamp(this.focus.z,-19,18);this.manual=true;}}down.lastX=e.clientX;down.lastY=e.clientY;});this.canvas.addEventListener('pointerup',e=>{if(down&&!down.drag){const p=this.groundAt(e.clientX,e.clientY);const hits=this.ray.intersectObjects([...this.objects.values()].filter(o=>o.visible),true);const hit=hits.find(h=>h.object.userData.node&&this.objects.get(h.object.userData.node.id).visible);this.onTap(hit?.object.userData.node||null,p);}down=null;});this.canvas.addEventListener('pointercancel',()=>down=null);this.canvas.addEventListener('wheel',e=>{e.preventDefault();this.zoom=T.MathUtils.clamp(this.zoom+e.deltaY*.015,14,38);this.resize();},{passive:false});}
+ bindInput(){
+  let down=null,tap=null;
+  this.canvas.addEventListener('pointerdown',e=>{if(!e.isPrimary||e.button!==0)return;tap=null;down={id:e.pointerId,x:e.clientX,y:e.clientY,lastX:e.clientX,lastY:e.clientY,drag:false};this.canvas.setPointerCapture(e.pointerId);});
+  this.canvas.addEventListener('pointermove',e=>{if(!down||down.id!==e.pointerId)return;if(Math.hypot(e.clientX-down.x,e.clientY-down.y)>10)down.drag=true;if(down.drag){const a=this.groundAt(down.lastX,down.lastY),b=this.groundAt(e.clientX,e.clientY);if(a&&b){this.focus.add(a.sub(b));this.focus.x=T.MathUtils.clamp(this.focus.x,-18,18);this.focus.z=T.MathUtils.clamp(this.focus.z,-19,18);this.manual=true;}}down.lastX=e.clientX;down.lastY=e.clientY;});
+  this.canvas.addEventListener('pointerup',e=>{if(!down||down.id!==e.pointerId)return;tap=down.drag?null:{x:e.clientX,y:e.clientY};down=null;});
+  // Open interaction UI on click, after the browser has chosen its target.
+  // Opening it on pointerup lets a touch's compatibility click hit a new button.
+  this.canvas.addEventListener('click',()=>{if(!tap)return;const point=tap;tap=null;const p=this.groundAt(point.x,point.y);const hits=this.ray.intersectObjects([...this.objects.values()].filter(o=>o.visible),true);const hit=hits.find(h=>{if(!h.object.userData.node)return false;for(let o=h.object;o;o=o.parent)if(!o.visible)return false;return true;});this.onTap(hit?.object.userData.node||null,p);});
+  this.canvas.addEventListener('pointercancel',()=>{down=null;tap=null;});this.canvas.addEventListener('wheel',e=>{e.preventDefault();this.zoom=T.MathUtils.clamp(this.zoom+e.deltaY*.015,14,38);this.resize();},{passive:false});
+ }
  center(){this.manual=false;}
+ groundDirection(x,y){const r=this.canvas.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,a=this.groundAt(cx,cy),b=this.groundAt(cx+x*100,cy+y*100);if(!a||!b)return null;const dx=b.x-a.x,dz=b.z-a.z,m=Math.hypot(dx,dz)||1;return{x:dx/m,z:dz/m};}
  lookAt(x,z){this.focus.set(x,0,z);this.manual=true;}
  updateFootprints(dt,moving){
   const p=this.hero.position,d=Math.hypot(p.x-this.lastPrintPosition.x,p.z-this.lastPrintPosition.z);

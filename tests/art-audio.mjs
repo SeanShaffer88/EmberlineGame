@@ -36,7 +36,7 @@ try{
  const before=await positions();await page.waitForTimeout(1300);const after=await positions();assert.notDeepEqual(before.crew,after.crew);assert.notDeepEqual(before.hare,after.hare);assert.notEqual(before.tree,after.tree);
  const upgraded=await page.evaluate(async()=>{const {view:v}=await import('./main.js');return{lamps:v.art.lamps.every(x=>x.visible),wagon:v.objects.get('home').children.find(c=>c.userData.asset==='wagon').visible,home:v.objects.get('home').position.toArray(),rewards:v.art.rewards.filter(r=>r.group.visible).length};});
  assert.ok(upgraded.lamps&&upgraded.wagon&&upgraded.rewards>=12);assert.deepEqual(upgraded.home,[0,0,-3]);
- await page.screenshot({path:'build/screenshots/07-living-settlement.png'});checks.push('Upgraded fixture shows wagon, porch, lamps and building decorations; residents, hare and trees animate; home remains at its original coordinates');
+ await page.locator('#toast').waitFor({state:'hidden'});await page.screenshot({path:'build/screenshots/07-living-settlement.png'});checks.push('Upgraded fixture shows wagon, porch, lamps and building decorations; residents, hare and trees animate; home remains at its original coordinates');
  await page.evaluate(async()=>{const {state:s}=await import('./main.js');s.activeSeconds=250;});
  for(let i=0;i<50;i++){if(await page.evaluate(async()=>(await import('./main.js')).view.weatherBlend>.8))break;await page.waitForTimeout(250);}
  const storm=await page.evaluate(async()=>{const {view:v}=await import('./main.js');const full=v.snow.geometry.drawRange.count;v.setQuality(true);v.updateWeather(.02);return{blend:v.weatherBlend,full,low:v.snow.geometry.drawRange.count,shadows:v.renderer.shadowMap.enabled};});
